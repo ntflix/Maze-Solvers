@@ -23,9 +23,6 @@ class Node(Generic[T]):
 class Graph(Generic[T]):
     """A binary graph of type {T}."""
 
-    values: list[T]
-    connections = list[int]()
-
     nodes: list[Node[T]]    # a helper variable, temporarily used 
 
     def __init__(self):
@@ -37,25 +34,20 @@ class Graph(Generic[T]):
         Returns:
             None.
         """
-        self.values: list[T] = []       # Initialize self.values to an empty list to remove old values
-        self.nodes: list[Node[T]] = []  # Initialize self.nodes to an empty list
 
-        for value in self.values:
-            if self.values.count(value) > 1:
-                # There are duplicate values in the tree
-                print("Invalid tree. Duplicate values must not exist. Value: " + str(value))
-                exit(1)
+        self.nodes: list[Node[T]] = []  # Initialize self.nodes to an empty list
     
-    def setNodes(self, values: list[T], connectionsPointers: list[list[int]]) -> None:
+    def setNodesFromNodesList(self, nodes: list[Node[T]]) -> None:
+        self.nodes = nodes
+
+    def setNodesFromValuesAndConnections(self, values: list[T], connectionsPointers: list[list[int]]) -> None:
         """Give a Tree object some nodes.
 
         Args:
-            values (List[T]): the value of each node
-            leftPointers (List[int]): the left pointer of each node, where index is the node number
-            rightPointers (List[int]): the right pointer of each node, where index is the node number
+            values (List[T]): the value of each node.
+            connectionsPointers (List[List[int]]): the connections that each node has.
         """
 
-        self.values = values                    # set `self.values` to the provided values
         self.connections = connectionsPointers  # and set `self.connections` to provided connections
 
         for i in range(len(values)):
