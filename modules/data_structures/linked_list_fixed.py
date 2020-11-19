@@ -12,7 +12,7 @@ class _LinkedListNode(Generic[T]):
         Generic ([type]): The type of data this node will store
     """
 
-    data: T  # this node's data
+    data: T                             # this node's data
     # the pointer of the next node  # variable type is in quotes because we are using forward referencing here to avoid recursive typing
     nextNode: Optional['_LinkedListNode[T]']
 
@@ -156,7 +156,7 @@ class LinkedList(Generic[T]):
                 insertOnto.nextNode = node
 
     def removeNode(self, toRemove: T, node: Optional[_LinkedListNode[T]] = None) -> None:
-        """Remove a node with data `toRemove` from the list, by linking the node before it to the node after it.
+        """Remove a node with data `toRemove` from the list.
 
         Args:
             toRemove (T): The data of the node to remove. The first node with this data will be the one removed.
@@ -169,27 +169,33 @@ class LinkedList(Generic[T]):
         
         >>> animalsThatFly = LinkedList[str](['crocodile', 'duck', 'pigeon', 'cow', 'goose', 'swan', 'pig'])
 
-        Removing a node at the start of the list
+        Test removing a node at the start of the list
         >>> animalsThatFly.removeNode('crocodile')
         >>> ', '.join([str(animal.data) for animal in animalsThatFly])  # remove node at start
         'duck, pigeon, cow, goose, swan, pig'
 
-        Removing a node in the middle of the list
+        Test removing a node in the middle of the list
         >>> animalsThatFly.removeNode('cow')
         >>> ', '.join([str(animal.data) for animal in animalsThatFly])  # remove node in middle
-        'duck, pigeon, goose, swan,'
+        'duck, pigeon, goose, swan, pig'
 
-        Removing a node at the end of the list
+        Test removing a node at the end of the list
         >>> animalsThatFly.removeNode('pig')
         >>> ', '.join([str(animal.data) for animal in animalsThatFly])  # remove node at end
         'duck, pigeon, goose, swan'
         """
+
+        # remove node at the specified index by linking the node before it to the node after it
 
         # check the specified node is `None` to see if we are starting at the beginning of this LinkedList or from a different node
         if node is None:
             # set `node` to `self.head` to traverse the list from the beginning
             if self.head is not None:
                 node = self.head
+                # if the start of the list is the one we want to remove, just set `self.head` to the next one
+                if node.data == toRemove:
+                    self.head = node.nextNode
+                    return
             else:
                 raise Exception("List is empty.")
         
