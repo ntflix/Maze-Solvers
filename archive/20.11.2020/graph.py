@@ -1,11 +1,10 @@
 #!python3.10
 
-# from modules.debugging.debug_print import debugPrint
 # support type hinting in my editor and code
 from typing import Generator, Generic, Optional, TypeVar
 
-# circular queue for breadth first search
-from modules.data_structures.circular_queue.circular_queue import CircularQueue
+# queue for breadth first search
+from temporary_modules import queue
 
 T = TypeVar("T")
 
@@ -47,9 +46,7 @@ class Node(Generic[T]):
         ```
         """
         # For example, "Bob -> (0, 4)"
-        return str(
-            str(self.data) + " -> (" + ", ".join(map(str, self.connections)) + ")"
-        )
+        return str(self.data + " -> (" + ", ".join(map(str, self.connections)) + ")")
 
 
 class Graph(Generic[T]):
@@ -78,7 +75,7 @@ class Graph(Generic[T]):
         ...     Node("Eve",    [0, 1, 2, 3])    # 4
         ... ])
         >>> graphWithPeopleInIt
-        ['Alice -> (1, 4)', 'Bob -> (0, 4)', 'Calvin -> (4, 3)', 'Daniel -> (2, 4)', 'Eve -> (0, 1, 2, 3)']
+        [Alice -> (1, 4)], [Bob -> (0, 4)], [Calvin -> (4, 3)], [Daniel -> (2, 4)], [Eve -> (0, 1, 2, 3)]
         """
 
         # Initialize `self.nodes` to an empty list
@@ -89,52 +86,14 @@ class Graph(Generic[T]):
             self.setNodesFromNodesList(nodes)
 
     def __repr__(self) -> str:
-        """Return a string representation of this object.
-
-        Returns:
-            str: The string representation of this object.
-        """
-        # map each of the nodes in the graph to a string and put all those into a list
-        # and then return the stringified list.
-        return str(list(map(str, self.__nodes)))
-
-    def __iter__(self) -> Generator[Node[T], None, None]:
-        """Make this class iterable
-
-        Yields:
-            Generator[Node[T], None, None]: The nodes of the graph, in the order that the graph was initialized with them.
-        """
-        for node in self.__nodes:
-            yield node
+        return "[" + "], [".join(list(map(str, self.__nodes))) + "]"
 
     @staticmethod
-    def createFullyConnectedSquareGraph(sizeX: int, sizeY: int) -> "Graph[T]":
-        """Creates a fully connected graph of the specified X and Y size.
-
-        Returns:
-            Graph[T]: The (empty) graph object (with every node connected) (of the given size).
-
-        >>> fullyConnectedGraph = Graph.createFullyConnectedSquareGraph(2, 2)
-        >>> [i for i in map(str, fullyConnectedGraph)]
-        ['None -> (1, 2, 3)', 'None -> (0, 2, 3)', 'None -> (0, 1, 3)', 'None -> (0, 1, 2)']
-        """
-
-        # make a list of the pointers of every single node
-        everyNodePointer = [i for i in range(0, sizeX * sizeY)]
-
-        # make the list of nodes where every node is connected to every single other node
-        # instantiate the empty list
-        everyNode = list[Node[T]]()
-        # for each node index in the amount of nodes we want to create...
-        for thisNode in range(len(everyNodePointer)):
-            # make a list of every node pointer _without_ this current node in the list
-            everyNodePointerExceptThisNode = (
-                everyNodePointer[:thisNode] + everyNodePointer[thisNode + 1 :]
-            )
-            # and add the list to the `everyNode` list
-            everyNode.append(Node[T](None, connections=everyNodePointerExceptThisNode))
-
-        return Graph(nodes=everyNode)
+    def createFullyConnectedSquareGraph(sizeX: int, sizeY: int) -> 'Graph':
+        raise NotImplementedError()
+        connections: list[list[int]]
+        # generate the list of lists of length `sizeY`
+        graph = Graph()
 
     def setNodesFromNodesList(self, nodes: list[Node[T]]) -> None:
         """Set a graph's nodes from a list of nodes.
@@ -151,7 +110,7 @@ class Graph(Generic[T]):
         ...     Node("Eve",    [0, 1, 2, 3])    # 4
         ... ])
         >>> socialNetwork
-        ['Alice -> (1, 4)', 'Bob -> (0, 4)', 'Calvin -> (4, 3)', 'Daniel -> (2, 4)', 'Eve -> (0, 1, 2, 3)']
+        [Alice -> (1, 4)], [Bob -> (0, 4)], [Calvin -> (4, 3)], [Daniel -> (2, 4)], [Eve -> (0, 1, 2, 3)]
         """
         self.__nodes = nodes
 
@@ -180,7 +139,7 @@ class Graph(Generic[T]):
         ...     [0, 1, 2, 3]
         ... ])
         >>> socialNetwork
-        ['Alice -> (1, 4)', 'Bob -> (0, 4)', 'Calvin -> (4, 3)', 'Daniel -> (2, 4)', 'Eve -> (0, 1, 2, 3)']
+        [Alice -> (1, 4)], [Bob -> (0, 4)], [Calvin -> (4, 3)], [Daniel -> (2, 4)], [Eve -> (0, 1, 2, 3)]
         """
 
         for i in range(len(values)):
@@ -268,15 +227,9 @@ class Graph(Generic[T]):
         >>> [person for person in socialNetwork.depthFirstTraversal()]
         ['Daniel', 'Calvin', 'Eve', 'Bob', 'Alice']
 
-        >>> [item for item in Graph[int]().depthFirstTraversal()]       # test traversal of empty graph
+        >>> [item for item in Graph[int]().depthFirstTraversal()]
         []
         """
-
-        # check there's actually any nodes
-        if len(self.__nodes) < 1:
-            # there's no nodes.
-            return
-
         if nodeIndex is None:
             # the function has been called without a starting node so we start from the beginning!
             # so we'll make everything not visited to be able to visit stuff.
@@ -306,13 +259,13 @@ class Graph(Generic[T]):
 
             yield self.__nodes[nodeIndex].data
 
-    def breadthFirstTraversal(self) -> Generator[Node[T], None, None]:
+    def breadthFirstTraversal(self) -> Generator[Node[T], None, None]:    
         """Iteratively breadth-first traverse the graph.
         Yields data – rather than returning it – because returning values would require more memory.
 
         Yields:
             Generator[Node[T]]: The nodes' data in depth-first order.
-
+        
         >>> socialNetwork = Graph[str]()
         >>> socialNetwork.setNodesFromNodesList([
         ...     Node("Alice",  [1, 4]),         # 0
@@ -324,15 +277,9 @@ class Graph(Generic[T]):
         >>> [person for person in socialNetwork.breadthFirstTraversal()]
         ['Alice', 'Bob', 'Eve', 'Calvin', 'Daniel']
 
-        >>> [item for item in Graph[int]().breadthFirstTraversal()]     # test a traversal of an empty graph
+        >>> [item for item in Graph[int]().breadthFirstTraversal()]
         []
         """
-
-        # check there's actually any nodes
-        if len(self.__nodes) < 1:
-            # there's no nodes.
-            return
-
         # initialize a queue for the visited nodes
         visitedNodes = CircularQueue[Node[T]](len(self.__nodes))
 
@@ -342,10 +289,10 @@ class Graph(Generic[T]):
         visitedNodes.enQueue(self.__nodes[0])
 
         # for each item in the queue:
-        while len(visitedNodes) > 0:
+        while visitedNodes.length > 0:
             # pop a node from the queue
             currentNode = visitedNodes.deQueue()
-            # and yield it
+            # and yeild it
             yield currentNode.data
 
             # get neighbours of the node
@@ -356,23 +303,3 @@ class Graph(Generic[T]):
                     self.__nodes[neighbour].visited = True
                     # and add it to the `visitedNodes` queue
                     visitedNodes.enQueue(self.__nodes[neighbour])
-
-
-numbers = Graph[int]()
-
-numbers.setNodesFromNodesList(
-    [
-        Node(17, [1, 2]),  #  0
-        Node(8, [3, 4]),  # 1
-        Node(22, [5, 6]),  # 2
-        Node(4, [7]),  # 3
-        Node(12, [8]),  # 4
-        Node(19),  # 5
-        Node(30, [9]),  # 6
-        Node(5),  # 7
-        Node(14),  # 8
-        Node(25),  # 9
-    ]
-)
-
-print([number for number in numbers.breadthFirstTraversal()])

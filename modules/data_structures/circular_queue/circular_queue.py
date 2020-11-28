@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import TypeVar, Generic
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class QueuePosition(Enum):
@@ -11,7 +11,7 @@ class QueuePosition(Enum):
 
     Args:
         Enum ([type]): Automatically provided by the enum module.
-    
+
     Example usage:
         `QueuePosition.front`
         `QueuePosition.rear`
@@ -24,6 +24,7 @@ class QueuePosition(Enum):
     >>> print(rear)
     QueuePosition.rear
     """
+
     front = 0
     rear = 1
 
@@ -34,21 +35,22 @@ class CircularQueue(Generic[T]):
     Args:
         Generic ([type]): The type of data this queue will store.
 
-    Create a circular queue and test its length and maxSize:
+    Create a circular queue and test its length and maxSize
     >>> myQueue = CircularQueue[float](100)
-    >>> myQueue.length
+    >>> len(myQueue)
     0
-    >>> myQueue.maxSize
-    100
 
+    Check maximum size of queue
+    >>> myQueue._CircularQueue__maxSize     # accessing private attribute
+    100
     """
 
     # this is a circular queue. It is implemented as such
-    queue: list[T]
-    maxSize: int
-    length: int
-    _tail: int
-    _head: int
+    __queue: list[T]
+    __maxSize: int
+    __length: int
+    __tail: int
+    __head: int
 
     def __init__(self, maxSize: int):
         """Initialize an empty queue with maximum size.
@@ -59,22 +61,25 @@ class CircularQueue(Generic[T]):
         Initializing of a queue:
         >>> myQueue = CircularQueue[str](6)
         ... # Empty queue has correct length and initial items:
-        >>> myQueue.queue
+        >>> myQueue._CircularQueue__queue       # accessing private attr for testing
         [-1, -1, -1, -1, -1, -1]
 
         Check the maximum size of the queue
-        >>> myQueue.maxSize
+        >>> myQueue._CircularQueue__maxSize     # accessing private attr for testing
         6
         """
         # initialize `self.queue` to an array of `-1` repeating `maxSize` number of times
-        self.queue = [-1] * maxSize
-        # set `self.maxSize` to provided `maxSize` argument
-        self.maxSize = maxSize
-        # set `self.length` to 0, because there are no elements in our queue just yet
-        self.length = 0
+        self.__queue = [-1] * maxSize
+        # set `self._maxSize` to provided `maxSize` argument
+        self.__maxSize = maxSize
+        # set `self.__length` to 0, because there are no elements in our queue just yet
+        self.__length = 0
         # and set both `self._tail` and `self._head` to `-1` as they don't point to anything yet
-        self._tail = -1
-        self._head = -1
+        self.__tail = -1
+        self.__head = -1
+
+    def __len__(self) -> int:
+        return self.__length
 
     def enQueue(self, item: T) -> None:
         """Enqueue an item to the queue. Time complexity is O(1).
@@ -119,11 +124,11 @@ class CircularQueue(Generic[T]):
                 Observe that this helps us to avoid reinitializing tail and head to 0 when
             the queue becomes full.
             """
-            self._tail = (self._tail + 1) % self.maxSize
-            self.queue[self._tail] = item
-            self.length += 1
-            if self.length == 1:
-                self._head = 0
+            self.__tail = (self.__tail + 1) % self.__maxSize
+            self.__queue[self.__tail] = item
+            self.__length += 1
+            if self.__length == 1:
+                self.__head = 0
         else:
             # queue is full! uh oh...
             raise Exception("Queue is full")
@@ -156,7 +161,7 @@ class CircularQueue(Generic[T]):
         Hello there, I am an octopus.
 
         The length of the queue should now be 0 as we dequeued everything:
-        >>> myQueue.length
+        >>> len(myQueue)
         0
         """
 
@@ -165,16 +170,16 @@ class CircularQueue(Generic[T]):
             raise Exception("Queue empty")
 
         # store in a temporary variable because if we return the value here, the rest of the function does not execute
-        _dataToReturn = self.queue[self._head]
+        _dataToReturn = self.__queue[self.__head]
 
-        self._head = (self._head + 1) % self.maxSize
-        # decrement `self.length` by 1
-        self.length -= 1
+        self.__head = (self.__head + 1) % self.__maxSize
+        # decrement `self.__length` by 1
+        self.__length -= 1
 
         if self.isEmpty():
             # set head and tail to `-1` if the queue is empty
-            self._head = -1
-            self._tail = -1
+            self.__head = -1
+            self.__tail = -1
 
         return _dataToReturn
 
@@ -232,9 +237,9 @@ class CircularQueue(Generic[T]):
             raise Exception("Queue is empty")
 
         if position == QueuePosition.front:
-            return self.queue[self._head]
+            return self.__queue[self.__head]
         elif position == QueuePosition.rear:
-            return self.queue[self._tail]
+            return self.__queue[self.__tail]
 
         raise Exception("Queue position must be 'front' or 'rear'")
 
@@ -252,7 +257,7 @@ class CircularQueue(Generic[T]):
         >>> myQueue.isEmpty()
         False
         """
-        return self.length == 0
+        return self.__length == 0
 
     def isFull(self) -> bool:
         """Check whether the queue is full.
@@ -270,4 +275,4 @@ class CircularQueue(Generic[T]):
         >>> myQueue.isFull()
         True
         """
-        return self.length == self.maxSize
+        return self.__length == self.__maxSize

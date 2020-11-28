@@ -1,11 +1,11 @@
 #!python3.10
 
-# from modules.debugging.debug_print import debugPrint
 # support type hinting in my editor and code
+from modules.debugging.debug_print import debugPrint
 from typing import Generator, Generic, Optional, TypeVar
 
-# circular queue for breadth first search
-from modules.data_structures.circular_queue.circular_queue import CircularQueue
+# queue for breadth first search
+from temporary_modules import queue
 
 T = TypeVar("T")
 
@@ -342,10 +342,10 @@ class Graph(Generic[T]):
         visitedNodes.enQueue(self.__nodes[0])
 
         # for each item in the queue:
-        while len(visitedNodes) > 0:
+        while visitedNodes.length > 0:
             # pop a node from the queue
             currentNode = visitedNodes.deQueue()
-            # and yield it
+            # and yeild it
             yield currentNode.data
 
             # get neighbours of the node
@@ -356,23 +356,3 @@ class Graph(Generic[T]):
                     self.__nodes[neighbour].visited = True
                     # and add it to the `visitedNodes` queue
                     visitedNodes.enQueue(self.__nodes[neighbour])
-
-
-numbers = Graph[int]()
-
-numbers.setNodesFromNodesList(
-    [
-        Node(17, [1, 2]),  #  0
-        Node(8, [3, 4]),  # 1
-        Node(22, [5, 6]),  # 2
-        Node(4, [7]),  # 3
-        Node(12, [8]),  # 4
-        Node(19),  # 5
-        Node(30, [9]),  # 6
-        Node(5),  # 7
-        Node(14),  # 8
-        Node(25),  # 9
-    ]
-)
-
-print([number for number in numbers.breadthFirstTraversal()])
