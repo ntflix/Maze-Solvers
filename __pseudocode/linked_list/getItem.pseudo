@@ -1,0 +1,16 @@
+function getItem(int key) {
+    set index to 0
+    set currentNode to (head of the linked list)
+
+    while (currentNode is not null) {
+        if (index == key) {
+            return the current node's data
+        } else if (index > key) {
+            except an IndexError
+        } else {
+            increment (index)
+            set currentNode to the currentNode's nextNode
+        }
+    
+    except an IndexError
+}

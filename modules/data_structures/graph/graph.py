@@ -7,49 +7,10 @@ from typing import Generator, Generic, Optional, TypeVar
 # circular queue for breadth first search
 from modules.data_structures.circular_queue.circular_queue import CircularQueue
 
+# graph node
+from modules.data_structures.graph.node import Node
+
 T = TypeVar("T")
-
-
-class Node(Generic[T]):
-    """A node of a graph. Stores data and its connections.
-
-    Args:
-        Generic ([type]): The type of data the node will store.
-    """
-
-    # This could easily be made into a Tuple rather than a whole new class but for debugging purposes, I chose to make this a class.
-
-    data: T  # this node's data  - public because the graph may want to set its data again
-    connections: list[
-        int
-    ]  # pointers of this node's connections   – public bc it needs to be read by the graph
-    visited: bool = (
-        False  # a helper variable to assist in traversals of a graph of nodes
-    )
-
-    def __init__(self, data: T, connections: list[int] = list[int]()) -> None:
-        """Constructor for a binary tree node.
-
-        Args:
-            data (T): This node's data, e.g. 'Barry'.
-            connections (list[int], optional): The list of pointers that are connections of this node. Defaults to an emply list[int]().
-        """
-        self.data = data
-        self.connections = connections
-
-    def __repr__(self) -> str:
-        """Return a string representation of this object
-
-        Returns:
-            str: The string representation of the object, for example:
-        ```
-        "Alice -> (1, 4)"
-        ```
-        """
-        # For example, "Bob -> (0, 4)"
-        return str(
-            str(self.data) + " -> (" + ", ".join(map(str, self.connections)) + ")"
-        )
 
 
 class Graph(Generic[T]):
@@ -70,15 +31,6 @@ class Graph(Generic[T]):
         >>> graph = Graph[str]()
         >>> graph
         []
-        >>> graphWithPeopleInIt = Graph[str](nodes = [
-        ...     Node("Alice",  [1, 4]),         # 0
-        ...     Node("Bob",    [0, 4]),         # 1
-        ...     Node("Calvin", [4, 3]),         # 2
-        ...     Node("Daniel", [2, 4]),         # 3
-        ...     Node("Eve",    [0, 1, 2, 3])    # 4
-        ... ])
-        >>> graphWithPeopleInIt
-        ['Alice -> (1, 4)', 'Bob -> (0, 4)', 'Calvin -> (4, 3)', 'Daniel -> (2, 4)', 'Eve -> (0, 1, 2, 3)']
         """
 
         # Initialize `self.nodes` to an empty list
@@ -108,32 +60,23 @@ class Graph(Generic[T]):
             yield node
 
     @staticmethod
-    def createFullyConnectedSquareGraph(sizeX: int, sizeY: int) -> "Graph[T]":
-        """Creates a fully connected graph of the specified X and Y size.
+    def createSquareGraph(sizeX: int, sizeY: int) -> "Graph[T]":
+        """Creates a graph of the specified X and Y size.
+
+        Args:
+            sizeX (int): the desired X size of the graph.
+            sizeY (int): the desired Y size of the graph.
 
         Returns:
-            Graph[T]: The (empty) graph object (with every node connected) (of the given size).
+            Graph[T]: The (empty) graph object (of the given size).
 
-        >>> fullyConnectedGraph = Graph.createFullyConnectedSquareGraph(2, 2)
-        >>> [i for i in map(str, fullyConnectedGraph)]
-        ['None -> (1, 2, 3)', 'None -> (0, 2, 3)', 'None -> (0, 1, 3)', 'None -> (0, 1, 2)']
+        >>> graph = Graph.createSquareGraph(2, 2)
+        >>> [i for i in map(str, graph)]
+        ['None -> ()', 'None -> ()', 'None -> ()', 'None -> ()']
         """
 
-        # make a list of the pointers of every single node
-        everyNodePointer = [i for i in range(0, sizeX * sizeY)]
-
-        # make the list of nodes where every node is connected to every single other node
-        # instantiate the empty list
-        everyNode = list[Node[T]]()
-        # for each node index in the amount of nodes we want to create...
-        for thisNode in range(len(everyNodePointer)):
-            # make a list of every node pointer _without_ this current node in the list
-            everyNodePointerExceptThisNode = (
-                everyNodePointer[:thisNode] + everyNodePointer[thisNode + 1 :]
-            )
-            # and add the list to the `everyNode` list
-            everyNode.append(Node[T](None, connections=everyNodePointerExceptThisNode))
-
+        # make a list of nodes of the correct length
+        everyNode = [Node[T](None) for _ in range(0, sizeX * sizeY)]
         return Graph(nodes=everyNode)
 
     def setNodesFromNodesList(self, nodes: list[Node[T]]) -> None:
@@ -142,16 +85,16 @@ class Graph(Generic[T]):
         Args:
             nodes (list[Node[T]]): The list of nodes from which to set the graph data.
 
-        >>> socialNetwork = Graph[str]()
-        >>> socialNetwork.setNodesFromNodesList([
-        ...     Node("Alice",  [1, 4]),         # 0
-        ...     Node("Bob",    [0, 4]),         # 1
-        ...     Node("Calvin", [4, 3]),         # 2
-        ...     Node("Daniel", [2, 4]),         # 3
-        ...     Node("Eve",    [0, 1, 2, 3])    # 4
+        >>> sampleMaze = Graph[None]()
+        >>> sampleMaze.setNodesFromNodesList([
+        ...     Node(None,  [1, 4]),         # 0
+        ...     Node(None,  [0, 4]),         # 1
+        ...     Node(None,  [4, 3]),         # 2
+        ...     Node(None,  [2, 4]),         # 3
+        ...     Node(None,  [0, 1, 2, 3])    # 4
         ... ])
-        >>> socialNetwork
-        ['Alice -> (1, 4)', 'Bob -> (0, 4)', 'Calvin -> (4, 3)', 'Daniel -> (2, 4)', 'Eve -> (0, 1, 2, 3)']
+        >>> sampleMaze
+        ['None -> (1, 4)', 'None -> (0, 4)', 'None -> (4, 3)', 'None -> (2, 4)', 'None -> (0, 1, 2, 3)']
         """
         self.__nodes = nodes
 
@@ -165,13 +108,13 @@ class Graph(Generic[T]):
             connectionsPointers (List[List[int]]): the connections that each node has.
 
         Setting a graph's nodes from provided data and connections:
-        >>> socialNetwork = Graph[str]()
-        >>> socialNetwork.setNodesFromValuesAndConnections([
-        ...     "Alice",
-        ...     "Bob",
-        ...     "Calvin",
-        ...     "Daniel",
-        ...     "Eve"
+        >>> maze = Graph[None]()
+        >>> maze.setNodesFromValuesAndConnections([
+        ...     None,
+        ...     None,
+        ...     None,
+        ...     None,
+        ...     None,
         ... ], [
         ...     [1, 4],
         ...     [0, 4],
@@ -179,8 +122,8 @@ class Graph(Generic[T]):
         ...     [2, 4],
         ...     [0, 1, 2, 3]
         ... ])
-        >>> socialNetwork
-        ['Alice -> (1, 4)', 'Bob -> (0, 4)', 'Calvin -> (4, 3)', 'Daniel -> (2, 4)', 'Eve -> (0, 1, 2, 3)']
+        >>> maze
+        ['None -> (1, 4)', 'None -> (0, 4)', 'None -> (4, 3)', 'None -> (2, 4)', 'None -> (0, 1, 2, 3)']
         """
 
         for i in range(len(values)):
@@ -189,6 +132,7 @@ class Graph(Generic[T]):
             self.__nodes.append(thisNode)  # append new node to `self.nodes`
 
     def connectionExistsFrom(self, indexA: int, indexB: int) -> bool:
+
         """Check whether there is a connection from provided node index A to index B.
 
         Args:
@@ -197,8 +141,49 @@ class Graph(Generic[T]):
 
         Returns:
             bool: whether there is a link from node indexA to node indexB.
+
+        Raises:
+            IndexError: if the node at `indexA` is nonexistent.
+
+        >>> Graph[str]([
+        ...     Node('Entrance', [1]),
+        ...     Node('1', [0, 2, 3]),
+        ...     Node('2', [1, 4]),
+        ...     Node('3', [1, 5]),
+        ...     Node('4', [2]),
+        ...     Node('5', [3, 6, 7]),
+        ...     Node('6', [5, 8]),
+        ...     Node('7', [5, 9, 10]),
+        ...     Node('Exit', [6, 11]),
+        ...     Node('9', [7]),
+        ...     Node('10', [7]),
+        ...     Node('11', [8])
+        ... ]).connectionExistsFrom(0, 1)
+        True
+
+        >>> Graph[str]([
+        ...     Node('Entrance', [1]),
+        ...     Node('1', [0, 2, 3]),
+        ...     Node('2', [1, 4]),
+        ...     Node('3', [1, 5]),
+        ...     Node('4', [2]),
+        ...     Node('5', [3, 6, 7]),
+        ...     Node('6', [5, 8]),
+        ...     Node('7', [5, 9, 10]),
+        ...     Node('Exit', [6, 11]),
+        ...     Node('9', [7]),
+        ...     Node('10', [7]),
+        ...     Node('11', [8])
+        ... ]).connectionExistsFrom(48, 4)
+        Traceback (most recent call last):
+        ...
+        IndexError: Node at index 48 is nonexistent.
         """
-        return indexB in self.__nodes[indexA].connections
+        try:
+            # check there's a connection between indexA and indexB
+            return indexB in self.__nodes[indexA].connections
+        except IndexError:
+            raise IndexError("Node at index {} is nonexistent.".format(str(indexA)))
 
     def __setAllNotVisited(self) -> None:
         """Set all the nodes of the graph's `visited` status to `False`."""
@@ -214,17 +199,17 @@ class Graph(Generic[T]):
         Returns:
             bool: Whether the pointer is valid.
 
-        >>> socialNetwork = Graph[str]()
-        >>> socialNetwork.setNodesFromNodesList([
-        ...     Node("Alice",  [1, 4]),         # 0
-        ...     Node("Bob",    [0, 4]),         # 1
-        ...     Node("Calvin", [4, 3]),         # 2
-        ...     Node("Daniel", [2, 4]),         # 3
-        ...     Node("Eve",    [0, 1, 2, 3])    # 4
+        >>> maze = Graph[None]()
+        >>> maze.setNodesFromNodesList([
+        ...     Node(None,  [1, 4]),         # 0
+        ...     Node(None,  [0, 4]),         # 1
+        ...     Node(None,  [4, 3]),         # 2
+        ...     Node(None,  [2, 4]),         # 3
+        ...     Node(None,  [0, 1, 2, 3])    # 4
         ... ])
-        >>> socialNetwork._exists(4)
+        >>> maze._exists(4)
         True
-        >>> socialNetwork._exists(5)
+        >>> maze._exists(5)
         False
         """
 
@@ -257,16 +242,15 @@ class Graph(Generic[T]):
         Yields:
             Generator[Node[T]]: The nodes' data in depth-first order.
 
-        >>> socialNetwork = Graph[str]()
-        >>> socialNetwork.setNodesFromNodesList([
-        ...     Node("Alice",  [1, 4]),         # 0
-        ...     Node("Bob",    [0, 4]),         # 1
-        ...     Node("Calvin", [4, 3]),         # 2
-        ...     Node("Daniel", [2, 4]),         # 3
-        ...     Node("Eve",    [0, 1, 2, 3])    # 4
+        >>> sampleGraph = Graph[int]([
+        ...     Node(2,  [1, 4]),         # 0
+        ...     Node(8,  [0, 4]),         # 1
+        ...     Node(42,  [4, 3]),         # 2
+        ...     Node(11,  [2, 4]),         # 3
+        ...     Node(91,  [0, 1, 2, 3])    # 4
         ... ])
-        >>> [person for person in socialNetwork.depthFirstTraversal()]
-        ['Daniel', 'Calvin', 'Eve', 'Bob', 'Alice']
+        >>> [item for item in sampleGraph.depthFirstTraversal()]
+        [11, 42, 91, 8, 2]
 
         >>> [item for item in Graph[int]().depthFirstTraversal()]       # test traversal of empty graph
         []
@@ -309,20 +293,45 @@ class Graph(Generic[T]):
     def breadthFirstTraversal(self) -> Generator[Node[T], None, None]:
         """Iteratively breadth-first traverse the graph.
         Yields data – rather than returning it – because returning values would require more memory.
+        `yield` basically pauses the function after yielding, saving all of its states, and only
+        when the next value is required by the caller function does the yielding function continue.
 
         Yields:
             Generator[Node[T]]: The nodes' data in depth-first order.
 
-        >>> socialNetwork = Graph[str]()
-        >>> socialNetwork.setNodesFromNodesList([
-        ...     Node("Alice",  [1, 4]),         # 0
-        ...     Node("Bob",    [0, 4]),         # 1
-        ...     Node("Calvin", [4, 3]),         # 2
-        ...     Node("Daniel", [2, 4]),         # 3
-        ...     Node("Eve",    [0, 1, 2, 3])    # 4
+        >>> simply_connected_maze = Graph[str]([
+        ...     Node('Entrance', [1]),
+        ...     Node('1', [0, 2, 3]),
+        ...     Node('2', [1, 4]),
+        ...     Node('3', [1, 5]),
+        ...     Node('4', [2]),
+        ...     Node('5', [3, 6, 7]),
+        ...     Node('6', [5, 8]),
+        ...     Node('7', [5, 9, 10]),
+        ...     Node('Exit', [6, 11]),
+        ...     Node('9', [7]),
+        ...     Node('10', [7]),
+        ...     Node('11', [8])
         ... ])
-        >>> [person for person in socialNetwork.breadthFirstTraversal()]
-        ['Alice', 'Bob', 'Eve', 'Calvin', 'Daniel']
+        >>> [maze_cell for maze_cell in simply_connected_maze.breadthFirstTraversal()]  # test traversal of a simple connected maze
+        ['Entrance', '1', '2', '3', '4', '5', '6', '7', 'Exit', '9', '10', '11']
+
+        >>> non_simple_maze = Graph[str]([
+        ...     Node('Entrance', [1, 2]),
+        ...     Node('1', [0, 3, 4]),
+        ...     Node('2', [0, 5]),
+        ...     Node('3', [1, 6]),
+        ...     Node('4', [1, 7]),
+        ...     Node('5', [7, 8]),
+        ...     Node('6', [3, 9]),
+        ...     Node('7', [4, 5, 9, 10]),
+        ...     Node('8', [5]),
+        ...     Node('9', [6, 7, 11]),
+        ...     Node('10', [7]),
+        ...     Node('Exit', [9])
+        ... ])
+        >>> [maze_cell for maze_cell in non_simple_maze.breadthFirstTraversal()]
+        ['Entrance', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Exit']
 
         >>> [item for item in Graph[int]().breadthFirstTraversal()]     # test a traversal of an empty graph
         []
@@ -357,22 +366,83 @@ class Graph(Generic[T]):
                     # and add it to the `visitedNodes` queue
                     visitedNodes.enQueue(self.__nodes[neighbour])
 
+    def addLinkBetween(
+        self, indexFrom: int, indexTo: int, bidirectional: bool = True
+    ) -> None:
+        """Add a link between two nodes of given indices.
 
-numbers = Graph[int]()
+        Args:
+            indexFrom (int): the 'from' node to connect to the 'to'
+            indexTo (int): the 'to' node
+            bidirectional (bool, optional): Whether or not to connect the link both ways (i.e., `indexFrom` to `indexTo` and vice versa.). Defaults to True.
 
-numbers.setNodesFromNodesList(
-    [
-        Node(17, [1, 2]),  #  0
-        Node(8, [3, 4]),  # 1
-        Node(22, [5, 6]),  # 2
-        Node(4, [7]),  # 3
-        Node(12, [8]),  # 4
-        Node(19),  # 5
-        Node(30, [9]),  # 6
-        Node(5),  # 7
-        Node(14),  # 8
-        Node(25),  # 9
-    ]
-)
+        Raises:
+            Exception: If the node index `indexFrom` already exists in `indexTo`'s connections.
 
-print([number for number in numbers.breadthFirstTraversal()])
+        >>> simply_connected_maze = Graph[str]([
+        ...     Node('Entrance', [1]),
+        ...     Node('1', [0, 2, 3]),
+        ...     Node('2', [1, 4]),
+        ...     Node('3', [1, 5]),
+        ...     Node('4', [2]),
+        ...     Node('5', [3, 6, 7]),
+        ...     Node('6', [5, 8]),
+        ...     Node('7', [5, 9, 10]),
+        ...     Node('Exit', [6, 11]),
+        ...     Node('9', [7]),
+        ...     Node('10', [7]),
+        ...     Node('11', [8])
+        ... ])
+
+        >>> simply_connected_maze.addLinkBetween(2, 3)
+
+        >>> simply_connected_maze.addLinkBetween(2, 4)
+        Traceback (most recent call last):
+        ...
+        Exception: Node index '4' already exists in node 2's connections.
+
+        >>> simply_connected_maze.addLinkBetween(55, 3)
+        Traceback (most recent call last):
+        ...
+        IndexError: Cannot add a connection from nonexistent node at index 55.
+
+        >>> simply_connected_maze.addLinkBetween(2, 333)
+        Traceback (most recent call last):
+        ...
+        IndexError: Cannot add a connection to nonexistent node at index 333.
+        """
+
+        # if `indexFrom` is out of range of `self.__nodes`:
+        if not (len(self.__nodes) > indexFrom >= 0):
+            raise IndexError(
+                "Cannot add a connection from nonexistent node at index {}.".format(
+                    str(indexFrom)
+                )
+            )
+        # if `indexTo` is out of range of `self.__nodes`:
+        if not (len(self.__nodes) > indexTo >= 0):
+            raise IndexError(
+                "Cannot add a connection to nonexistent node at index {}.".format(
+                    str(indexTo)
+                )
+            )
+
+        # check the node isn't already connected
+        if self.connectionExistsFrom(indexFrom, indexTo):
+            # it is, so raise an exception with a descriptive error message
+            raise Exception(
+                "Node index '{}' already exists in node {}'s connections.".format(
+                    str(indexTo), str(indexFrom)
+                )
+            )
+        else:
+            # add the node index in its indexA's connections list
+            try:
+                self.__nodes[indexFrom].connections.append(indexTo)
+            except IndexError:
+                raise IndexError(
+                    "Node at index {} is nonexistent.".format(str(indexFrom))
+                )
+            # check if we want to add it both ways
+            if bidirectional:
+                self.__nodes[indexTo].connections.append(indexFrom)

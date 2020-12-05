@@ -1,0 +1,40 @@
+function setItemRecursively(int index, T newValue, Node currentNode = null, int recursiveIndex = 0) {
+    if (recursiveIndex is 0) and (currentNode is null) {
+        // This function was called with default recursiveIndex and currentNode
+        set currentNode to (head of the linkedList)
+    }
+
+    if (currentNode is null) {
+        if (index > recursiveIndex) {
+            // the index is out of range...
+            except an IndexError
+        }
+    }
+
+    if (recursiveIndex is index) {
+        // this is the correct node index
+        if (currentNode is null) {
+            set nextNode to null
+        } else {
+            // this node is not null, so we just set nextNode to its nextNode
+            set nextNode to this node's nextNode
+        }
+        // nextNode is guaranteed to be a sensible value now
+        set newNode to LinkedListNode(value = newValue, nextNode = nextNode))
+        set the linkedList's head to newNode
+        return newNode
+    } else if (recursiveIndex < index) {
+        // not there yet
+        if (currentNode is null) {
+            except an IndexError
+        } else {
+            // call recursively to get the next node
+            set nextNode to setItemRecursively(index, newValue, currentNode.nextNode, recursiveIndex + 1)
+            set newNode LinkedListNode(value = (the currentNode's data), nextNode = nextNode)
+            set (head of the linkedList) to newNode
+            return newNode
+        }
+    } else if (recursiveIndex > index) {
+        except an IndexError
+    }
+}

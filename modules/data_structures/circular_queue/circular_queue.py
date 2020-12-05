@@ -1,33 +1,15 @@
 #!python3.10
 
-from enum import Enum
-from typing import TypeVar, Generic
+# queue position enum for specifying the position in the queue
+from modules.data_structures.circular_queue._queue_position import QueuePosition
+
+# linked list for enhanced queue
+from modules.data_structures.linked_list.linked_list import LinkedList
+
+# type hinting and some safety
+from typing import Optional, TypeVar, Generic
 
 T = TypeVar("T")
-
-
-class QueuePosition(Enum):
-    """An enum for either the front or rear of a queue
-
-    Args:
-        Enum ([type]): Automatically provided by the enum module.
-
-    Example usage:
-        `QueuePosition.front`
-        `QueuePosition.rear`
-
-    Check QueuePosition initializes properly
-    >>> front = QueuePosition.front
-    >>> print(front)
-    QueuePosition.front
-    >>> rear = QueuePosition.rear
-    >>> print(rear)
-    QueuePosition.rear
-    """
-
-    front = 0
-    rear = 1
-
 
 class CircularQueue(Generic[T]):
     """A queue object – first in, first out data structure designed in this case around readability, maintainability and efficiency.
@@ -46,7 +28,7 @@ class CircularQueue(Generic[T]):
     """
 
     # this is a circular queue. It is implemented as such
-    __queue: list[T]
+    __queue: LinkedList[Optional[T]]
     __maxSize: int
     __length: int
     __tail: int
@@ -62,14 +44,14 @@ class CircularQueue(Generic[T]):
         >>> myQueue = CircularQueue[str](6)
         ... # Empty queue has correct length and initial items:
         >>> myQueue._CircularQueue__queue       # accessing private attr for testing
-        [-1, -1, -1, -1, -1, -1]
+        [None, None, None, None, None, None]
 
         Check the maximum size of the queue
         >>> myQueue._CircularQueue__maxSize     # accessing private attr for testing
         6
         """
         # initialize `self.queue` to an array of `-1` repeating `maxSize` number of times
-        self.__queue = [-1] * maxSize
+        self.__queue = LinkedList[Optional[T]]([None] * maxSize) # type: ignore     # for type hinting to work correctly
         # set `self._maxSize` to provided `maxSize` argument
         self.__maxSize = maxSize
         # set `self.__length` to 0, because there are no elements in our queue just yet
