@@ -1,0 +1,31 @@
+function remove(T toRemove, Optional<Node> node) {
+    if (node is null) {
+        // we're starting at the beginning of the LList
+        // set node to head of LList to traverse from start
+        if ((head of the linkedList) is not null) {
+            set node to (head of the linked list)
+            // check if start of the list is toRemove
+            if ((data of node) == toRemove) {
+                set (head of the linkedList) to (node's nextNode)
+                end
+            }
+        } else {
+            except a ListEmptyException
+        }
+    }
+
+    // node has now been set appropriately
+    if ((node's nextNode) is null) {
+        // not found in entire list
+        except a NotFoundException
+    }
+
+    if ((data of (node's nextNode) == toRemove) {
+        // we must remove nextNode
+        // so just set the list to skip over it:
+        set (node's nextNode) to (node's nextNode's nextNode)
+    } else {
+        // not there yet
+        remove(toRemove, (node's nextNode))
+    }
+}

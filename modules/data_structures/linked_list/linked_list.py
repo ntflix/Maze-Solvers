@@ -310,7 +310,7 @@ class LinkedList(Generic[T]):
         """
 
         if clone:
-            # then don't modify the passed-in LinkedList argument
+            # then don't modify the passed-in LinkedListNode argument
             node = nodeValues.clone()  # to pass by value, not reference
         else:
             # recursively called so we want to modify the passed-in LinkedList argument
@@ -324,7 +324,7 @@ class LinkedList(Generic[T]):
         else:
             # `node.nextNode` is *not* None
             #  so we call this function recursively to traverse the chain of `LinkedListNodes` to be able to find the last node in the list and add them to our list.
-            self.insertNodeAtBeginning(node.nextNode, clone=False)
+            self.insertNodeAtBeginning(node.nextNode, clone=False)  # modifies the inout node parameter
             # --> ...and after we have gotten to setting the node (whose `nextNode` is `None`) to `self.__head`, we then set our `self.__head` to the node to have finished inserting the nodes.
             self.__head = node
 

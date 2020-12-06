@@ -1,0 +1,14 @@
+function insertAtBeginning(Node node, bool clone = true) {
+    if (clone is true) {
+        // don't modify the node argument
+        set node to (a clone-by-value of itself)
+    }
+    
+    if (node's nextNode is null) {
+        set (node's nextNode) to (head of linkedList)
+    } else {
+        // traverse the chain of nodes
+        insertAtBeginning((node's nextNode), clone = false)
+        set (head of linkedList) to node
+    }
+}

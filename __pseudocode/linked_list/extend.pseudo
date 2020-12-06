@@ -1,0 +1,18 @@
+function extend(Node node, Optional<Node> insertOnto) {
+    if (insertOnto is null) {
+        // function called with default `insertOnto` parameter
+        if (head of the linked list) is null {
+            set (head of the linked list) to node
+        } else {
+            extend(node, (head of the linked list))
+        }
+    } else {
+        // we've recursively called this function and intend
+        // to chain inserts from one node to its nextNode
+        if (the nextNode of insertOnto) is not null {
+            extend(node, (the nextNode of insertOnto))
+        } else {
+            set (the nextNode of insertOnto) to node
+        }
+    }
+}

@@ -1,4 +1,4 @@
-function getItem(int key) {
+function __getitem__(int key) {
     set index to 0
     set currentNode to (head of the linked list)
 
