@@ -59,6 +59,15 @@ class Graph(Generic[T]):
         for node in self.__nodes:
             yield node
 
+    def __getitem__(self, key: int) -> Optional[T]:
+        index = 0
+        for node in self:
+            if index == key:
+                return node.data
+            index += 1
+        # not found
+        raise KeyError()
+
     @staticmethod
     def createSquareGraph(sizeX: int, sizeY: int) -> "Graph[T]":
         """Creates a graph of the specified X and Y size.
@@ -288,7 +297,7 @@ class Graph(Generic[T]):
                 # see PEP 380 Syntax for Delegating to a Subgenerator – https://www.python.org/dev/peps/pep-0380/
                 yield from self.depthFirstTraversal(connectionIndex)
 
-            yield self.__nodes[nodeIndex].data
+            yield self.__nodes[nodeIndex].data  # type: ignore bc this was previously guaranteed to be a safe indexing
 
     def breadthFirstTraversal(self) -> Generator[Node[T], None, None]:
         """Iteratively breadth-first traverse the graph.
@@ -355,7 +364,7 @@ class Graph(Generic[T]):
             # pop a node from the queue
             currentNode = visitedNodes.deQueue()
             # and yield it
-            yield currentNode.data
+            yield currentNode.data  # type: ignore as we previously guaranteed that this value is safe with the while statement
 
             # get neighbours of the node
             for neighbour in currentNode.connections:

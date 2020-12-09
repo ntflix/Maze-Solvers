@@ -40,11 +40,11 @@ class LinkedListNode(Generic[T]):
             str: the string representation of the object
 
         >>> LinkedListNode[str](data = "Gareth", nextNode = 2)
-        'Gareth' (2)
+        Gareth (2)
         """
         return "{} ({})".format(str(self.data), str(self.nextNode))
-    
-    def clone(self) -> 'LinkedListNode[T]':
+
+    def clone(self) -> "LinkedListNode[T]":
         """Recursively clone an object to overcome Python's pass-by-reference argument types.
         Basically used to force Python to pass by value rather than reference.
 
@@ -57,7 +57,7 @@ class LinkedListNode(Generic[T]):
             # call this recursively to get all the values for the nodes while not copying by reference
             node.nextNode = self.nextNode.clone()
         else:
-            # got to the end of the chain of nodes
+            #  got to the end of the chain of nodes
             node.nextNode = None
 
         return node

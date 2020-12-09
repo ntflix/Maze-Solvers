@@ -83,6 +83,51 @@ class LinkedList(Generic[T]):
                 # set node to the next node referenced by this node. This may or may not exist, hence we have to be careful and unwrap the value as we have above.
                 node = node.nextNode
 
+    def __getitem__(self, key: int) -> T:
+        """Get item at specified index
+
+        Args:
+            key (int): the index of the item to get.
+
+        Raises:
+            IndexError: Index out of range.
+
+        Returns:
+            T: The data of the item at specified index.
+
+        >>> mazeCellsIndices = LinkedList[int]([14, 11, 3, 6, 8])
+        >>> mazeCellsIndices[0]
+        14
+        >>> mazeCellsIndices[2]
+        3
+        >>> mazeCellsIndices[4]
+        8
+        >>> mazeCellsIndices[6] # doctest: +IGNORE_EXCEPTION_DETAIL
+        Traceback (most recent call last):
+        ...
+        IndexError: LinkedList index 6 is out of range
+        >>> mazeCellsIndices[-1] # doctest: +IGNORE_EXCEPTION_DETAIL
+        Traceback (most recent call last):
+        ...
+        IndexError: LinkedList index -1 is out of range
+        """
+        index = 0
+        currentNode = self.__head
+
+        while currentNode is not None:
+            if index == key:
+                return currentNode.data
+            elif index > key:
+                raise IndexError(
+                    "LinkedList index {} is out of range".format(str(index))
+                )
+            else:
+                # we're not there yet so increment index and set node to the nextNode
+                index += 1
+                currentNode = currentNode.nextNode
+        # looped over everything without finding index
+        raise IndexError("LinkedList index {} is out of range".format(str(index)))
+
     def __setitem__(self, key: int, newValue: T):
         """setitem method of LinkedList. Used to set an item specified at an index in the LinkedList.
 
@@ -102,6 +147,19 @@ class LinkedList(Generic[T]):
         >>> print(indices)
         [5, 6, 7, 8]
 
+        >>> indices[4] = 9
+        >>> print(indices)
+        [5, 6, 7, 8, 9]
+
+        >>> indices[6] = 11
+        Traceback (most recent call last):
+        ...
+        IndexError: LinkedList index 6 is out of range
+
+        >>> indices[-1] = 4
+        Traceback (most recent call last):
+        ...
+        IndexError: LinkedList index -1 is out of range
         """
         self.setItemRecursively(key, newValue)
 
@@ -133,7 +191,7 @@ class LinkedList(Generic[T]):
 
         if currentNode is None:
             if index > recursiveIndex:
-                # the index is out of range
+                # the index is out of range...
                 raise IndexError(
                     "LinkedList index {} is out of range".format(str(index))
                 )
@@ -252,7 +310,7 @@ class LinkedList(Generic[T]):
         """
 
         if clone:
-            # then don't modify the passed-in LinkedList argument
+            # then don't modify the passed-in LinkedListNode argument
             node = nodeValues.clone()  # to pass by value, not reference
         else:
             # recursively called so we want to modify the passed-in LinkedList argument
@@ -266,7 +324,9 @@ class LinkedList(Generic[T]):
         else:
             # `node.nextNode` is *not* None
             #  so we call this function recursively to traverse the chain of `LinkedListNodes` to be able to find the last node in the list and add them to our list.
-            self.insertNodeAtBeginning(node.nextNode, clone=False)
+            self.insertNodeAtBeginning(
+                node.nextNode, clone=False
+            )  # modifies the inout node parameter
             # --> ...and after we have gotten to setting the node (whose `nextNode` is `None`) to `self.__head`, we then set our `self.__head` to the node to have finished inserting the nodes.
             self.__head = node
 

@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar
+from typing import Generic, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -12,7 +12,9 @@ class Node(Generic[T]):
 
     # This could easily be made into a Tuple rather than a whole new class but for debugging purposes, I chose to make this a class.
 
-    data: T  # this node's data  - public because the graph may want to set its data again
+    data: Optional[
+        T
+    ]  # this node's data  - public because the graph may want to set its data again
     connections: list[
         int
     ]  # pointers of this node's connections   – public bc it needs to be read by the graph
@@ -20,7 +22,7 @@ class Node(Generic[T]):
         False  # a helper variable to assist in traversals of a graph of nodes
     )
 
-    def __init__(self, data: T, connections: list[int] = list[int]()) -> None:
+    def __init__(self, data: Optional[T], connections: list[int] = list[int]()) -> None:
         """Constructor for a binary tree node.
 
         Args:
@@ -43,4 +45,3 @@ class Node(Generic[T]):
         return str(
             str(self.data) + " -> (" + ", ".join(map(str, self.connections)) + ")"
         )
-

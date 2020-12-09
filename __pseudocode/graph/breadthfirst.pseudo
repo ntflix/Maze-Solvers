@@ -1,0 +1,30 @@
+function breadthFirst() {
+    // check there are nodes
+    if (amount of nodes) < 1 {
+        // there are no nodes.
+        end
+    }
+
+    // make a queue of visited nodes
+    set visitedNodes to a (Queue<Node> with length (amount of nodes))
+
+    // set the 0th node as visited
+    set nodes[0] as visited
+    // then enqueue it
+    enqueue nodes[0] to visitedNodes
+
+    while (the amount of nodes) in visitedNodes > 0 {
+        // pop a node from the queue
+        set currentNode to (deQueue from visitedNodes)
+        // then yield it
+        yield (currentNode's data)
+    }
+
+    // get neighbours of the node
+    for each neighbour in (currentNode's connections) {
+        if (neighbour has been visited) is false {
+            set neighbour as visited
+            enqueue neighbour to visitedNodes
+        }
+    }
+}

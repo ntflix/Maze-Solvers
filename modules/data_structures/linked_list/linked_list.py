@@ -110,7 +110,7 @@ class LinkedList(Generic[T]):
         Traceback (most recent call last):
         ...
         IndexError: LinkedList index -1 is out of range
-        """        
+        """
         index = 0
         currentNode = self.__head
 
@@ -273,7 +273,7 @@ class LinkedList(Generic[T]):
         >>> print(mazeCellsIndices)
         [2, 3, 5, 7, 11, 13, 17, 19]
         >>> print(moreMazeCellsIndices)
-        [2, 3, 5, 7, 7]
+        [2, 3, 5, 7]
 
         Insert empty list at beginning of another
         >>> moreMazeCellsIndices.insertLinkedListAtBeginning(LinkedList[int]())
@@ -324,7 +324,9 @@ class LinkedList(Generic[T]):
         else:
             # `node.nextNode` is *not* None
             #  so we call this function recursively to traverse the chain of `LinkedListNodes` to be able to find the last node in the list and add them to our list.
-            self.insertNodeAtBeginning(node.nextNode, clone=False)  # modifies the inout node parameter
+            self.insertNodeAtBeginning(
+                node.nextNode, clone=False
+            )  # modifies the inout node parameter
             # --> ...and after we have gotten to setting the node (whose `nextNode` is `None`) to `self.__head`, we then set our `self.__head` to the node to have finished inserting the nodes.
             self.__head = node
 

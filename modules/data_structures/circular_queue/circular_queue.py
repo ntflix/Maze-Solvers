@@ -11,6 +11,7 @@ from typing import Optional, TypeVar, Generic
 
 T = TypeVar("T")
 
+
 class CircularQueue(Generic[T]):
     """A queue object – first in, first out data structure designed in this case around readability, maintainability and efficiency.
 
@@ -23,7 +24,7 @@ class CircularQueue(Generic[T]):
     0
 
     Check maximum size of queue
-    >>> myQueue._CircularQueue__maxSize     # accessing private attribute
+    >>> myQueue._CircularQueue__maxSize     # accessing private attribute for testing
     100
     """
 
@@ -43,7 +44,7 @@ class CircularQueue(Generic[T]):
         Initializing of a queue:
         >>> myQueue = CircularQueue[str](6)
         ... # Empty queue has correct length and initial items:
-        >>> myQueue._CircularQueue__queue       # accessing private attr for testing
+        >>> print(myQueue._CircularQueue__queue)       # accessing private attr for testing
         [None, None, None, None, None, None]
 
         Check the maximum size of the queue
@@ -51,7 +52,7 @@ class CircularQueue(Generic[T]):
         6
         """
         # initialize `self.queue` to an array of `-1` repeating `maxSize` number of times
-        self.__queue = LinkedList[Optional[T]]([None] * maxSize) # type: ignore     # for type hinting to work correctly
+        self.__queue = LinkedList[Optional[T]]([None] * maxSize)  # type: ignore     # for type hinting to work correctly
         # set `self._maxSize` to provided `maxSize` argument
         self.__maxSize = maxSize
         # set `self.__length` to 0, because there are no elements in our queue just yet
@@ -163,7 +164,9 @@ class CircularQueue(Generic[T]):
             self.__head = -1
             self.__tail = -1
 
-        return _dataToReturn
+        return (
+            _dataToReturn
+        )  # type:ignore because we previously guaranteed the list to not be empty with `self.isEmpty()``
 
     def get(self, position: QueuePosition) -> T:
         """Fetch an item from the front or the back of the queue without removing it from the queue
@@ -219,9 +222,13 @@ class CircularQueue(Generic[T]):
             raise Exception("Queue is empty")
 
         if position == QueuePosition.front:
-            return self.__queue[self.__head]
+            return self.__queue[
+                self.__head
+            ]  # type:ignore   # already made sure the queue is not empty
         elif position == QueuePosition.rear:
-            return self.__queue[self.__tail]
+            return self.__queue[
+                self.__tail
+            ]  # type:ignore   # again, it's guaranteed to be safe
 
         raise Exception("Queue position must be 'front' or 'rear'")
 
