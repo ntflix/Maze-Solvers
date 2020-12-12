@@ -3,9 +3,8 @@ from typing import Protocol
 
 class MazeSolverCommandResult(Protocol):
     humanDescription: str
-    success: bool
 
-    def __init__(self) -> None:
+    def __init__(self, description: str) -> None:
         pass
 
     def __repr__(self) -> str:

@@ -6,3 +6,4 @@ class MazeSolverProtocol(Protocol):
         pass
 
     def advance(self):
+        pass
