@@ -1,4 +1,4 @@
-from typing import Generic, Optional, TypeVar
+from typing import Generic, List, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -41,7 +41,12 @@ class Node(Generic[T]):
         "Alice -> (1, 4)"
         ```
         """
-        # For example, "Bob -> (0, 4)"
+        # For example, "Bob -> [0, 4]"
         return str(
-            str(self.data) + " -> (" + ", ".join(map(str, self.connections)) + ")"
+            str(self.data) + " -> [" + ", ".join(map(str, self.connections)) + "]"
         )
+
+    def clone(self) -> "Node[T]":
+        #  make sure to clone by value, not reference.
+        connections: List[int] = [x for x in self.connections]
+        return Node[T](self.data, connections)

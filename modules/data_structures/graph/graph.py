@@ -2,7 +2,7 @@
 
 # from modules.debugging.debug_print import debugPrint
 # support type hinting in my editor and code
-from typing import Generator, Generic, Optional, TypeVar
+from typing import Generator, Generic, List, Optional, TypeVar
 
 # circular queue for breadth first search
 from modules.data_structures.circular_queue.circular_queue import CircularQueue
@@ -16,7 +16,7 @@ T = TypeVar("T")
 class Graph(Generic[T]):
     """A binary graph of type {T}."""
 
-    __nodes: list[Node[T]]  #  the list of nodes of this graph
+    __nodes: List[Node[T]] = []  #  the list of nodes of this graph
 
     def __init__(self, nodes: Optional[list[Node[T]]] = None):
         """Constructor for a binary tree of type {T}.
@@ -33,9 +33,7 @@ class Graph(Generic[T]):
         []
         """
 
-        # Initialize `self.nodes` to an empty list
-        self.__nodes: list[Node[T]] = []
-        # Then check if any nodes were provided
+        # Check if any nodes were provided
         if nodes is not None:
             # And if any were, set the nodes to them
             self.setNodesFromNodesList(nodes)
@@ -66,7 +64,20 @@ class Graph(Generic[T]):
                 return node.data
             index += 1
         # not found
-        raise KeyError()
+        raise IndexError(f"Value at index {key} not found.")
+
+    def __len__(self) -> int:
+        return len(self.__nodes)
+
+    def setNodeData(self, index: int, newValue: T) -> None:
+        for nodeIndex in range(len(self)):
+            if nodeIndex == index:
+                # set the node data bc index is correct
+                self.__nodes[nodeIndex].data = newValue
+                # make sure to return so we don't loop over everything!
+                return
+        # not found
+        raise IndexError(f"Value at index {index} not found.")
 
     @staticmethod
     def createSquareGraph(sizeX: int, sizeY: int) -> "Graph[T]":
@@ -446,12 +457,23 @@ class Graph(Generic[T]):
             )
         else:
             # add the node index in its indexA's connections list
+
+            # do this by using a temporary variable to avoid errors when mutating list values' values
+            nodeTemp: Node[T]
+
             try:
-                self.__nodes[indexFrom].connections.append(indexTo)
+                nodeTemp = self.__nodes[indexFrom].clone()
             except IndexError:
                 raise IndexError(
                     "Node at index {} is nonexistent.".format(str(indexFrom))
                 )
-            # check if we want to add it both ways
-            if bidirectional:
-                self.__nodes[indexTo].connections.append(indexFrom)
+
+            # set our temporary vars correctly
+            nodeTemp.connections.append(indexTo)
+            # and then set the node we want to the correctly set temporary variable
+            self.__nodes[indexFrom] = nodeTemp
+
+        if bidirectional:
+            # do it again!
+            #  but make sure to not do it bidirectionally because then it'd go on forever
+            self.addLinkBetween(indexTo, indexFrom, False)

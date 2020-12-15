@@ -1,6 +1,6 @@
 from modules.data_structures.maze.maze_cell.maze_cell import MazeCell
-from modules.data_structures.graph.graph import Graph
-from typing import List, Protocol, Tuple
+from typing import Iterator, List, Protocol
+from modules.common_structures.xy import XY
 
 
 class MazeProtocol(Protocol):
@@ -10,13 +10,29 @@ class MazeProtocol(Protocol):
         Protocol ([type]): [description]
     """
 
-    def __init__(self, size: Tuple[int, int]) -> None:
+    def __init__(self, sizeX: int, sizeY: int, fullyConnected: bool = False) -> None:
         """Initialize a maze from a given size.
-        The given maze will have no empty walls – i.e., no cells will have connections between them.
+        The given maze will have all walls – i.e., no cells will have connections between them.
         This would look like a grid.
 
         Args:
-            size (Tuple[int, int]): The XY size of the desired maze.
+            size (XY): The XY size of the desired maze.
+            fullyConnected(bool, optional): Whether to create a fully connected
+                maze (i.e., no walls between adjacent cells). Defaults to False.
+        """
+        raise NotImplementedError()
+
+    def __iter__(self) -> Iterator[MazeCell]:
+        raise NotImplementedError()
+
+    def getNeighboursOfCell(self, cellIndex: int) -> List[int]:
+        """Return a list of indices of the neighbour of a cell at specified index.
+
+        Args:
+            cellIndex (int): The index of the cell whose neighbours you want.
+
+        Returns:
+            List[int]: The list of indices of its neighbours.
         """
         raise NotImplementedError()
 
@@ -48,33 +64,22 @@ class MazeProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def getCoordinatesOf(self, mazeCell: MazeCell) -> Tuple[int, int]:
+    def getCoordinatesOf(self, mazeCell: MazeCell) -> XY:
         """Get the coordinates of a given maze cell
 
         Args:
             mazeCell (MazeCell): The maze cell whose coordinates you want to get.
 
         Returns:
-            Tuple[int, int]: The coordinates of the given maze cell.
+            XY: The coordinates of the given maze cell.
         """
         raise NotImplementedError()
 
-    def getNeighboursOf(self, mazeCell: MazeCell) -> List[MazeCell]:
-        """Get a list of neighbours for a specified `MazeCell`.
-
-        Args:
-            mazeCell (MazeCell): The cell whose neighbours you would like to get.
-
-        Returns:
-            List[MazeCell]: The neighbours of specified `MazeCell`.
-        """
-        raise NotImplementedError()
-
-    def getCellAtCoordinates(self, coordinates: Tuple[int, int]) -> MazeCell:
+    def getCellAtCoordinates(self, coordinates: XY) -> MazeCell:
         """Get the MazeCell at specified coordinates.
 
         Args:
-            coordinates (Tuple[int, int]): The XY coordinates of the MazeCell.
+            coordinates (XY): The XY coordinates of the MazeCell.
 
         Returns:
             MazeCell: The MazeCell at the specified coordinates.
