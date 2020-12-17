@@ -1,0 +1,56 @@
+function init(size: XY, fullyConnected: Boolean) {
+    set $self.size to $size
+
+    set $graph to (empty square graph of size ($size))
+    set self.__maze to $graph
+
+    for $cellIndex in (0 to (length of $self.__maze)) {
+        set $newCell to new MazeCell with index $cellIndex
+
+        set ((this cell) of $self.__maze)'s data to $newCell
+
+        if ($fullyConnected == true) {
+            set $thisCellsNeighboursIndices to $self.getNeighboursOfCell($cellIndex)
+
+            // add its neighbour cells to the graph
+            for ($connection in $thisCellsNeighboursIndices) {
+                if ($self.__maze.connectionExistsFrom($cellIndex, $connection)) {
+                    $self.__maze.addLinkBetween(
+                        $cellIndex,
+                        $connection
+                    )
+                }
+            }
+        }
+    }
+}
+
+function getNeighboursOfCell(cellIndex: int) -> List<int> {
+    set $thisCellsNeighboursIndices to (an empty List<int>())
+
+    // get the coordinates of the given cell
+    set $coordinates to $self.__getCoordinateFromIndex($cellIndex)
+
+    // get all adjacent coordinates of the current cell
+    set $unvalidatedNeighbourCoordinates to [
+        new XY($coordinates.x, $coordinates.y - 1),  // north
+        new XY($coordinates.x, $coordinates.y + 1),  // south
+        new XY($coordinates.x - 1, $coordinates.y),  // west
+        new XY($coordinates.x + 1, $coordinates.y)  // east
+    ]
+
+    // make sure we only add the neighbours that are not out of range of the maze's size
+    for $thisCoordinate in $unvalidatedNeighbourCoordinates {
+        // if the coordinate is valid
+        if $self.__coordinateIsValid($thisCoordinate) {
+            // calculate its index
+            set $indexOfCellAtThisCoordinate to $self.__getIndexFromCoordinate(
+                $thisCoordinate
+            )
+            // and add it to this cell's neighbours
+            add $indexOfCellAtThisCoordinate to $thisCellsNeighboursIndices
+        }
+    }
+
+    return $thisCellsNeighboursIndices
+}

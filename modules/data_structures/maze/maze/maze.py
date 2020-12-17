@@ -47,11 +47,9 @@ class Maze(MazeProtocol):
 
             if fullyConnected:
                 # list of indices for this cell's neighbours
-                thisCellsNeighboursIndices: List[int] = []
-
-                # if we want to create a fully connected maze
-                if fullyConnected:
-                    thisCellsNeighboursIndices = self.getNeighboursOfCell(cellIndex)
+                thisCellsNeighboursIndices: List[int] = self.getNeighboursOfCell(
+                    cellIndex
+                )
 
                 # and add its neighbouring cells to the graph
                 for connection in thisCellsNeighboursIndices:
