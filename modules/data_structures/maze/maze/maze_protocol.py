@@ -37,7 +37,7 @@ class MazeProtocol(Protocol):
         raise NotImplementedError()
 
     def addWallBetween(
-        self, cellA: MazeCell, cellB: MazeCell, bidirectional: bool = True
+        self, cellAIndex: int, cellBIndex: int, bidirectional: bool = True
     ) -> None:
         """Add a wall between two adjacent cells.
 
@@ -51,7 +51,7 @@ class MazeProtocol(Protocol):
         raise NotImplementedError()
 
     def removeWallBetween(
-        self, cellA: MazeCell, cellB: MazeCell, bidirectional: bool = True
+        self, cellA: int, cellB: int, bidirectional: bool = True
     ) -> None:
         """Remove a wall between two adjacent cells.
 
@@ -64,7 +64,7 @@ class MazeProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def getCoordinatesOf(self, mazeCell: MazeCell) -> XY:
+    def getCoordinatesOf(self, mazeCellIndex: int) -> XY:
         """Get the coordinates of a given maze cell
 
         Args:

@@ -37,7 +37,8 @@ class Maze(MazeProtocol):
         self.__maze = Graph[MazeCell].createSquareGraph(size.x, size.y)
 
         # initialize as list of maze cells
-        for cellIndex in range(len(self.__maze)):
+        mazeLength = len(self.__maze)
+        for cellIndex in range(mazeLength):
 
             # set this cell's node data to a new MazeCell with index
             self.__maze.setNodeData(
@@ -141,7 +142,7 @@ class Maze(MazeProtocol):
         return True
 
     def addWallBetween(
-        self, cellA: MazeCell, cellB: MazeCell, bidirectional: bool = True
+        self, cellAIndex: int, cellBIndex: int, bidirectional: bool = True
     ) -> None:
         """Add a wall between two adjacent cells.
 
@@ -153,29 +154,31 @@ class Maze(MazeProtocol):
             bidirectional (bool, optional): Whether to create a bidirectional link. Defaults to True.
         """
 
+        self.__maze.addLinkBetween(cellAIndex, cellBIndex, bidirectional)
+
     def removeWallBetween(
-        self, cellA: MazeCell, cellB: MazeCell, bidirectional: bool = True
+        self, cellA: int, cellB: int, bidirectional: bool = True
     ) -> None:
         """Remove a wall between two adjacent cells.
 
         This works by adding a link between them in the graph.
 
         Args:
-            cellA (MazeCell): The 'from' cell
-            cellB (MazeCell): The 'to' cell
+            cellA (int): The 'from' cell's index
+            cellB (int): The 'to' cell's index
             bidirectional (bool, optional): Whether to remove wall in both directions. Defaults to True.
         """
 
-    def getCoordinatesOf(self, mazeCell: MazeCell) -> XY:
+    def getCoordinatesOf(self, mazeCellIndex: int) -> XY:
         """Get the coordinates of a given maze cell.
 
         Args:
-            mazeCell (MazeCell): The maze cell whose coordinates you want to get.
+            mazeCell (int): The maze cell's index whose coordinates you want to get.
 
         Returns:
             XY: The coordinates of the given maze cell.
         """
-        return self.__getCoordinateFromIndex(mazeCell.index)
+        return self.__getCoordinateFromIndex(mazeCellIndex)
 
     def getCellAtCoordinates(self, coordinates: XY) -> MazeCell:
         """Get the MazeCell at specified coordinates.
