@@ -1,11 +1,10 @@
 #!python3.10
 
-# from modules.debugging.debug_print import debugPrint
 # support type hinting in my editor and code
-from typing import Generator, Generic, Optional, TypeVar
+from typing import Generator, Generic, List, Optional, TypeVar
 
 # queue for breadth first search
-from modules.data_structures.queue import Queue
+from temporary_modules.queue import Queue
 
 # graph node
 from modules.data_structures.graph.node import Node
@@ -16,7 +15,7 @@ T = TypeVar("T")
 class Graph(Generic[T]):
     """A binary graph of type {T}."""
 
-    __nodes: list[Node[T]]  #  the list of nodes of this graph
+    __nodes: List[Node[T]] = []  #  the list of nodes of this graph
 
     def __init__(self, nodes: Optional[list[Node[T]]] = None):
         """Constructor for a binary tree of type {T}.
@@ -33,9 +32,7 @@ class Graph(Generic[T]):
         []
         """
 
-        # Initialize `self.nodes` to an empty list
-        self.__nodes: list[Node[T]] = []
-        # Then check if any nodes were provided
+        # Check if any nodes were provided
         if nodes is not None:
             # And if any were, set the nodes to them
             self.setNodesFromNodesList(nodes)
@@ -59,6 +56,28 @@ class Graph(Generic[T]):
         for node in self.__nodes:
             yield node
 
+    def __getitem__(self, key: int) -> Optional[T]:
+        index = 0
+        for node in self:
+            if index == key:
+                return node.data
+            index += 1
+        # not found
+        raise IndexError(f"Value at index {key} not found.")
+
+    def __len__(self) -> int:
+        return len(self.__nodes)
+
+    def setNodeData(self, index: int, newValue: T) -> None:
+        for nodeIndex in range(len(self)):
+            if nodeIndex == index:
+                # set the node data bc index is correct
+                self.__nodes[nodeIndex].data = newValue
+                # make sure to return so we don't loop over everything!
+                return
+        # not found
+        raise IndexError(f"Value at index {index} not found.")
+
     @staticmethod
     def createSquareGraph(sizeX: int, sizeY: int) -> "Graph[T]":
         """Creates a graph of the specified X and Y size.
@@ -74,6 +93,9 @@ class Graph(Generic[T]):
         >>> [i for i in map(str, graph)]
         ['None -> ()', 'None -> ()', 'None -> ()', 'None -> ()']
         """
+
+        if (sizeX < 0) or (sizeY < 0):
+            raise ValueError(f"Invalid size `({sizeX}, {sizeY})` given.")
 
         # make a list of nodes of the correct length
         everyNode = [Node[T](None) for _ in range(0, sizeX * sizeY)]
@@ -288,7 +310,7 @@ class Graph(Generic[T]):
                 # see PEP 380 Syntax for Delegating to a Subgenerator – https://www.python.org/dev/peps/pep-0380/
                 yield from self.depthFirstTraversal(connectionIndex)
 
-            yield self.__nodes[nodeIndex].data
+            yield self.__nodes[nodeIndex].data  # type: ignore bc this was previously guaranteed to be a safe indexing
 
     def breadthFirstTraversal(self) -> Generator[Node[T], None, None]:
         """Iteratively breadth-first traverse the graph.
@@ -355,7 +377,7 @@ class Graph(Generic[T]):
             # pop a node from the queue
             currentNode = visitedNodes.deQueue()
             # and yield it
-            yield currentNode.data
+            yield currentNode.data  # type: ignore as we previously guaranteed that this value is safe with the while statement
 
             # get neighbours of the node
             for neighbour in currentNode.connections:
@@ -437,12 +459,23 @@ class Graph(Generic[T]):
             )
         else:
             # add the node index in its indexA's connections list
+
+            # do this by using a temporary variable to avoid errors when mutating list values' values
+            nodeTemp: Node[T]
+
             try:
-                self.__nodes[indexFrom].connections.append(indexTo)
+                nodeTemp = self.__nodes[indexFrom].clone()
             except IndexError:
                 raise IndexError(
                     "Node at index {} is nonexistent.".format(str(indexFrom))
                 )
-            # check if we want to add it both ways
-            if bidirectional:
-                self.__nodes[indexTo].connections.append(indexFrom)
+
+            # set our temporary vars correctly
+            nodeTemp.connections.append(indexTo)
+            # and then set the node we want to the correctly set temporary variable
+            self.__nodes[indexFrom] = nodeTemp
+
+        if bidirectional:
+            # do it again!
+            #  but make sure to not do it bidirectionally because then it'd go on forever
+            self.addLinkBetween(indexTo, indexFrom, False)

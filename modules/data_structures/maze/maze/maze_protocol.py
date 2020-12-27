@@ -1,5 +1,5 @@
 from modules.data_structures.maze.maze_cell.maze_cell import MazeCell
-from typing import Iterator, List, Protocol
+from typing import Iterator, List, Protocol, Tuple
 from modules.common_structures.xy import XY
 
 
@@ -9,6 +9,11 @@ class MazeProtocol(Protocol):
     Args:
         Protocol ([type]): [description]
     """
+
+    size: XY
+
+    startIndex: int
+    endIndex: int
 
     def __init__(self, sizeX: int, sizeY: int, fullyConnected: bool = False) -> None:
         """Initialize a maze from a given size.
@@ -51,7 +56,7 @@ class MazeProtocol(Protocol):
         raise NotImplementedError()
 
     def removeWallBetween(
-        self, cellA: int, cellB: int, bidirectional: bool = True
+        self, cellAIndex: int, cellBIndex: int, bidirectional: bool = True
     ) -> None:
         """Remove a wall between two adjacent cells.
 
@@ -64,27 +69,25 @@ class MazeProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def getCoordinatesOf(self, mazeCellIndex: int) -> XY:
-        """Get the coordinates of a given maze cell
+    def getCoordinatesOf(self, cellIndex: int) -> Tuple[int, int]:
+        """Get the coordinates of a given maze cell.
 
         Args:
-            mazeCell (MazeCell): The maze cell whose coordinates you want to get.
+            cellIndex (int): The maze cell's index whose coordinates you want to get.
 
         Returns:
-            XY: The coordinates of the given maze cell.
+            Tuple[int, int]: The XY coordinates of the given maze cell.
         """
         raise NotImplementedError()
 
-    def getCellAtCoordinates(self, coordinates: XY) -> MazeCell:
+    def getCellAtCoordinates(self, x: int, y: int) -> int:
         """Get the MazeCell at specified coordinates.
 
         Args:
-            coordinates (XY): The XY coordinates of the MazeCell.
+            x (int): The X coordinate of the MazeCell.
+            y (int): The Y coordinate of the MazeCell.
 
         Returns:
-            MazeCell: The MazeCell at the specified coordinates.
-
-        Raises:
-            IndexError: if `coordinates` are out of bounds.
+            int: The MazeCell index at the specified coordinates.
         """
         raise NotImplementedError()

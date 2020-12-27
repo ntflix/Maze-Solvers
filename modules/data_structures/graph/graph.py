@@ -1,6 +1,5 @@
 #!python3.10
 
-# from modules.debugging.debug_print import debugPrint
 # support type hinting in my editor and code
 from typing import Generator, Generic, List, Optional, TypeVar
 
@@ -69,6 +68,17 @@ class Graph(Generic[T]):
     def __len__(self) -> int:
         return len(self.__nodes)
 
+    def getConnectionsOfNodeAtIndex(self, index: int) -> List[int]:
+        """Get the connections of a node at specified index.
+
+        Args:
+            index (int): The index of the node.
+
+        Returns:
+            List[int]: The list indices of its connected cells.
+        """
+        return self.__nodes[index].connections
+
     def setNodeData(self, index: int, newValue: T) -> None:
         for nodeIndex in range(len(self)):
             if nodeIndex == index:
@@ -94,6 +104,9 @@ class Graph(Generic[T]):
         >>> [i for i in map(str, graph)]
         ['None -> ()', 'None -> ()', 'None -> ()', 'None -> ()']
         """
+
+        if (sizeX < 0) or (sizeY < 0):
+            raise ValueError(f"Invalid size `({sizeX}, {sizeY})` given.")
 
         # make a list of nodes of the correct length
         everyNode = [Node[T](None) for _ in range(0, sizeX * sizeY)]
@@ -386,8 +399,47 @@ class Graph(Generic[T]):
                     # and add it to the `visitedNodes` queue
                     visitedNodes.enQueue(self.__nodes[neighbour])
 
+    def i(self, index: int) -> bool:
+        if not (len(self.__nodes) > index >= 0):
+            raise IndexError("Node at index {} is out of range.".format(str(index)))
+        return True
+
+    def removeLinkBetween(
+        self,
+        indexFrom: int,
+        indexTo: int,
+        bidirectional: bool = True,
+    ) -> None:
+        """Removes a link between two nodes
+
+        Args:
+            indexFrom (int): The `from` node to connect to the `to`
+            indexTo (int): The `to` node
+            bidirectional (bool, optional): Whether or not to remove the link both ways. Defaults to True.
+        """
+
+        # make sure indices are valid
+        self.__checkIndexIsValidWithException(indexFrom)
+        self.__checkIndexIsValidWithException(indexTo)
+
+        # check it's in the list of indices
+        if indexTo in self.__nodes[indexFrom].connections:
+            self.__nodes[indexFrom].connections.remove(indexTo)
+        else:
+            # it isn't
+            raise Exception(
+                f"Node index {indexTo} already does not exist in node at index {indexFrom}'s connections.",
+            )
+
+        # if bidirectional, flip indexTo and indexFrom and do it again
+        if bidirectional:
+            self.removeLinkBetween(indexTo, indexFrom, False)
+
     def addLinkBetween(
-        self, indexFrom: int, indexTo: int, bidirectional: bool = True
+        self,
+        indexFrom: int,
+        indexTo: int,
+        bidirectional: bool = True,
     ) -> None:
         """Add a link between two nodes of given indices.
 
@@ -432,20 +484,9 @@ class Graph(Generic[T]):
         IndexError: Cannot add a connection to nonexistent node at index 333.
         """
 
-        # if `indexFrom` is out of range of `self.__nodes`:
-        if not (len(self.__nodes) > indexFrom >= 0):
-            raise IndexError(
-                "Cannot add a connection from nonexistent node at index {}.".format(
-                    str(indexFrom)
-                )
-            )
-        # if `indexTo` is out of range of `self.__nodes`:
-        if not (len(self.__nodes) > indexTo >= 0):
-            raise IndexError(
-                "Cannot add a connection to nonexistent node at index {}.".format(
-                    str(indexTo)
-                )
-            )
+        # make sure indices are valid
+        self.__checkIndexIsValidWithException(indexFrom)
+        self.__checkIndexIsValidWithException(indexTo)
 
         # check the node isn't already connected
         if self.connectionExistsFrom(indexFrom, indexTo):
