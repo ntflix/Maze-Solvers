@@ -278,6 +278,29 @@ class TestMazeMethods(unittest.TestCase):
         ):
             _ = maze.getCoordinatesFromIndex(55)
 
+    def testGetFirstCellCoordinatesFromIndexInNonSquareMaze(self):
+        maze = Maze(3, 55)
+        c = maze.getCoordinatesFromIndex(0)
+        self.assertEqual(c, (0, 0))
+
+    def testGetRandomCellCoordinatesFromIndexInNonSquareMaze(self):
+        maze = Maze(42, 16)
+        c = maze.getCoordinatesFromIndex(488)
+        self.assertEqual(c, (26, 11))
+
+    def testGetLastCellCoordinatesFromIndexInNonSquareMaze(self):
+        maze = Maze(37, 17)
+        c = maze.getCoordinatesFromIndex(628)
+        self.assertEqual(c, (36, 16))
+
+    def testGetInvalidCellCoordinatesFromIndexInNonSquareMaze(self):
+        maze = Maze(12, 1)
+        with self.assertRaises(
+            IndexError,
+            msg="`cellIndex` out of range (761263748 not between 0 and 11).",
+        ):
+            _ = maze.getCoordinatesFromIndex(761263748)
+
     ###
     ### Test getting cells' indices from coordinates
     ###
