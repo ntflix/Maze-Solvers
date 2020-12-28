@@ -399,7 +399,7 @@ class Graph(Generic[T]):
                     # and add it to the `visitedNodes` queue
                     visitedNodes.enQueue(self.__nodes[neighbour])
 
-    def i(self, index: int) -> bool:
+    def __checkIndexIsValidWithException(self, index: int) -> bool:
         if not (len(self.__nodes) > index >= 0):
             raise IndexError("Node at index {} is out of range.".format(str(index)))
         return True
@@ -427,7 +427,7 @@ class Graph(Generic[T]):
             self.__nodes[indexFrom].connections.remove(indexTo)
         else:
             # it isn't
-            raise Exception(
+            raise ValueError(
                 f"Node index {indexTo} already does not exist in node at index {indexFrom}'s connections.",
             )
 
@@ -491,7 +491,7 @@ class Graph(Generic[T]):
         # check the node isn't already connected
         if self.connectionExistsFrom(indexFrom, indexTo):
             # it is, so raise an exception with a descriptive error message
-            raise Exception(
+            raise ValueError(
                 "Node index '{}' already exists in node {}'s connections.".format(
                     str(indexTo), str(indexFrom)
                 )

@@ -12,11 +12,19 @@ class TestMazeMethods(unittest.TestCase):
         maze = Maze(20, 20)
         self.assertIsInstance(maze, Maze)
 
+    def testNonSquareInit(self):
+        maze = Maze(3, 5)
+        self.assertIsInstance(maze, Maze)
+
     def testFullyConnectedInit(self):
         maze = Maze(4, 4, False)
         self.assertIsInstance(maze, Maze)
         self.assertCountEqual(maze.getConnectionsOfCellAtIndex(0), [1, 4])
         self.assertCountEqual(maze.getConnectionsOfCellAtIndex(5), [1, 4, 6, 9])
+
+    def testNonSquareFullyConnectedInit(self):
+        maze = Maze(5, 2, False)
+        self.assertIsInstance(maze, Maze)
 
     def testInitWithZeroSize(self):
         maze = Maze(0, 0)
@@ -121,6 +129,12 @@ class TestMazeMethods(unittest.TestCase):
         # add a wall from first cell
         maze.addWallBetween(0, 1)
         self.assertCountEqual(maze.getConnectionsOfCellAtIndex(0), [4])
+
+    def testAddWallAgain(self):
+        maze = Maze(4, 4, False)
+        # add a wall from first cell
+        maze.addWallBetween(0, 1)
+        self.assertCountEqual(maze.getConnectionsOfCellAtIndex(0), [4])
         # add another wall from first cell
         maze.addWallBetween(0, 4)
         self.assertCountEqual(maze.getConnectionsOfCellAtIndex(0), [])
@@ -181,7 +195,7 @@ class TestMazeMethods(unittest.TestCase):
         maze.removeWallBetween(0, 4)
         self.assertCountEqual(maze.getConnectionsOfCellAtIndex(0), [1, 4])
 
-    def testRemoveExistentWall(self):
+    def testRemoveNonExistentWall(self):
         maze = Maze(3, 3, False)
         # remove a wall that doesn't exist
         with self.assertRaises(
@@ -195,7 +209,7 @@ class TestMazeMethods(unittest.TestCase):
         # remove a wall between `x` and `x`, i.e., to itself
         with self.assertRaises(
             ValueError,
-            msg="Cell at index 0 is not adjacent to cell at 8.",
+            msg="Cell at index 0 is not adjacent to cell at 0.",
         ):
             maze.removeWallBetween(0, 0)
 
@@ -204,7 +218,7 @@ class TestMazeMethods(unittest.TestCase):
         # remove invalid wall between top left and bottom right cells
         with self.assertRaises(
             ValueError,
-            msg="Cell at index 0 is not adjacent to cell at 0.",
+            msg="Cell at index 0 is not adjacent to cell at 8.",
         ):
             maze.removeWallBetween(0, 8)
 

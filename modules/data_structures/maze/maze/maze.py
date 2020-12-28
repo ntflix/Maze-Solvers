@@ -99,7 +99,7 @@ class Maze(MazeProtocol):
         # only add the neighbours that are not out of range of maze
         for thisCoordinate in unvalidatedNeighbourCoordinates:
             # if the coordinate is valid...
-            if self.__coordinateIsValid(thisCoordinate):
+            if self.__checkCoordinateIsValid(thisCoordinate):
                 # then calculate its index
                 indexOfCellAtThisCoordinate = self.getIndexFromCoordinates(
                     thisCoordinate.x, thisCoordinate.y
@@ -117,7 +117,7 @@ class Maze(MazeProtocol):
         return self.__maze.getConnectionsOfNodeAtIndex(cellIndex)
 
     def __checkIndexIsValidWithException(self, cellIndex: int) -> bool:
-        if not self.__indexIsValid(cellIndex):
+        if not self.__checkIndexIsValid(cellIndex):
             # it is not valid so raise error
             # calculate the index of the last cell in maze
             lastCellCoordinate = XY(self.size.x - 1, self.size.y - 1)
@@ -142,25 +142,29 @@ class Maze(MazeProtocol):
         Returns:
             XY: The coordinates of the cell.
         """
-        Y = floor(index / self.size.y)
+        Y = floor(index / self.size.x)
         X = index % self.size.x
 
         return XY(X, Y)
 
-    def __coordinateIsValid(self, coordinate: XY) -> bool:
+    def __checkCoordinateIsValid(self, coordinate: XY) -> bool:
         for axisValue in coordinate:
             # check it's not too small
             if axisValue < 0:
                 return False
-            # check it's not too big
-            if axisValue >= self.size.y:
-                return False
+
+        # check it's not too big
+        if coordinate.y >= self.size.y:
+            return False
+
+        if coordinate.x >= self.size.x:
+            return False
 
         return True
 
-    def __indexIsValid(self, index: int) -> bool:
+    def __checkIndexIsValid(self, index: int) -> bool:
         coordinate = self.__getXYFromIndex(index)
-        return self.__coordinateIsValid(coordinate)
+        return self.__checkCoordinateIsValid(coordinate)
 
     def __checkIsAdjacentWithException(self, indexA: int, indexB: int) -> bool:
         if indexB in self.getNeighboursOfCell(indexA):
@@ -172,7 +176,10 @@ class Maze(MazeProtocol):
             )
 
     def addWallBetween(
-        self, cellAIndex: int, cellBIndex: int, bidirectional: bool = True
+        self,
+        cellAIndex: int,
+        cellBIndex: int,
+        bidirectional: bool = True,
     ) -> None:
         """Add a wall between two adjacent cells.
 
@@ -188,10 +195,22 @@ class Maze(MazeProtocol):
 
         if self.__checkIsAdjacentWithException(cellAIndex, cellBIndex):
             # remove the link, which removes the lack of wall (puts something in the way between the cells)
-            self.__maze.removeLinkBetween(cellAIndex, cellBIndex, bidirectional)
+            try:
+                self.__maze.removeLinkBetween(cellAIndex, cellBIndex, bidirectional)
+            except ValueError as error:
+                raise ValueError(
+                    (
+                        "You cannot add a wall that already exists: "
+                        "there is already a wall between the given cells "
+                        f"{cellAIndex} and {cellBIndex}: ('{error}')."
+                    )
+                )
 
     def removeWallBetween(
-        self, cellAIndex: int, cellBIndex: int, bidirectional: bool = True
+        self,
+        cellAIndex: int,
+        cellBIndex: int,
+        bidirectional: bool = True,
     ) -> None:
         """Remove a wall between two adjacent cells.
 
@@ -206,7 +225,16 @@ class Maze(MazeProtocol):
         self.__checkIndexIsValidWithException(cellBIndex)
 
         if self.__checkIsAdjacentWithException(cellAIndex, cellBIndex):
-            self.__maze.addLinkBetween(cellAIndex, cellBIndex, bidirectional)
+            try:
+                self.__maze.addLinkBetween(cellAIndex, cellBIndex, bidirectional)
+            except ValueError as error:
+                raise ValueError(
+                    (
+                        "You cannot remove a nonexistent wall: "
+                        "there is not a wall between the given cells "
+                        f"{cellAIndex} and {cellBIndex}: ('{error}')."
+                    )
+                )
 
     def getCoordinatesFromIndex(self, cellIndex: int) -> Tuple[int, int]:
         """Get the coordinates of a given maze cell.
@@ -227,7 +255,7 @@ class Maze(MazeProtocol):
         return (coords.x, coords.y)
 
     def __checkCoordinateIsValidWithException(self, coordinate: XY) -> bool:
-        if not self.__coordinateIsValid(coordinate):
+        if not self.__checkCoordinateIsValid(coordinate):
             raise ValueError(f"Coordinate {coordinate} is not valid.")
         return True
 
