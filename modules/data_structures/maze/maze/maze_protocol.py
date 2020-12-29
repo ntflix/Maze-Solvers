@@ -1,42 +1,38 @@
-from modules.data_structures.graph.graph import Graph
+from modules.file_handling.serializable import Serializable
 from typing import Iterator, List, Protocol
 from modules.common_structures.xy import XY
 
 
-class MazeProtocol(Protocol):
-    """The protocol for any Maze object to conform to.
-
-    Args:
-        Protocol ([type]): [description]
-    """
+class MazeProtocol(Serializable, Protocol):
+    """The protocol for any Maze object to conform to."""
 
     size: XY
 
     startIndex: int
     endIndex: int
 
-    def __init__(self, sizeX: int, sizeY: int, fullyConnected: bool = False) -> None:
+    def __init__(self, sizeX: int, sizeY: int, walls: bool = True) -> None:
         """Initialize a maze from a given size.
         The given maze will have all walls – i.e., no cells will have connections between them.
         This would look like a grid.
 
         Args:
             size (XY): The XY size of the desired maze.
-            fullyConnected(bool, optional): Whether to create a fully connected
-                maze (i.e., no walls between adjacent cells). Defaults to False.
+            walls(bool, optional): Whether to create a fully connected
+                maze (i.e., walls between adjacent cells). Defaults to True.
         """
         raise NotImplementedError()
 
     def __iter__(self) -> Iterator[int]:
         raise NotImplementedError()
 
-    def _toGraph(self) -> Graph[int]:
-        """Return a graph representation of the maze where the connections are adjacent cells without walls between and nodes are the maze cells.
+    def serialize(self) -> "MazeProtocol":
+        """Return a serializable representation of the MazeProtocol object.
 
         Returns:
-            Graph[int]: The graph representation of the maze.
+            MazeProtocol: The MazeProtocol object.
         """
-        raise NotImplementedError()
+        return self
 
     def getConnectionsOfCellAtIndex(self, cellIndex: int) -> List[int]:
         """Return a list of indices of the connections of a cell at given index.

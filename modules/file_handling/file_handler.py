@@ -1,7 +1,8 @@
+from modules.file_handling.serializable import Serializable
 from typing import Generic, Protocol, TypeVar
 
 
-T = TypeVar("T")
+T = TypeVar("T", bound=Serializable)
 
 
 class FileHandler(Generic[T], Protocol):
@@ -20,9 +21,4 @@ class FileHandler(Generic[T], Protocol):
     def save(self, object: T) -> None:
         raise NotImplementedError(
             "Cannot call save() on protocol class",
-        )
-
-    def __close(self) -> None:
-        raise NotImplementedError(
-            "Cannot call __close() on protocol class",
         )

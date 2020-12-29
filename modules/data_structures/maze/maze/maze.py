@@ -69,13 +69,13 @@ class Maze(MazeProtocol):
             if data is not None:
                 yield data
 
-    def _toGraph(self) -> Graph[int]:
-        """Return a graph representation of the maze where the connections are adjacent cells without walls between and nodes are the maze cells.
+    def serialize(self) -> "Maze":
+        """Return a serializable representation of the Maze object.
 
         Returns:
-            Graph[int]: The graph representation of the maze.
+            Maze: The maze.
         """
-        return self.__maze
+        return self
 
     def getNeighboursOfCell(self, cellIndex: int) -> List[int]:
         """Return a list of indices of the neighbour of a cell at specified index.
@@ -170,7 +170,7 @@ class Maze(MazeProtocol):
         return True
 
     def __checkIndexIsValid(self, index: int) -> bool:
-        coordinate = self.getCoordinatesFromIndex(index)
+        coordinate = self.__getXYFromIndex(index)
         return self.__checkCoordinateIsValid(coordinate)
 
     def __checkIsAdjacentWithException(self, indexA: int, indexB: int) -> bool:
