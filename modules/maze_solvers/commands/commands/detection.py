@@ -1,7 +1,6 @@
 from modules.maze_solvers.commands.protocols.directionable_command import (
     DirectionableCommand,
 )
-from modules.data_structures.maze.maze_cell.maze_cell import MazeCell
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.maze_solvers.commands.results.detection_command_result import (
     DetectionCommandResult,
@@ -26,8 +25,8 @@ class DetectionCommand(MazeSolverCommand, DirectionableCommand):
     # the relative direction it is detecting in
     relativeDirection: RelativeDirection
 
-    # the cell it is in
-    cell: MazeCell
+    # the cell index it is in
+    cell: int
 
     # the absolute direction it is detecting in
     absoluteDirection: AbsoluteDirection

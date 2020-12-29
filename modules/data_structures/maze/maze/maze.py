@@ -1,8 +1,7 @@
 from math import floor
 from modules.data_structures.graph.graph import Graph
 from modules.data_structures.maze.maze.maze_protocol import MazeProtocol
-from modules.data_structures.maze.maze_cell.maze_cell import MazeCell
-from typing import Iterator, List, Tuple
+from typing import Iterator, List
 from modules.common_structures.xy import XY
 
 
@@ -14,8 +13,8 @@ class Maze(MazeProtocol):
         `MazeProtocol`
     """
 
-    # the Graph of MazeCells representing the maze.
-    __maze: Graph[MazeCell]
+    # the Graph of ints representing the maze.
+    __maze: Graph[int]
 
     size: XY
 
@@ -37,16 +36,16 @@ class Maze(MazeProtocol):
         self.size = size
 
         # initialize `self.__maze` to an empty graph so we can operate on it
-        self.__maze = Graph[MazeCell].createSquareGraph(size.x, size.y)
+        self.__maze = Graph[int].createSquareGraph(size.x, size.y)
 
         # initialize as list of maze cells
         mazeLength = len(self.__maze)
         for cellIndex in range(mazeLength):
 
-            # set this cell's node data to a new MazeCell with index
+            # set this cell's node data to the new index
             self.__maze.setNodeData(
                 index=cellIndex,
-                newValue=MazeCell(cellIndex),
+                newValue=cellIndex,
             )
 
             if not walls:
@@ -64,11 +63,19 @@ class Maze(MazeProtocol):
                             cellIndex, connection, bidirectional=False
                         )
 
-    def __iter__(self) -> Iterator[MazeCell]:
+    def __iter__(self) -> Iterator[int]:
         for cell in self.__maze:
             data = cell.data
             if data is not None:
                 yield data
+
+    def _toGraph(self) -> Graph[int]:
+        """Return a graph representation of the maze where the connections are adjacent cells without walls between and nodes are the maze cells.
+
+        Returns:
+            Graph[int]: The graph representation of the maze.
+        """
+        return self.__maze
 
     def getNeighboursOfCell(self, cellIndex: int) -> List[int]:
         """Return a list of indices of the neighbour of a cell at specified index.
@@ -163,7 +170,7 @@ class Maze(MazeProtocol):
         return True
 
     def __checkIndexIsValid(self, index: int) -> bool:
-        coordinate = self.__getXYFromIndex(index)
+        coordinate = self.getCoordinatesFromIndex(index)
         return self.__checkCoordinateIsValid(coordinate)
 
     def __checkIsAdjacentWithException(self, indexA: int, indexB: int) -> bool:
@@ -174,6 +181,21 @@ class Maze(MazeProtocol):
             raise ValueError(
                 f"Cell at index {indexA} is not adjacent to cell at {indexB}."
             )
+
+    def getCoordinatesFromIndex(self, cellIndex: int) -> XY:
+        """Get the coordinates of a given maze cell.
+
+        Args:
+            cellIndex (int): The maze cell's index whose coordinates you want to get.
+
+        Returns:
+            XY: The XY coordinates of the given maze cell.
+        """
+        # check the given index is valid
+        self.__checkIndexIsValidWithException(cellIndex)
+
+        # it is valid, so get coordinates
+        return self.__getXYFromIndex(cellIndex)
 
     def addWallBetween(
         self,
@@ -186,8 +208,8 @@ class Maze(MazeProtocol):
         This works by removing a link between them in the graph.
 
         Args:
-            cellA (MazeCell): The 'from' cell
-            cellB (MazeCell): The 'to' cell
+            cellA (int): The 'from' cell
+            cellB (int): The 'to' cell
             bidirectional (bool, optional): Whether to create a bidirectional link. Defaults to True.
         """
         self.__checkIndexIsValidWithException(cellAIndex)
@@ -235,24 +257,6 @@ class Maze(MazeProtocol):
                         f"{cellAIndex} and {cellBIndex}: ('{error}')."
                     )
                 )
-
-    def getCoordinatesFromIndex(self, cellIndex: int) -> Tuple[int, int]:
-        """Get the coordinates of a given maze cell.
-
-        Args:
-            cellIndex (int): The maze cell's index whose coordinates you want to get.
-
-        Returns:
-            Tuple[int, int]: The XY coordinates of the given maze cell.
-        """
-        # check the given index is valid
-        self.__checkIndexIsValidWithException(cellIndex)
-
-        # it is valid, so get coordinates
-        coords = self.__getXYFromIndex(cellIndex)
-
-        # and return as Tuple[int, int] for (x, y)
-        return (coords.x, coords.y)
 
     def __checkCoordinateIsValidWithException(self, coordinate: XY) -> bool:
         if not self.__checkCoordinateIsValid(coordinate):

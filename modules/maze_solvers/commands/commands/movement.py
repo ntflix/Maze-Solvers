@@ -1,7 +1,6 @@
 from modules.maze_solvers.commands.protocols.directionable_command import (
     DirectionableCommand,
 )
-from modules.data_structures.maze.maze_cell.maze_cell import MazeCell
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from typing import Optional, overload
 from modules.maze_solvers.commands.results.movement_command_result import (
@@ -29,8 +28,8 @@ class MovementCommand(MazeSolverCommand, DirectionableCommand):
     # the direction it was moving in
     absoluteDirection: AbsoluteDirection
 
-    # the cell it started in
-    cell: MazeCell
+    # the cell index it started in
+    cell: int
 
     # the human-readable description of the command
     humanDescription: str

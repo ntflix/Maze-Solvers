@@ -1,5 +1,5 @@
-from modules.data_structures.maze.maze_cell.maze_cell import MazeCell
-from typing import Iterator, List, Protocol, Tuple
+from modules.data_structures.graph.graph import Graph
+from typing import Iterator, List, Protocol
 from modules.common_structures.xy import XY
 
 
@@ -27,7 +27,26 @@ class MazeProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def __iter__(self) -> Iterator[MazeCell]:
+    def __iter__(self) -> Iterator[int]:
+        raise NotImplementedError()
+
+    def _toGraph(self) -> Graph[int]:
+        """Return a graph representation of the maze where the connections are adjacent cells without walls between and nodes are the maze cells.
+
+        Returns:
+            Graph[int]: The graph representation of the maze.
+        """
+        raise NotImplementedError()
+
+    def getConnectionsOfCellAtIndex(self, cellIndex: int) -> List[int]:
+        """Return a list of indices of the connections of a cell at given index.
+
+        Args:
+            cellIndex (int): The index of the cell whose connections you want.
+
+        Returns:
+            List[int]: List of connections.
+        """
         raise NotImplementedError()
 
     def getNeighboursOfCell(self, cellIndex: int) -> List[int]:
@@ -49,8 +68,8 @@ class MazeProtocol(Protocol):
         This works by removing a link between them in the graph.
 
         Args:
-            cellA (MazeCell): The 'from' cell
-            cellB (MazeCell): The 'to' cell
+            cellA (int): The 'from' cell
+            cellB (int): The 'to' cell
             bidirectional (bool, optional): Whether to create a bidirectional link. Defaults to True.
         """
         raise NotImplementedError()
@@ -63,31 +82,31 @@ class MazeProtocol(Protocol):
         This works by adding a link between them in the graph.
 
         Args:
-            cellA (MazeCell): The 'from' cell
-            cellB (MazeCell): The 'to' cell
+            cellA (int): The 'from' cell
+            cellB (int): The 'to' cell
             bidirectional (bool, optional): Whether to remove wall in both directions. Defaults to True.
         """
         raise NotImplementedError()
 
-    def getCoordinatesOf(self, cellIndex: int) -> Tuple[int, int]:
+    def getCoordinatesFromIndex(self, cellIndex: int) -> XY:
         """Get the coordinates of a given maze cell.
 
         Args:
             cellIndex (int): The maze cell's index whose coordinates you want to get.
 
         Returns:
-            Tuple[int, int]: The XY coordinates of the given maze cell.
+            XY: The XY coordinates of the given maze cell.
         """
         raise NotImplementedError()
 
-    def getCellAtCoordinates(self, x: int, y: int) -> int:
-        """Get the MazeCell at specified coordinates.
+    def getIndexFromCoordinates(self, x: int, y: int) -> int:
+        """Get the int at specified coordinates.
 
         Args:
-            x (int): The X coordinate of the MazeCell.
-            y (int): The Y coordinate of the MazeCell.
+            x (int): The X coordinate of the int.
+            y (int): The Y coordinate of the int.
 
         Returns:
-            int: The MazeCell index at the specified coordinates.
+            int: The int index at the specified coordinates.
         """
         raise NotImplementedError()
