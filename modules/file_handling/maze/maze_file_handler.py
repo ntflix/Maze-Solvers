@@ -1,3 +1,4 @@
+import logging
 from modules.file_handling.file_persistence import FilePersistence
 from modules.data_structures.maze.maze.maze_protocol import MazeProtocol
 from modules.file_handling.file_handler import FileHandler
@@ -21,7 +22,22 @@ class MazeFileHandler(FileHandler[MazeProtocol]):
         pass
 
     def load(self) -> MazeProtocol:
-        return self.__persistence.load(key=self.__key)
+        # try to load file
+        loaded = self.__persistence.load(key=self.__key)
+        if isinstance(loaded, MazeProtocol):  # type: ignore
+            # type checker says, "Unnecessary isinstance call; "MazeProtocol" is always an instance of "MazeProtocol"
+            # I mean yes, that's what I'm checking, because Python does not enforce strict types. Thanks anyway Pylance.
+            return loaded
+        else:
+            errorMessage = (
+                f"Imported `maze` object from file {self.__path}"
+                " does not conform to `MazeProtocol` and"
+                " thus cannot be used as a maze object."
+            )
+            # log the error in this class's error channel
+            logging.getLogger(__name__).error(errorMessage)
+            # imported maze does not conform to MazeProtocol
+            raise RuntimeError(errorMessage)
 
     def save(self, object: MazeProtocol) -> None:
         return self.__persistence.save(object, key=self.__key)

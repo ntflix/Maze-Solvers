@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, Tuple
 
 
 class XY:
@@ -15,3 +15,12 @@ class XY:
 
     def __str__(self) -> str:
         return f"({self.x}, {self.y})"
+
+    def __eq__(self, o: object) -> bool:
+        if type(o) == XY:
+            return (self.x, self.y) == (o.x, o.y)  # type: ignore
+        else:
+            return False
+
+    def toTuple(self) -> Tuple[int, int]:
+        return (self.x, self.y)

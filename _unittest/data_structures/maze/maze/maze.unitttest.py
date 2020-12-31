@@ -95,15 +95,15 @@ class TestMazeMethods(unittest.TestCase):
     ###
 
     def testGetCoordinateOfFirstCell(self):
-        coordinate = Maze(5, 5).getCoordinatesFromIndex(0)
+        coordinate = Maze(5, 5).getCoordinatesFromIndex(0).toTuple()
         self.assertEqual(coordinate, (0, 0))
 
     def testGetCoordinateOfSomeCell(self):
-        coordinate = Maze(5, 5).getCoordinatesFromIndex(12)
+        coordinate = Maze(5, 5).getCoordinatesFromIndex(12).toTuple()
         self.assertEqual(coordinate, (2, 2))
 
     def testGetCoordinateOfLastCell(self):
-        coordinate = Maze(5, 5).getCoordinatesFromIndex(24)
+        coordinate = Maze(5, 5).getCoordinatesFromIndex(24).toTuple()
         self.assertEqual(coordinate, (4, 4))
 
     def testGetCoordinateOfOutOfRangeTooHighCell(self):
@@ -245,19 +245,19 @@ class TestMazeMethods(unittest.TestCase):
     def testGetFirstCellCoordinatesFromIndex(self):
         maze = Maze(2, 2)
         # first cell in maze should be (0, 0)
-        c = maze.getCoordinatesFromIndex(0)
+        c = maze.getCoordinatesFromIndex(0).toTuple()
         self.assertEqual(c, (0, 0))
 
     def testGetCentreCellCoordinatesFromIndex(self):
         maze = Maze(3, 3)
         # getting centre cell, should be (1, 1)
-        c = maze.getCoordinatesFromIndex(4)
+        c = maze.getCoordinatesFromIndex(4).toTuple()
         self.assertEqual(c, (1, 1))
 
     def testGetLastCellCoordinatesFromIndex(self):
         maze = Maze(3, 3)
         # getting last cell in maze, should be (2, 2)
-        c = maze.getCoordinatesFromIndex(8)
+        c = maze.getCoordinatesFromIndex(8).toTuple()
         self.assertEqual(c, (2, 2))
 
     def testGetOutOfRangeTooLowCellCoordinatesFromIndex(self):
@@ -280,17 +280,17 @@ class TestMazeMethods(unittest.TestCase):
 
     def testGetFirstCellCoordinatesFromIndexInNonSquareMaze(self):
         maze = Maze(3, 55)
-        c = maze.getCoordinatesFromIndex(0)
+        c = maze.getCoordinatesFromIndex(0).toTuple()
         self.assertEqual(c, (0, 0))
 
     def testGetRandomCellCoordinatesFromIndexInNonSquareMaze(self):
         maze = Maze(42, 16)
-        c = maze.getCoordinatesFromIndex(488)
+        c = maze.getCoordinatesFromIndex(488).toTuple()
         self.assertEqual(c, (26, 11))
 
     def testGetLastCellCoordinatesFromIndexInNonSquareMaze(self):
         maze = Maze(37, 17)
-        c = maze.getCoordinatesFromIndex(628)
+        c = maze.getCoordinatesFromIndex(628).toTuple()
         self.assertEqual(c, (36, 16))
 
     def testGetInvalidCellCoordinatesFromIndexInNonSquareMaze(self):
