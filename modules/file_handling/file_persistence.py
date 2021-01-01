@@ -1,4 +1,3 @@
-import dbm
 from modules.file_handling.serializable import Serializable
 from typing import Generic, TypeVar
 import logging
@@ -20,15 +19,14 @@ class FilePersistence(Generic[T]):
 
         #  open the file within a context manager
         try:
-            # sheve.open(self.__path, flag="r")  # open in read mode
-            with shelve.open(self.__path, flag="r") as shelf:
+            with shelve.open(self.__path) as shelf:
                 # load from file
                 loaded = shelf[key]
-        except dbm.error as error:  # there was an error with the loading of the file
+        except KeyError as error:
             # make a nice error message :)
-            errorMessage = f"Could not load file from {self.__path}: {error}."
+            errorMessage = f"File at {self.__path} is corrupt or does not exist."
             # log the error
-            logging.error(errorMessage)
+            logging.error((errorMessage, error))
             # aaand raise a not so nice error with the nice message for the happy user
             raise FileNotFoundError(errorMessage)
 
@@ -46,7 +44,7 @@ class FilePersistence(Generic[T]):
         # log saving file
         logging.debug(f"Saving object '{object}' to '{self.__path}' with key '{key}'.")
         # open a file handle within a context manager to not have to worry about closing the file
-        with shelve.open(self.__path, flag="c") as shelf:  # open in create/write mode
+        with shelve.open(self.__path) as shelf:
             logging.debug(f"Opened shelve file handle at {self.__path}")
             # save it to the file with given key
             # serialize it because `object` is of type `T` which conforms to `Serializable`
