@@ -1,6 +1,6 @@
 import logging
 from modules.file_handling.file_persistence import FilePersistence
-from modules.data_structures.maze.maze.maze_protocol import MazeProtocol
+from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.file_handling.file_handler import FileHandler
 
 

@@ -1,5 +1,5 @@
 from modules.common_structures.xy import XY
-from modules.data_structures.maze.maze.maze import Maze
+from modules.data_structures.maze.maze import Maze
 from modules.file_handling.maze.maze_file_handler import MazeFileHandler
 import unittest
 

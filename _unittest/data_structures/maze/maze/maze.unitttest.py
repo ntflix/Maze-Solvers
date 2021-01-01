@@ -1,4 +1,4 @@
-from modules.data_structures.maze.maze.maze import Maze
+from modules.data_structures.maze.maze import Maze
 import unittest
 
 

@@ -1,6 +1,6 @@
 from math import floor
 from modules.data_structures.graph.graph import Graph
-from modules.data_structures.maze.maze.maze_protocol import MazeProtocol
+from modules.data_structures.maze.maze_protocol import MazeProtocol
 from typing import Iterator, List
 from modules.common_structures.xy import XY
 
