@@ -5,8 +5,10 @@ import unittest
 
 
 class TestMazeFileHandler(unittest.TestCase):
+    FILE_PATH_PREFIX = "_unittest/file_handling/maze/sample_data/"
+
     def testMazeIsSaved(self):
-        FILEPATH = "test_save.maze"
+        FILEPATH = self.FILE_PATH_PREFIX + "test_save.maze"
 
         fileHandler = MazeFileHandler(FILEPATH)
         maze = Maze(4, 4, True)
@@ -15,7 +17,7 @@ class TestMazeFileHandler(unittest.TestCase):
             fileHandler.save(maze)
 
     def testMazeIsLoadedCorrectly(self):
-        FILEPATH = "test_save.maze"
+        FILEPATH = self.FILE_PATH_PREFIX + "test_save.maze"
 
         size = XY(13, 3)
 
@@ -28,7 +30,7 @@ class TestMazeFileHandler(unittest.TestCase):
         self.assertEqual(newMaze.size, size)
 
     def testLoadNonExistentFileWithException(self):
-        FILEPATH = "nonexistentfile"
+        FILEPATH = self.FILE_PATH_PREFIX + "nonexistentfile"
 
         # try to load it
         fileHandler = MazeFileHandler(FILEPATH)
