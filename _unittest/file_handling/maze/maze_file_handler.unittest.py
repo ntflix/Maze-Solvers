@@ -36,7 +36,7 @@ class TestMazeFileHandler(unittest.TestCase):
         fileHandler = MazeFileHandler(FILEPATH)
         with self.assertRaises(
             FileNotFoundError,
-            msg=f"FileNotFoundError: File at {FILEPATH} is corrupt or does not exist.",
+            msg=f"FileNotFoundError: Could not load file from {FILEPATH}: db file doesn't exist; use 'c' or 'n' flag to create a new db",
         ):
             _ = fileHandler.load()
 
