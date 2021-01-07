@@ -1,7 +1,8 @@
 from abc import abstractclassmethod
-from modules.maze_solvers.commands.protocols.maze_solver_command_result import (
+from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
 )
+
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
 )

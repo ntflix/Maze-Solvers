@@ -1,16 +1,15 @@
-from modules.maze_solvers.commands.protocols.directionable_command import (
+from modules.maze_solvers.commands.results.maze_solver_command_result import (
+    MazeSolverCommandResult,
+)
+from modules.maze_solvers.commands.commands.directionable_command import (
     DirectionableCommand,
 )
+from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolverCommand
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from typing import Optional, overload
-from modules.maze_solvers.commands.results.movement_command_result import (
-    MovementCommandResult,
-)
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
 )
-from modules.maze_solvers.commands.protocols.command_protocol import MazeSolverCommand
-from modules.maze_solvers.relative_direction import RelativeDirection
 
 
 class MovementCommand(MazeSolverCommand, DirectionableCommand):
@@ -21,9 +20,6 @@ class MovementCommand(MazeSolverCommand, DirectionableCommand):
         `MazeSolverCommand`,
         `DirectionableCommand`
     """
-
-    # the relative direction of movement
-    relativeDirection: RelativeDirection
 
     # the direction it was moving in
     absoluteDirection: AbsoluteDirection
@@ -38,7 +34,7 @@ class MovementCommand(MazeSolverCommand, DirectionableCommand):
     commandType = MazeSolverCommandType.movement
 
     # the (optional) result of the movement
-    commandResult: Optional[MovementCommandResult] = None
+    commandResult: Optional[MazeSolverCommandResult] = None
 
     @overload
     def __init__(self) -> None:
