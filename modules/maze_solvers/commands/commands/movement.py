@@ -1,3 +1,4 @@
+from modules.common_structures.xy import XY
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
 )
@@ -24,8 +25,8 @@ class MovementCommand(MazeSolverCommand, DirectionableCommand):
     # the direction it was moving in
     absoluteDirection: AbsoluteDirection
 
-    # the cell index it started in
-    cell: int
+    # the cell coordinate it started in
+    cell: XY
 
     # the human-readable description of the command
     humanDescription: str

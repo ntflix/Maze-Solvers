@@ -1,16 +1,16 @@
-from modules.maze_solvers.commands.protocols.directionable_command import (
+from modules.maze_solvers.commands.commands.directionable_command import (
     DirectionableCommand,
 )
-from modules.maze_solvers.absolute_direction import AbsoluteDirection
-from modules.maze_solvers.commands.results.detection_command_result import (
-    DetectionCommandResult,
+from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolverCommand
+from modules.maze_solvers.commands.results.maze_solver_command_result import (
+    MazeSolverCommandResult,
 )
+from modules.common_structures.xy import XY
+from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from typing import Optional
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
 )
-from modules.maze_solvers.commands.protocols.command_protocol import MazeSolverCommand
-from modules.maze_solvers.relative_direction import RelativeDirection
 
 
 class DetectionCommand(MazeSolverCommand, DirectionableCommand):
@@ -22,11 +22,8 @@ class DetectionCommand(MazeSolverCommand, DirectionableCommand):
         `DirectionableCommand`
     """
 
-    # the relative direction it is detecting in
-    relativeDirection: RelativeDirection
-
-    # the cell index it is in
-    cell: int
+    # the cell it is in
+    cell: XY
 
     # the absolute direction it is detecting in
     absoluteDirection: AbsoluteDirection
@@ -38,4 +35,4 @@ class DetectionCommand(MazeSolverCommand, DirectionableCommand):
     commandType = MazeSolverCommandType.detection
 
     # the result of the detection
-    commandResult: Optional[DetectionCommandResult] = None
+    commandResult: Optional[MazeSolverCommandResult] = None
