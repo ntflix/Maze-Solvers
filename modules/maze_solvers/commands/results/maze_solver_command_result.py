@@ -1,17 +1,15 @@
-from modules.common_structures.xy import XY
-from modules.maze_solvers.absolute_direction import AbsoluteDirection
+from modules.maze_solvers.maze_solver_state import MazeSolverState
 from typing import Protocol
 
 
 class MazeSolverCommandResult(Protocol):
     humanDescription: str
-    newDirection: AbsoluteDirection
-    newLocation: XY
+    newState: MazeSolverState
 
     def __init__(
         self,
         humanDescription: str,
-        facing: AbsoluteDirection,
+        state: MazeSolverState,
     ) -> None:
         pass
 
