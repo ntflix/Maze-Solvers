@@ -10,13 +10,13 @@ from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolverProtocol
 
 class WallFollower(MazeSolverProtocol):
     # List of commands issued
-    commands: List[MazeSolverCommand]
+    __commands: List[MazeSolverCommand]
 
     # The current state of the Maze Solver
-    state: MazeSolverState
+    __state: MazeSolverState
 
     # the history of states so the user can see the progress of the solver in more depth
-    state_history: List[MazeSolverState]
+    __state_history: List[MazeSolverState]
 
     # __algorithm: str
 
@@ -24,4 +24,13 @@ class WallFollower(MazeSolverProtocol):
         raise NotImplementedError()
 
     def advance(self) -> MazeSolverCommandResult:
+        raise NotImplementedError()
+
+    def getCompletedCommandsList(self) -> List[MazeSolverCommand]:
+        raise NotImplementedError()
+
+    def getCurrentState(self) -> MazeSolverState:
+        raise NotImplementedError()
+
+    def getStateHistory(self) -> List[MazeSolverState]:
         raise NotImplementedError()
