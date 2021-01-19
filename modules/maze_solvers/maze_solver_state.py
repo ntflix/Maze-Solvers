@@ -15,3 +15,13 @@ class MazeSolverState:
     # so that would be something like ['leftTurns'] = [int, 2]
     # the tuple is the datatype followed by the data
     solverSpecificVariables: Dict[str, Tuple[type, Any]]
+
+    def __init__(
+        self,
+        currentCell: XY,
+        facingDirection: AbsoluteDirection,
+        solverSpecificVariables: Dict[str, Tuple[type, Any]],
+    ) -> None:
+        self.currentCell = currentCell
+        self.facingDirection = facingDirection
+        self.solverSpecificVariables = solverSpecificVariables

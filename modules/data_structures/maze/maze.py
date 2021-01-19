@@ -1,7 +1,8 @@
 from math import floor
+from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.data_structures.graph.graph import Graph
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from typing import Iterator, List
+from typing import Callable, Iterator, List, Tuple, Set
 from modules.common_structures.xy import XY
 
 
@@ -50,9 +51,7 @@ class Maze(MazeProtocol):
 
             if not walls:
                 # list of indices for this cell's neighbours
-                thisCellsNeighboursIndices: List[int] = self.getNeighboursOfCell(
-                    cellIndex
-                )
+                thisCellsNeighboursIndices = self.getNeighboursOfCell(cellIndex)
 
                 # and add its neighbouring cells to the graph
                 for connection in thisCellsNeighboursIndices:
@@ -77,7 +76,78 @@ class Maze(MazeProtocol):
         """
         return self
 
-    def getNeighboursOfCell(self, cellIndex: int) -> List[int]:
+    def getWallsOfCellAtCoordinate(self, coordinate: XY) -> Set[AbsoluteDirection]:
+        directions = [
+            AbsoluteDirection.north,
+            AbsoluteDirection.south,
+            AbsoluteDirection.east,
+            AbsoluteDirection.west,
+        ]
+
+        # get the directions of the connections that this cell has
+        directionsOfConnections = self.getDirectionsOfConnectionsOfCellAtCoordinate(
+            coordinate
+        )
+
+        # calculate the set difference between all the connections and the connections of
+        # this cell, to find the walls (inverse the `directionsOfConnections` set against `directions`)
+        inverseOfConnections = set(directions) - set(directionsOfConnections)
+
+        return inverseOfConnections
+
+    def getDirectionsOfConnectionsOfCellAtCoordinate(
+        self, coordinate: XY
+    ) -> Iterator[AbsoluteDirection]:
+        # get the index of the given cell
+        index = self.getIndexFromCoordinates(coordinate.x, coordinate.y)
+        # get the connections and directions of connections of the cell
+        connections = self.getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(index)
+
+        # helper function to extract direction from Tuple[XY, AbsoluteDirection]
+        getDirection: Callable[
+            [Tuple[XY, AbsoluteDirection]], AbsoluteDirection
+        ] = lambda x: x[1]
+
+        # we extract the directions from the connections
+        directions = map(getDirection, connections)
+
+        return directions
+
+    def getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(
+        self, cellIndex: int
+    ) -> List[Tuple[XY, AbsoluteDirection]]:
+        # get the directions of the connections of a cell at index
+
+        # check the given index is valid
+        self.__checkIndexIsValidWithException(cellIndex)
+
+        # create (unvalidated) indices of this cell's neighbours
+        coordinates = self.__getXYFromIndex(cellIndex)
+
+        unvalidatedNeighbourCoordinates = {
+            XY(coordinates.x, coordinates.y - 1): AbsoluteDirection.north,  # north
+            XY(coordinates.x, coordinates.y + 1): AbsoluteDirection.south,  # south
+            XY(coordinates.x - 1, coordinates.y): AbsoluteDirection.west,  # west
+            XY(coordinates.x + 1, coordinates.y): AbsoluteDirection.east,  # east
+        }
+
+        # validate the coordinates
+        validNeighboursCoordinates = filter(
+            self.__checkCoordinateIsValid, unvalidatedNeighbourCoordinates.keys()
+        )
+
+        coordinatesAndDirections: List[Tuple[XY, AbsoluteDirection]] = []
+
+        # get the north, east, south, west from each coordinate
+        for coordinate in validNeighboursCoordinates:
+            # create a tuple of (COORDINATE and DIRECTION) and append it to the `coordinatesAndDirections` list
+            coordinatesAndDirections.append(
+                (coordinate, unvalidatedNeighbourCoordinates[coordinate])
+            )
+
+        return coordinatesAndDirections
+
+    def getNeighboursOfCell(self, cellIndex: int) -> Iterator[int]:
         """Return a list of indices of the neighbour of a cell at specified index.
 
         Args:
@@ -87,32 +157,27 @@ class Maze(MazeProtocol):
             List[int]: The list of indices of its neighbours.
         """
 
-        # check the given index is valid
-        self.__checkIndexIsValidWithException(cellIndex)
+        # get a list of tuples of XY and AbsoluteDirections
+        coordinatesWithDirections: List[
+            Tuple[XY, AbsoluteDirection]
+        ] = self.getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(cellIndex)
 
-        # empty list of neighbours
-        thisCellsNeighboursIndices: List[int] = []
+        # helper function to extract the (x, y) part from a tuple of XY and AbsoluteDirection
+        extractXY: Callable[
+            [Tuple[XY, AbsoluteDirection]], Tuple[int, int]
+        ] = lambda x: x[0].toTuple()
 
-        # create (unvalidated) indices of this cell's neighbours
-        coordinates = self.__getXYFromIndex(cellIndex)
+        # get a list of (x, y) tuples from the list of tuples using our new lambda function
+        coordinates = map(extractXY, coordinatesWithDirections)
 
-        unvalidatedNeighbourCoordinates = [
-            XY(coordinates.x, coordinates.y - 1),  # north
-            XY(coordinates.x, coordinates.y + 1),  # south
-            XY(coordinates.x - 1, coordinates.y),  # west
-            XY(coordinates.x + 1, coordinates.y),  # east
-        ]
+        # helper function to perform self.getIndexFromCoordinates with a Tuple[int, int] rather than separate arguments.
+        # necessary for a `map` function.
+        getIndexFromTuple: Callable[
+            [Tuple[int, int]], int
+        ] = lambda xyTuple: self.getIndexFromCoordinates(xyTuple[0], xyTuple[1])
 
-        # only add the neighbours that are not out of range of maze
-        for thisCoordinate in unvalidatedNeighbourCoordinates:
-            # if the coordinate is valid...
-            if self.__checkCoordinateIsValid(thisCoordinate):
-                # then calculate its index
-                indexOfCellAtThisCoordinate = self.getIndexFromCoordinates(
-                    thisCoordinate.x, thisCoordinate.y
-                )
-                # and add it to this cell's neighbours
-                thisCellsNeighboursIndices.append(indexOfCellAtThisCoordinate)
+        # get a list of indices from the list of XY coordinates using our new lambda function
+        thisCellsNeighboursIndices = map(getIndexFromTuple, coordinates)
 
         return thisCellsNeighboursIndices
 
