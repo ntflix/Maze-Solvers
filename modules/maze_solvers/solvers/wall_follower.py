@@ -3,14 +3,14 @@ from modules.maze_solvers.commands.results.maze_solver_command_result import (
 )
 from modules.data_structures.maze.maze import Maze
 from modules.maze_solvers.maze_solver_state import MazeSolverState
-from typing import List
+from typing import List, Tuple
 from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolverCommand
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolverProtocol
 
 
 class WallFollower(MazeSolverProtocol):
     # List of commands issued
-    __commands: List[MazeSolverCommand]
+    __commands: List[Tuple[MazeSolverCommand, MazeSolverState]]
 
     # The current state of the Maze Solver
     __state: MazeSolverState
@@ -24,13 +24,24 @@ class WallFollower(MazeSolverProtocol):
         raise NotImplementedError()
 
     def advance(self) -> MazeSolverCommandResult:
+        """Used to `advance` the solver by one solver instruction.
+
+        Returns:
+            MazeSolverCommandResult: The result of the next instruction.
+        """
         raise NotImplementedError()
 
-    def getCompletedCommandsList(self) -> List[MazeSolverCommand]:
+    def getCompletedCommandsWithNewStateList(
+        self,
+    ) -> List[Tuple[MazeSolverCommand, MazeSolverState]]:
+        # commands are separate from state and
+        # the state should never be modified
+        # because of the command list.
+        # commands are solely for feedback to user.
+
+        # and the history of MazeSolverStates so the user can see the progress of the solver in more depth
         raise NotImplementedError()
 
     def getCurrentState(self) -> MazeSolverState:
-        raise NotImplementedError()
-
-    def getStateHistory(self) -> List[MazeSolverState]:
+        # the current state of the maze solver
         raise NotImplementedError()

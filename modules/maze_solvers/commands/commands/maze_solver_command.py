@@ -6,14 +6,10 @@ from modules.maze_solvers.commands.results.maze_solver_command_result import (
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
 )
-from typing import Optional, Protocol
+from typing import Optional
 
 
-class MazeSolverCommand(Protocol):
-    """
-    The protocol for any maze solver command to conform to.
-    """
-
+class MazeSolverCommand:
     # the human-readable description of the command
     humanDescription: str
 

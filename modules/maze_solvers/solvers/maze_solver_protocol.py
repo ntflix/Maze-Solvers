@@ -9,7 +9,7 @@ from typing import List, Protocol, Tuple
 
 class MazeSolverProtocol(Protocol):
     def __init__(self, maze: Maze) -> None:
-        pass
+        raise NotImplementedError()
 
     def advance(self) -> MazeSolverCommandResult:
         """Used to `advance` the solver by one solver instruction.

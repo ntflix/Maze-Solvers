@@ -1,8 +1,7 @@
 from modules.maze_solvers.maze_solver_state import MazeSolverState
-from typing import Protocol
 
 
-class MazeSolverCommandResult(Protocol):
+class MazeSolverCommandResult:
     humanDescription: str
     newState: MazeSolverState
 
@@ -11,7 +10,7 @@ class MazeSolverCommandResult(Protocol):
         humanDescription: str,
         state: MazeSolverState,
     ) -> None:
-        pass
+        raise NotImplementedError()
 
     def __repr__(self) -> str:
         return self.humanDescription
