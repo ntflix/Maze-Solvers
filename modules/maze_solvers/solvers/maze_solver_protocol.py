@@ -47,9 +47,55 @@ class MazeSolver:
             f"Attempting to move {self.__state.facingDirection} from cell {self.__state.currentCell}."
         )
 
-        walls: List[AbsoluteDirection] = self.__maze.getWallsOfCellAtCoordinate(self.__state.currentCell)
-        if
-        raise NotImplementedError()
+        # get the walls of the agent's current cell
+        walls = self.__maze.getWallsOfCellAtCoordinate(self.__state.currentCell)
+
+        # check we're moving in a valid direction
+        if self.__state.facingDirection in walls:
+            # we are trying to move into a wall!
+            logging.debug(
+                f"Cannot move forward, wall is in direction {self.__state.facingDirection} (walls: {walls})"
+            )
+            return MazeSolverCommandResult(
+                False,
+                f"Failure: {self.__state.facingDirection} wall exists in cell {self.__state.currentCell}",
+                self.__state,
+            )
+        else:
+            # there's no wall in that direction
+            # so get the index of the current cell for use later
+            cellIndex = self.__maze.getIndexFromCoordinates(
+                self.__state.currentCell.x,
+                self.__state.currentCell.y,
+            )
+
+            # get the connections of this cell and their directions (using the index we just got)
+            connectionsAndDirections = (
+                self.__maze.getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(
+                    cellIndex
+                )
+            )
+
+            # iterate through each of the Tuple[XY, AbsoluteDirection] in
+            # connectionsAndDirections to find the one we're facing
+            for connection in connectionsAndDirections:
+                if connection[1] == self.__state.facingDirection:
+                    # this is the direction we want to go in, and there
+                    # are no walls in the way! so, update our state to
+                    # reflect that we're moving to this new cell.
+                    self.__state.currentCell = connection[0]
+                    logging.debug(
+                        f"Updated Wall Follower state currentCell to {connection[0]}"
+                    )
+                    return MazeSolverCommandResult(
+                        True,
+                        f"Moved {self.__state.facingDirection}",
+                        self.__state,
+                    )
+
+            errorMessage = f"FATAL – direction {self.__state.facingDirection} not found in list Tuple[XY, AbsoluteDirection]: {connectionsAndDirections}"
+            logging.error(errorMessage)
+            raise Exception(errorMessage)
 
     def __turn(self, direction: AbsoluteDirection) -> MazeSolverCommandResult:
         raise NotImplementedError()
