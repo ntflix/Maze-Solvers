@@ -1,5 +1,8 @@
 from abc import abstractmethod
 import logging
+from modules.maze_solvers.commands.results.detection_command_result import (
+    DetectionCommandResult,
+)
 from modules.common_structures.xy import XY
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.data_structures.maze.maze import Maze
@@ -42,7 +45,7 @@ class MazeSolver:
         # init commands list to an empty list
         self.__commands = []
 
-    def __moveForward(self) -> MazeSolverCommandResult:
+    def _moveForward(self) -> MazeSolverCommandResult:
         logging.debug(
             f"Attempting to move {self.__state.facingDirection} from cell {self.__state.currentCell}."
         )
@@ -58,7 +61,7 @@ class MazeSolver:
             )
             return MazeSolverCommandResult(
                 False,
-                f"Failure: {self.__state.facingDirection} wall exists in cell {self.__state.currentCell}",
+                f"{self.__state.facingDirection} wall exists in cell {self.__state.currentCell}",
                 self.__state,
             )
         else:
@@ -84,9 +87,7 @@ class MazeSolver:
                     # are no walls in the way! so, update our state to
                     # reflect that we're moving to this new cell.
                     self.__state.currentCell = connection[0]
-                    logging.debug(
-                        f"Updated Wall Follower state currentCell to {connection[0]}"
-                    )
+                    logging.debug(f"Updated agent state currentCell to {connection[0]}")
                     return MazeSolverCommandResult(
                         True,
                         f"Moved {self.__state.facingDirection}",
@@ -97,11 +98,56 @@ class MazeSolver:
             logging.error(errorMessage)
             raise Exception(errorMessage)
 
-    def __turn(self, direction: AbsoluteDirection) -> MazeSolverCommandResult:
-        raise NotImplementedError()
+    def _turn(self, relativeDirection: relativeDirection) -> MazeSolverCommandResult:
+        # turn with a relative direction
 
-    def __detectForward(self) -> None:
-        raise NotImplementedError()
+        logging.debug(f"Attempting to turn agent {relativeDirection}")
+
+    def _turn(self, direction: AbsoluteDirection) -> MazeSolverCommandResult:
+        if self.__state.facingDirection == direction:
+            # already facing that direction, so log it because it's a bit weird
+
+            # log as info
+            logging.info(
+                f"Agent attempted to turn to the direction it is already currently facing: {direction}"
+            )
+            # and return the same state we started with
+            return MazeSolverCommandResult(
+                True,
+                f"Already facing direction {direction}",
+                self.__state,
+            )
+        # not facing the same direction
+
+        # log it on debug
+        logging.debug(
+            f"Agent turned from {self.__state.facingDirection} to {direction}"
+        )
+
+        # update the state with the new direction
+        self.__state.facingDirection = direction
+
+        # return updated state
+        return MazeSolverCommandResult(
+            True,
+            f"Turned to face {direction}",
+            self.__state,
+        )
+
+    def _detectForward(self) -> DetectionCommandResult:
+        walls = self.__maze.getWallsOfCellAtCoordinate(self.__state.currentCell)
+        obstacleInFront = self.__state.facingDirection in walls
+
+        return DetectionCommandResult(
+            True,
+            obstacleInFront,
+            (
+                # construct our lovely human-readable command result message
+                ("Obstacle" if obstacleInFront else "Nothing")
+                + f" detected in direction {self.__state.facingDirection}"
+            ),
+            self.__state,
+        )
 
     @abstractmethod
     def advance(self) -> MazeSolverCommandResult:

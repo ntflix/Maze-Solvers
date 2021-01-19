@@ -1,4 +1,5 @@
 import logging
+from modules.common_structures.xy import XY
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
@@ -11,10 +12,17 @@ from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 
 
 class WallFollower(MazeSolver):
-    def __init__(self, maze: Maze) -> None:
+    def __init__(
+        self,
+        maze: Maze,
+        startingPosition: XY,
+        startingDirection: AbsoluteDirection = AbsoluteDirection.north,
+    ) -> None:
         # init superclass
-        super().__init__(maze)
-        logging.debug(f"Initialized Wall Follower maze solver with maze {maze}")
+        super().__init__(maze, startingPosition, startingDirection)
+        logging.debug(
+            f"Initialized Wall Follower maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
+        )
 
     def advance(self) -> MazeSolverCommandResult:
         """Used to `advance` the solver by one solver instruction.
@@ -26,22 +34,29 @@ class WallFollower(MazeSolver):
         ```
         1   GO forward
         2       Collision?
-        3           YES:
-        4               UNTIL (no obstacle in front):
-        5                   TURN right
-        6               GO forward
-        7               TURN left
-        8                   Collision?
-        9                       YES:
-        10                          GOTO #4
-        11                      NO:
-        12                          GOTO #7
-        13          NO:
-        14              GOTO #1
+        3           NO:
+        4               GOTO #1 (if repeat)
+        5           YES:
+        6               UNTIL (no obstacle in front):
+        7                   TURN right
+        8               GO forward
+        9               TURN left
+        10                  Collision?
+        11                      YES:
+        12                          GOTO #4
+        13                      NO:
+        14                          GOTO #7
         15      TURN left
         ```
         """
         logging.debug("Attempting to advance the wall follower")
+
+        forward = self._moveForward()
+        if forward.success:
+            return forward
+        else:
+            while self._detectForward().obstacleExists:
+                self._turn()
 
     def getCompletedCommandsWithNewStateList(
         self,
