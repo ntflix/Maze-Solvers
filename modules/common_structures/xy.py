@@ -22,5 +22,8 @@ class XY:
         else:
             return False
 
+    def __hash__(self) -> int:
+        return hash(self.toTuple())
+
     def toTuple(self) -> Tuple[int, int]:
         return (self.x, self.y)

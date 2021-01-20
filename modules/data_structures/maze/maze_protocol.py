@@ -1,5 +1,6 @@
+from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.file_handling.serializable import Serializable
-from typing import Iterator, List, Protocol
+from typing import Iterator, List, Protocol, Set, Tuple
 from modules.common_structures.xy import XY
 
 
@@ -34,6 +35,19 @@ class MazeProtocol(Serializable, Protocol):
         """
         return self
 
+    def getWallsOfCellAtCoordinate(self, coordinate: XY) -> Set[AbsoluteDirection]:
+        raise NotImplementedError()
+
+    def getDirectionsOfConnectionsOfCellAtCoordinate(
+        self, coordinate: XY
+    ) -> Iterator[AbsoluteDirection]:
+        raise NotImplementedError()
+
+    def getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(
+        self, cellIndex: int
+    ) -> List[Tuple[XY, AbsoluteDirection]]:
+        raise NotImplementedError()
+
     def getConnectionsOfCellAtIndex(self, cellIndex: int) -> List[int]:
         """Return a list of indices of the connections of a cell at given index.
 
@@ -45,7 +59,7 @@ class MazeProtocol(Serializable, Protocol):
         """
         raise NotImplementedError()
 
-    def getNeighboursOfCell(self, cellIndex: int) -> List[int]:
+    def getNeighboursOfCell(self, cellIndex: int) -> Iterator[int]:
         """Return a list of indices of the neighbour of a cell at specified index.
 
         Args:

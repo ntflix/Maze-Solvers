@@ -1,4 +1,3 @@
-from abc import abstractclassmethod
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
 )
@@ -19,14 +18,15 @@ class MazeSolverCommand:
     # the result of the command. optional for if the command is not completed
     commandResult: Optional[MazeSolverCommandResult]
 
-    @abstractclassmethod
     def __repr__(self) -> str:
-        raise NotImplementedError(
-            "Called `__repr__()` method on abstract class 'MazeSolverCommand'"
-        )
+        return self.humanDescription
 
-    @abstractclassmethod
-    def __init__(self) -> None:
-        raise NotImplementedError(
-            "Called `__init__()` method on abstract class 'MazeSolverCommand'"
-        )
+    def __init__(
+        self,
+        humanDescription: str,
+        commandType: MazeSolverCommandType,
+        commandResult: Optional[MazeSolverCommandResult] = None,
+    ) -> None:
+        self.humanDescription = humanDescription
+        self.commandType = commandType
+        self.commandResult = commandResult
