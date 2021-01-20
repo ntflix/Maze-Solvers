@@ -31,8 +31,8 @@ while True:
 
     # lastCell = cell
     i += 1
-    if i > 200:
+    if i > 2000:
         break
 
-commands = solver.getCompletedCommandsWithNewStateList()
+commands = solver.getCompletedCommandsList()
 assert ()

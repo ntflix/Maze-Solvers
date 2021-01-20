@@ -160,9 +160,6 @@ class WallFollower(MazeSolver):
                     "Detected collision while attempting to move forward"
                 )
 
-        # add to state history
-        self._state_history.append(self._state)
-
         wallFollowerCommandResult = MazeSolverCommandResult(
             result.success,  # type: ignore  # for static type checking
             result.humanDescription,  # type: ignore  # for static type checking
@@ -176,7 +173,7 @@ class WallFollower(MazeSolver):
         )
 
         # add to command history
-        self._commands.append(command)
+        self._saveCommandToHistory(command)
 
         logging.info(
             f"{command.humanDescription}: {wallFollowerCommandResult.humanDescription}"

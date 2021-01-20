@@ -68,11 +68,8 @@ class RandomMouse(MazeSolver):
             result,
         )
 
-        # add to state history
-        self._state_history.append(self._state)
-
         # add to command history
-        self._commands.append((command, self._state))
+        self._saveCommandToHistory(command)
 
         logging.info(f"{command.humanDescription}: {result.humanDescription}")
 

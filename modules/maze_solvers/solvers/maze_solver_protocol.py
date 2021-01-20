@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import copy
 import logging
 from modules.maze_solvers.relative_direction import RelativeDirection
 from modules.maze_solvers.commands.results.detection_command_result import (
@@ -12,7 +13,7 @@ from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolve
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
 )
-from typing import List, Tuple
+from typing import List
 
 
 class MazeSolver:
@@ -38,8 +39,6 @@ class MazeSolver:
             facingDirection=startingDirection,
             solverSpecificVariables=dict(),
         )
-        # initialize state history to an empty list
-        self._state_history = []
         # init commands list to an empty list
         self._commands = []
 
@@ -153,6 +152,36 @@ class MazeSolver:
             self._state,
         )
 
+    def _saveCommandToHistory(self, command: MazeSolverCommand) -> None:
+        # save a deep copy of the command because we don't want to copy by reference,
+        # we want to copy by value. this means that when the variable inevitably mutates
+        # in the future, it will not impact the previously saved states.
+        self._commands.append(copy.deepcopy(command))
+
+    def getCompletedCommandsList(self) -> List[MazeSolverCommand]:
+        """Returns a list of the commands performed by the solver, with their command results and new solver states.
+        This method is used to get a list of:
+        ```
+            1. MazeSolverCommands
+                1.1. MazeSolverCommandType
+                1.2. Human-readable description
+                1.3. MazeSolverCommandResult (optional)
+                    1.3.1. success (bool)
+                    1.3.2. Human readable description
+                    1.3.3. MazeSolverState
+        ```
+
+        Returns:
+            List[MazeSolverCommand]: List of commands that have been performed by the solver.
+        """
+        # commands are separate from state and
+        # the state should never be modified
+        # because of the command list.
+        # commands are solely for feedback to user.
+
+        # (and the history of MazeSolverStates so the user can see the progress of the solver in more depth)
+        return self._commands
+
     @abstractmethod
     def advance(self) -> MazeSolverCommandResult:
         """Used to `advance` the solver by one solver instruction.
@@ -161,18 +190,6 @@ class MazeSolver:
             MazeSolverCommandResult: The result of the next instruction.
         """
         raise NotImplementedError()
-
-    @abstractmethod
-    def getCompletedCommandsWithNewStateList(
-        self,
-    ) -> List[Tuple[MazeSolverCommand, MazeSolverState]]:
-        # commands are separate from state and
-        # the state should never be modified
-        # because of the command list.
-        # commands are solely for feedback to user.
-
-        # and the history of MazeSolverStates so the user can see the progress of the solver in more depth
-        return self._commands
 
     def getCurrentState(self) -> MazeSolverState:
         # the current state of the maze solver
