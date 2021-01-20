@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Tuple
 from modules.maze_solvers.relative_direction import RelativeDirection
 
 
@@ -10,45 +9,39 @@ class AbsoluteDirection(Enum):
     south = (0, -1)
     west = (-1, 0)
 
+    def toDegrees(self) -> int:
+        degrees = {
+            AbsoluteDirection.north: 0,
+            AbsoluteDirection.east: 90,
+            AbsoluteDirection.south: 180,
+            AbsoluteDirection.west: 270,
+        }
+
+        return degrees[self]
+
+    @staticmethod
+    def fromDegrees(degrees: int) -> "AbsoluteDirection":
+        directions = {
+            0: AbsoluteDirection.north,
+            90: AbsoluteDirection.east,
+            180: AbsoluteDirection.south,
+            270: AbsoluteDirection.west,
+        }
+
+        return directions[degrees]
+
     @staticmethod
     def fromRelativeDirection(
         relativeDirection: RelativeDirection, facingDirection: "AbsoluteDirection"
     ) -> "AbsoluteDirection":
-        print(str(facingDirection.toAllParts()) + f"\t{facingDirection}")
-        print(str(relativeDirection.toAllParts()) + f"\t{relativeDirection}")
-        print()
-        raise NotImplementedError()
+        """Calculate an absolute direction from a relative direction and absolute direction.
 
-    def toAllParts(self) -> Tuple[int, int, int, int]:
-        # north, east, south, west
-        result = [0, 0, 0, 0]
+        Returns:
+            AbsoluteDirection: The calculated direction.
+        """
+        newDirectionDegrees = (
+            facingDirection.toDegrees() + relativeDirection.toDegrees()
+        ) % 360
+        newDirection = AbsoluteDirection.fromDegrees(newDirectionDegrees)
 
-        if self.value[0] == -1:
-            # west
-            result[3] = 1
-        elif self.value[0] == 1:
-            # east
-            result[1] = 1
-        elif self.value[1] == -1:
-            # south
-            result[2] = 1
-        elif self.value[1] == 1:
-            # north
-            result[0] = 1
-
-        return tuple(result)
-
-
-for absoluteDirection in [
-    AbsoluteDirection.north,
-    AbsoluteDirection.east,
-    AbsoluteDirection.south,
-    AbsoluteDirection.west,
-]:
-    for relativeDirection in [
-        RelativeDirection.forward,
-        RelativeDirection.right,
-        RelativeDirection.backward,
-        RelativeDirection.left,
-    ]:
-        AbsoluteDirection.fromRelativeDirection(relativeDirection, absoluteDirection)
+        return newDirection
