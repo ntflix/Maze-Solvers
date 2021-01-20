@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 from modules.maze_solvers.relative_direction import RelativeDirection
 
 
@@ -18,6 +19,15 @@ class AbsoluteDirection(Enum):
         }
 
         return degrees[self]
+
+    @staticmethod
+    def allCases() -> List["AbsoluteDirection"]:
+        return [
+            AbsoluteDirection.north,
+            AbsoluteDirection.east,
+            AbsoluteDirection.south,
+            AbsoluteDirection.west,
+        ]
 
     @staticmethod
     def fromDegrees(degrees: int) -> "AbsoluteDirection":

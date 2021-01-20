@@ -9,8 +9,6 @@ from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
 )
 from modules.data_structures.maze.maze import Maze
-from modules.maze_solvers.maze_solver_state import MazeSolverState
-from typing import List, Tuple
 from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolverCommand
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 
@@ -69,7 +67,7 @@ class WallFollower(MazeSolver):
         algorithmStep = self._state.solverSpecificVariables["algorithmStep"][1]
 
         logging.info(
-            f"Attempting to advance the wall follower. Current step: {algorithmStep}"
+            f"Attempting to advance the Wall Follower. Current step: {algorithmStep}"
         )
 
         # initialise result var to return later on
@@ -171,12 +169,14 @@ class WallFollower(MazeSolver):
             self._state,
         )
 
-        # add command to history
         command = MazeSolverCommand(
             humanDescription=command.humanDescription,
             commandType=command.commandType,
             commandResult=wallFollowerCommandResult,
         )
+
+        # add to command history
+        self._commands.append((command, self._state))
 
         logging.info(
             f"{command.humanDescription}: {wallFollowerCommandResult.humanDescription}"
@@ -191,18 +191,3 @@ class WallFollower(MazeSolver):
             stage (int): The stage to set it to.
         """
         self._state.solverSpecificVariables["algorithmStep"] = (int, stage)
-
-    def getCompletedCommandsWithNewStateList(
-        self,
-    ) -> List[Tuple[MazeSolverCommand, MazeSolverState]]:
-        # commands are separate from state and
-        # the state should never be modified
-        # because of the command list.
-        # commands are solely for feedback to user.
-
-        # and the history of MazeSolverStates so the user can see the progress of the solver in more depth
-        raise NotImplementedError()
-
-    def getCurrentState(self) -> MazeSolverState:
-        # the current state of the maze solver
-        return self._state

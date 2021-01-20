@@ -22,9 +22,6 @@ class MazeSolver:
     # The current state of the Maze Solver
     _state: MazeSolverState
 
-    # the history of states so the user can see the progress of the solver in more depth
-    _state_history: List[MazeSolverState]
-
     # the actual maze
     __maze: Maze
 
@@ -175,9 +172,8 @@ class MazeSolver:
         # commands are solely for feedback to user.
 
         # and the history of MazeSolverStates so the user can see the progress of the solver in more depth
-        raise NotImplementedError()
+        return self._commands
 
-    @abstractmethod
     def getCurrentState(self) -> MazeSolverState:
         # the current state of the maze solver
-        raise NotImplementedError()
+        return self._state
