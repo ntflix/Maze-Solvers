@@ -17,7 +17,7 @@ from typing import List, Tuple
 
 class MazeSolver:
     # List of commands issued
-    _commands: List[Tuple[MazeSolverCommand, MazeSolverState]]
+    _commands: List[MazeSolverCommand]
 
     # The current state of the Maze Solver
     _state: MazeSolverState

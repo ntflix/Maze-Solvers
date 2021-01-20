@@ -1,5 +1,4 @@
 import logging
-import time
 from modules.maze_solvers.solvers.random_mouse import RandomMouse
 from modules.common_structures.xy import XY
 from modules.data_structures.maze.maze import Maze
@@ -12,7 +11,7 @@ logging.basicConfig(format=FORMAT, level=LEVEL)
 log = logging.getLogger()
 
 maze = Maze(37, 7, walls=False)
-wf = RandomMouse(maze, XY(0, 0))
+solver = RandomMouse(maze, XY(0, 0))
 
 timesAt00 = 0
 lastCell = (-1, -1)
@@ -20,9 +19,8 @@ i = 0
 
 print("GO")
 while True:
-    wf.advance()
-    cell = wf.getCurrentState().currentCell.toTuple()
-
+    solver.advance()
+    cell = solver.getCurrentState().currentCell.toTuple()
     # if cell == (0, 0):
     #     if lastCell != (0, 0):
     #         timesAt00 += 1
@@ -33,3 +31,8 @@ while True:
 
     # lastCell = cell
     i += 1
+    if i > 200:
+        break
+
+commands = solver.getCompletedCommandsWithNewStateList()
+assert ()

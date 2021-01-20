@@ -176,7 +176,7 @@ class WallFollower(MazeSolver):
         )
 
         # add to command history
-        self._commands.append((command, self._state))
+        self._commands.append(command)
 
         logging.info(
             f"{command.humanDescription}: {wallFollowerCommandResult.humanDescription}"

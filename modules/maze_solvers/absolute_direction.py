@@ -10,6 +10,15 @@ class AbsoluteDirection(Enum):
     south = (0, -1)
     west = (-1, 0)
 
+    def __str__(self) -> str:
+        # get the string representation of this from dictionary of strings
+        return {
+            AbsoluteDirection.north: "North",
+            AbsoluteDirection.east: "East",
+            AbsoluteDirection.south: "South",
+            AbsoluteDirection.west: "West",
+        }[self]
+
     def toDegrees(self) -> int:
         degrees = {
             AbsoluteDirection.north: 0,
