@@ -24,7 +24,7 @@ class WallFollower(MazeSolver):
         super().__init__(maze, startingPosition, startingDirection)
 
         # set our algorithmStep to 0 as we're on the 1st step of the wall follower algorithm
-        self.__setAlgorithmStep(0)
+        self._setAlgorithmStep(0)
 
         logging.debug(
             f"Initialized Wall Follower maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
@@ -64,15 +64,15 @@ class WallFollower(MazeSolver):
         ```
         """
 
-        algorithmStep = self._state.solverSpecificVariables["algorithmStep"][1]
+        # initialise result var to return later on
+        result = MazeSolverCommandResult(True, "", self._state)
+        command = MazeSolverCommand("", MazeSolverCommandType.detection, None)
+
+        algorithmStep = self._getAlgorithmStep()
 
         logging.info(
             f"Attempting to advance the Wall Follower. Current step: {algorithmStep}"
         )
-
-        # initialise result var to return later on
-        result = MazeSolverCommandResult(True, "", self._state)
-        command = MazeSolverCommand("", MazeSolverCommandType.detection, None)
 
         # 1st stage – go forward and detect if a collision ocurred.
         if algorithmStep == 0:
@@ -88,7 +88,7 @@ class WallFollower(MazeSolver):
             else:
                 # collision ocurred
                 # move to step 1
-                self.__setAlgorithmStep(1)
+                self._setAlgorithmStep(1)
                 result.success = False
                 result.humanDescription = (
                     "Detected collision while attempting to move forward"
@@ -102,11 +102,11 @@ class WallFollower(MazeSolver):
 
             if self._detectForward().obstacleExists:
                 #  goto step 2
-                self.__setAlgorithmStep(2)
+                self._setAlgorithmStep(2)
                 result.humanDescription = "Detected obstacle in front"
             else:
                 # nothing in the way, goto step 3
-                self.__setAlgorithmStep(3)
+                self._setAlgorithmStep(3)
                 result.humanDescription = "Nothing detected in front"
 
         elif algorithmStep == 2:
@@ -115,7 +115,7 @@ class WallFollower(MazeSolver):
             # TURN right
             self._turn(RelativeDirection.right)
             # go back to detecting (step 1)
-            self.__setAlgorithmStep(1)
+            self._setAlgorithmStep(1)
             result.success = True
             result.humanDescription = (
                 f"Turned right to face {self._state.facingDirection}"
@@ -127,7 +127,7 @@ class WallFollower(MazeSolver):
             # GO forward
             forward = self._moveForward()
             # goto step 4 where we turn left
-            self.__setAlgorithmStep(4)
+            self._setAlgorithmStep(4)
             result.success = True
             result.humanDescription = "Moved forwrad"
 
@@ -137,7 +137,7 @@ class WallFollower(MazeSolver):
             command.humanDescription = "Turn left"
             # turn left
             self._turn(RelativeDirection.left)
-            self.__setAlgorithmStep(5)
+            self._setAlgorithmStep(5)
             result.success = True
             result.humanDescription = "Turned left"
 
@@ -149,12 +149,12 @@ class WallFollower(MazeSolver):
             forward = self._moveForward()
             if forward.success:
                 # GOTO step 4 where we turn left again
-                self.__setAlgorithmStep(4)
+                self._setAlgorithmStep(4)
                 result.success = True
                 result.humanDescription = "Moved forward"
             else:
                 # GOTO step 1 where we turn right for a bit
-                self.__setAlgorithmStep(1)
+                self._setAlgorithmStep(1)
                 result.success = False
                 result.humanDescription = (
                     "Detected collision while attempting to move forward"
@@ -180,11 +180,3 @@ class WallFollower(MazeSolver):
         )
 
         return wallFollowerCommandResult
-
-    def __setAlgorithmStep(self, stage: int) -> None:
-        """Set the step stage of the wall follower algorithm agent.
-
-        Args:
-            stage (int): The stage to set it to.
-        """
-        self._state.solverSpecificVariables["algorithmStep"] = (int, stage)

@@ -24,7 +24,7 @@ class RandomMouse(MazeSolver):
         super().__init__(maze, startingPosition, startingDirection)
 
         # set our algorithmStep to 0 as we're on the 1st step of the wall follower algorithm
-        self.__setAlgorithmStep(0)
+        self._setAlgorithmStep(0)
 
         logging.debug(
             f"Initialized Random Mouse maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
@@ -44,10 +44,10 @@ class RandomMouse(MazeSolver):
         ```
         """
 
-        algorithmStep = self._state.solverSpecificVariables["algorithmStep"][1]
+        algorithmStep = self._getAlgorithmStep()
 
         logging.info(
-            f"Attempting to advance the Random Mouse. Current step: {algorithmStep}"
+            f"Attempting to advance the Wall Follower. Current step: {algorithmStep}"
         )
 
         # choose random direction to go in
@@ -74,11 +74,3 @@ class RandomMouse(MazeSolver):
         logging.info(f"{command.humanDescription}: {result.humanDescription}")
 
         return result
-
-    def __setAlgorithmStep(self, stage: int) -> None:
-        """Set the step stage of the wall follower algorithm agent.
-
-        Args:
-            stage (int): The stage to set it to.
-        """
-        self._state.solverSpecificVariables["algorithmStep"] = (int, stage)

@@ -26,6 +26,9 @@ class MazeSolver:
     # the actual maze
     __maze: Maze
 
+    # stage of algorithm
+    __step = 0
+
     def __init__(
         self,
         maze: Maze,
@@ -41,6 +44,9 @@ class MazeSolver:
         )
         # init commands list to an empty list
         self._commands = []
+
+        # init step to 0 by default
+        self._setAlgorithmStep(0)
 
     def _moveForward(self) -> MazeSolverCommandResult:
         logging.info(
@@ -181,6 +187,12 @@ class MazeSolver:
 
         # (and the history of MazeSolverStates so the user can see the progress of the solver in more depth)
         return self._commands
+
+    def _setAlgorithmStep(self, stage: int) -> None:
+        self.__step
+
+    def _getAlgorithmStep(self) -> int:
+        return self.__step
 
     @abstractmethod
     def advance(self) -> MazeSolverCommandResult:

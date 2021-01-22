@@ -1,0 +1,5 @@
+lauguage: python
+sudo: false
+python:
+- 3.9
+script: export PYTHONPATH=`pwd` && python3 **/*.unittest.py
