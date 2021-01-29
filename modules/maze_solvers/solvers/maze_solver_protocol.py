@@ -189,7 +189,7 @@ class MazeSolver:
         return self._commands
 
     def _setAlgorithmStep(self, stage: int) -> None:
-        self.__step
+        self.__step = stage
 
     def _getAlgorithmStep(self) -> int:
         return self.__step

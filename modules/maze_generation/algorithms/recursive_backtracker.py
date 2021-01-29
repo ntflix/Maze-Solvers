@@ -36,7 +36,7 @@ class RecursiveBacktracker:
         # init __visitedOrNotCells to a list of False with the length of the max index of cells
         self.__visitedOrNotCells = [False] * (lastIndex + 1)
 
-    def generate(self, start: XY) -> None:
+    def generate(self, start: XY) -> Maze:
         # init positionsStack to a new empty stack of type int
         self.__positionsStack = Stack[int]()
 
@@ -98,8 +98,4 @@ class RecursiveBacktracker:
             # push the choice to the positionsStack so it is our next one
             self.__positionsStack.push(randomCellChoice)
 
-        print()
-
-
-x = RecursiveBacktracker(XY(4, 4))
-x.generate(start=XY(0, 0))
+        return self.__maze
