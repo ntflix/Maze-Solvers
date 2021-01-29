@@ -74,8 +74,8 @@ class WallFollower(MazeSolver):
             f"Attempting to advance the Wall Follower. Current step: {algorithmStep}"
         )
 
-        # 1st stage – go forward and detect if a collision ocurred.
         if algorithmStep == 0:
+            # Go forward and detect if a collision ocurred.
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Move forward"
             # GO forward
@@ -95,6 +95,7 @@ class WallFollower(MazeSolver):
                 )
 
         elif algorithmStep == 1:
+            # Check front is clear.
             # UNTIL no obstacle is in front (implicit loop through algorithmStep remaining the same)
             result.success = True
             command.commandType = MazeSolverCommandType.detection
@@ -110,6 +111,7 @@ class WallFollower(MazeSolver):
                 result.humanDescription = "Nothing detected in front"
 
         elif algorithmStep == 2:
+            # Turn right, go to step 1.
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Turn right"
             # TURN right
@@ -122,6 +124,7 @@ class WallFollower(MazeSolver):
             )
 
         elif algorithmStep == 3:
+            # Just go forward.
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Move forward"
             # GO forward
@@ -132,17 +135,17 @@ class WallFollower(MazeSolver):
             result.humanDescription = "Moved forwrad"
 
         elif algorithmStep == 4:
-            # turn left
+            # Turn left
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Turn left"
-            # turn left
+            # Actually turn left
             self._turn(RelativeDirection.left)
             self._setAlgorithmStep(5)
             result.success = True
             result.humanDescription = "Turned left"
 
         elif algorithmStep == 5:
-            # go forward and detect collision
+            # Go forward and detect collision
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Move forward"
 

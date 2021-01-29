@@ -1,6 +1,6 @@
-#!python3.10
+#!python3.9
 
-# support type hinting in my editor and code
+# support type hinting in editor and code
 from typing import Generator, Generic, List, Optional, TypeVar
 
 # circular queue for breadth first search
@@ -102,7 +102,7 @@ class Graph(Generic[T]):
 
         >>> graph = Graph.createSquareGraph(2, 2)
         >>> [i for i in map(str, graph)]
-        ['None -> ()', 'None -> ()', 'None -> ()', 'None -> ()']
+        ['None -> []', 'None -> []', 'None -> []', 'None -> []']
         """
 
         if (sizeX < 0) or (sizeY < 0):
@@ -127,7 +127,7 @@ class Graph(Generic[T]):
         ...     Node(None,  [0, 1, 2, 3])    # 4
         ... ])
         >>> sampleMaze
-        ['None -> (1, 4)', 'None -> (0, 4)', 'None -> (4, 3)', 'None -> (2, 4)', 'None -> (0, 1, 2, 3)']
+        ['None -> [1, 4]', 'None -> [0, 4]', 'None -> [4, 3]', 'None -> [2, 4]', 'None -> [0, 1, 2, 3]']
         """
         self.__nodes = nodes
 
@@ -156,7 +156,7 @@ class Graph(Generic[T]):
         ...     [0, 1, 2, 3]
         ... ])
         >>> maze
-        ['None -> (1, 4)', 'None -> (0, 4)', 'None -> (4, 3)', 'None -> (2, 4)', 'None -> (0, 1, 2, 3)']
+        ['None -> [1, 4]', 'None -> [0, 4]', 'None -> [4, 3]', 'None -> [2, 4]', 'None -> [0, 1, 2, 3]']
         """
 
         for i in range(len(values)):
@@ -471,17 +471,17 @@ class Graph(Generic[T]):
         >>> simply_connected_maze.addLinkBetween(2, 4)
         Traceback (most recent call last):
         ...
-        Exception: Node index '4' already exists in node 2's connections.
+        ValueError: Node index '4' already exists in node 2's connections.
 
         >>> simply_connected_maze.addLinkBetween(55, 3)
         Traceback (most recent call last):
         ...
-        IndexError: Cannot add a connection from nonexistent node at index 55.
+        IndexError: Node at index 55 is out of range.
 
         >>> simply_connected_maze.addLinkBetween(2, 333)
         Traceback (most recent call last):
         ...
-        IndexError: Cannot add a connection to nonexistent node at index 333.
+        IndexError: Node at index 333 is out of range.
         """
 
         # make sure indices are valid
