@@ -132,7 +132,7 @@ class WallFollower(MazeSolver):
             # goto step 4 where we turn left
             self._setAlgorithmStep(4)
             result.success = True
-            result.humanDescription = "Moved forwrad"
+            result.humanDescription = "Moved forward"
 
         elif algorithmStep == 4:
             # Turn left

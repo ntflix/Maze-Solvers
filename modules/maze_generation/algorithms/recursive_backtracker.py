@@ -31,7 +31,7 @@ class RecursiveBacktracker:
 
         # get the last cell index of the maze, so we can initialise __visitedOrNotCells to a list of False (nothing visited yet)
         lastIndex = self.__maze.getIndexFromCoordinates(
-            self.__size.x - 1, self.__size.y - 1
+            XY(self.__size.x - 1, self.__size.y - 1)
         )
         # init __visitedOrNotCells to a list of False with the length of the max index of cells
         self.__visitedOrNotCells = [False] * (lastIndex + 1)
@@ -43,7 +43,7 @@ class RecursiveBacktracker:
         # Convert the `start` position to the same cell's index in the maze, and push to the positions stack
         self.__positionsStack.push(
             # get the index of the `start` posotion
-            self.__maze.getIndexFromCoordinates(start.x, start.y)
+            self.__maze.getIndexFromCoordinates(start)
         )
 
         # set the starting cell as visited

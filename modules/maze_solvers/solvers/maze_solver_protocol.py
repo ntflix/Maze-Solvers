@@ -70,10 +70,7 @@ class MazeSolver:
         else:
             # there's no wall in that direction
             # so get the index of the current cell for use later
-            cellIndex = self.__maze.getIndexFromCoordinates(
-                self._state.currentCell.x,
-                self._state.currentCell.y,
-            )
+            cellIndex = self.__maze.getIndexFromCoordinates(self._state.currentCell)
 
             # get the connections of this cell and their directions (using the index we just got)
             connectionsAndDirections = (

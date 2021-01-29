@@ -1,3 +1,4 @@
+from modules.common_structures.xy import XY
 from modules.data_structures.maze.maze import Maze
 import unittest
 
@@ -307,17 +308,17 @@ class TestMazeMethods(unittest.TestCase):
 
     def testGetFirstCellIndexFromCoordinates(self):
         maze = Maze(2, 2)
-        index = maze.getIndexFromCoordinates(0, 0)
+        index = maze.getIndexFromCoordinates(XY(0, 0))
         self.assertEqual(index, 0)
 
     def testGetCentreCellIndexFromCoordinates(self):
         maze = Maze(3, 3)
-        index = maze.getIndexFromCoordinates(1, 1)
+        index = maze.getIndexFromCoordinates(XY(1, 1))
         self.assertEqual(index, 4)
 
     def testGetLastCellIndexFromCoordinates(self):
         maze = Maze(3, 3)
-        index = maze.getIndexFromCoordinates(2, 2)
+        index = maze.getIndexFromCoordinates(XY(2, 2))
         self.assertEqual(index, 8)
 
     def testGetOutOfRangeCellTooLowIndexFromCoordinate(self):
@@ -326,7 +327,7 @@ class TestMazeMethods(unittest.TestCase):
             ValueError,
             msg="Coordinate (-44, 0) is not valid.",
         ):
-            _ = maze.getIndexFromCoordinates(-44, 0)
+            _ = maze.getIndexFromCoordinates(XY(-44, 0))
 
     def testGetOutOfRangeCellTooHighIndexFromCoordinate(self):
         maze = Maze(1, 1)
@@ -334,7 +335,7 @@ class TestMazeMethods(unittest.TestCase):
             ValueError,
             msg="Coordinate (72, 0) is not valid.",
         ):
-            _ = maze.getIndexFromCoordinates(72, 0)
+            _ = maze.getIndexFromCoordinates(XY(72, 0))
 
 
 if __name__ == "__main__":

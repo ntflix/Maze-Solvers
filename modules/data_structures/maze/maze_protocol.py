@@ -109,12 +109,11 @@ class MazeProtocol(Serializable, Protocol):
         """
         raise NotImplementedError()
 
-    def getIndexFromCoordinates(self, x: int, y: int) -> int:
-        """Get the int at specified coordinates.
+    def getIndexFromCoordinates(self, coordinates: XY) -> int:
+        """Get the index at specified coordinates.
 
         Args:
-            x (int): The X coordinate of the int.
-            y (int): The Y coordinate of the int.
+            coordinates (XY): The coordinates of the index.
 
         Returns:
             int: The int index at the specified coordinates.

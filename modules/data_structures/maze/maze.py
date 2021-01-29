@@ -40,8 +40,7 @@ class Maze(MazeProtocol):
         self.__maze = Graph[int].createSquareGraph(size.x, size.y)
 
         # initialize as list of maze cells
-        mazeLength = len(self.__maze)
-        for cellIndex in range(mazeLength):
+        for cellIndex in range(len(self.__maze)):
 
             # set this cell's node data to the new index
             self.__maze.setNodeData(
@@ -99,7 +98,7 @@ class Maze(MazeProtocol):
         self, coordinate: XY
     ) -> Iterator[AbsoluteDirection]:
         # get the index of the given cell
-        index = self.getIndexFromCoordinates(coordinate.x, coordinate.y)
+        index = self.getIndexFromCoordinates(coordinate)
         # get the connections and directions of connections of the cell
         connections = self.getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(index)
 
@@ -121,7 +120,10 @@ class Maze(MazeProtocol):
         # check the given index is valid
         self.__checkIndexIsValidWithException(cellIndex)
 
-        # create (unvalidated) indices of this cell's neighbours
+        # get a list of the connections of this cell
+        connectionIndices = self.getConnectionsOfCellAtIndex(cellIndex)
+
+        # get this cell's coordinates
         coordinates = self.__getXYFromIndex(cellIndex)
 
         unvalidatedNeighbourCoordinates = {
@@ -131,21 +133,39 @@ class Maze(MazeProtocol):
             XY(coordinates.x + 1, coordinates.y): AbsoluteDirection.east,  # east
         }
 
-        # validate the coordinates
-        validNeighboursCoordinates = filter(
-            self.__checkCoordinateIsValid, unvalidatedNeighbourCoordinates.keys()
-        )
+        neighbourCoordinates: List[XY] = []
+
+        for connectionIndex in connectionIndices:
+            # add this neighbour's coordinate to the list of neighbour coordinates
+            neighbourCoordinates.append(self.getCoordinatesFromIndex(connectionIndex))
 
         coordinatesAndDirections: List[Tuple[XY, AbsoluteDirection]] = []
 
         # get the north, east, south, west from each coordinate
-        for coordinate in validNeighboursCoordinates:
+        for coordinate in neighbourCoordinates:
             # create a tuple of (COORDINATE and DIRECTION) and append it to the `coordinatesAndDirections` list
             coordinatesAndDirections.append(
                 (coordinate, unvalidatedNeighbourCoordinates[coordinate])
             )
 
         return coordinatesAndDirections
+
+    def getNeighbourCoordinatesOfCell(self, cellIndex: int) -> Iterator[XY]:
+        # get the coordinates of this cell
+        coordinates = self.getCoordinatesFromIndex(cellIndex)
+
+        # make a list of neighbours by filtering the invalid neighbours
+        neighbours = filter(
+            self.__checkCoordinateIsValid,
+            [
+                XY(coordinates.x, coordinates.y - 1),  # north
+                XY(coordinates.x, coordinates.y + 1),  # south
+                XY(coordinates.x - 1, coordinates.y),  # west
+                XY(coordinates.x + 1, coordinates.y),  # east
+            ],
+        )
+
+        return neighbours
 
     def getNeighboursOfCell(self, cellIndex: int) -> Iterator[int]:
         """Return a list of indices of the neighbour of a cell at specified index.
@@ -157,29 +177,13 @@ class Maze(MazeProtocol):
             List[int]: The list of indices of its neighbours.
         """
 
-        # get a list of tuples of XY and AbsoluteDirections
-        coordinatesWithDirections: List[
-            Tuple[XY, AbsoluteDirection]
-        ] = self.getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(cellIndex)
+        # make a list of neighbours for this cell
+        neighbours = self.getNeighbourCoordinatesOfCell(cellIndex)
 
-        # helper function to extract the (x, y) part from a tuple of XY and AbsoluteDirection
-        extractXY: Callable[
-            [Tuple[XY, AbsoluteDirection]], Tuple[int, int]
-        ] = lambda x: x[0].toTuple()
+        # convert all the XYs to indices
+        neighboursIndices = map(self.getIndexFromCoordinates, neighbours)
 
-        # get a list of (x, y) tuples from the list of tuples using our new lambda function
-        coordinates = map(extractXY, coordinatesWithDirections)
-
-        # helper function to perform self.getIndexFromCoordinates with a Tuple[int, int] rather than separate arguments.
-        # necessary for a `map` function.
-        getIndexFromTuple: Callable[
-            [Tuple[int, int]], int
-        ] = lambda xyTuple: self.getIndexFromCoordinates(xyTuple[0], xyTuple[1])
-
-        # get a list of indices from the list of XY coordinates using our new lambda function
-        thisCellsNeighboursIndices = map(getIndexFromTuple, coordinates)
-
-        return thisCellsNeighboursIndices
+        return neighboursIndices
 
     def getConnectionsOfCellAtIndex(self, cellIndex: int) -> List[int]:
         # check that the cellIndex is OK
@@ -193,10 +197,7 @@ class Maze(MazeProtocol):
             # it is not valid so raise error
             # calculate the index of the last cell in maze
             lastCellCoordinate = XY(self.size.x - 1, self.size.y - 1)
-            lastCellIndex = self.getIndexFromCoordinates(
-                lastCellCoordinate.x,
-                lastCellCoordinate.y,
-            )
+            lastCellIndex = self.getIndexFromCoordinates(lastCellCoordinate)
 
             # raise appropriate error with message:
             raise IndexError(
@@ -328,19 +329,18 @@ class Maze(MazeProtocol):
             raise ValueError(f"Coordinate {coordinate} is not valid.")
         return True
 
-    def getIndexFromCoordinates(self, x: int, y: int) -> int:
-        """Calculate the index of a cell at given coordinates
+    def getIndexFromCoordinates(self, coordinates: XY) -> int:
+        """Get the index at specified coordinates.
 
         Args:
-            x: The X coordinate of the cell whose index you want.
-            y: The Y coordinate of the cell whose index you want.
+            coordinates (XY): The coordinates of the index.
 
         Returns:
             int: The index of the cell.
         """
         # check the coords are valid
-        self.__checkCoordinateIsValidWithException(XY(x, y))
+        self.__checkCoordinateIsValidWithException(coordinates)
 
         # (y * xSize) + x
-        index = (y * self.size.x) + x
+        index = (coordinates.y * self.size.x) + coordinates.x
         return index
