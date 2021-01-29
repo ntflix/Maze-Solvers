@@ -37,7 +37,7 @@ class Maze(MazeProtocol):
         self.size = size
 
         # initialize `self.__maze` to an empty graph so we can operate on it
-        self.__maze = Graph[int].createSquareGraph(size.x, size.y)
+        self.__maze = Graph[int].createGraph(size.x, size.y)
 
         # initialize as list of maze cells
         for cellIndex in range(len(self.__maze)):

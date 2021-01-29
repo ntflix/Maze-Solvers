@@ -10,3 +10,5 @@ do
         echo
     fi
 done
+
+python3 -m doctest **/*.py

@@ -273,7 +273,7 @@ class LinkedList(Generic[T]):
         >>> print(mazeCellsIndices)
         [2, 3, 5, 7, 11, 13, 17, 19]
         >>> print(moreMazeCellsIndices)
-        [2, 3, 5, 7, 7]
+        [2, 3, 5, 7]
 
         Insert empty list at beginning of another
         >>> moreMazeCellsIndices.insertLinkedListAtBeginning(LinkedList[int]())

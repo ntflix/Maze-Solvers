@@ -90,7 +90,7 @@ class Graph(Generic[T]):
         raise IndexError(f"Value at index {index} not found.")
 
     @staticmethod
-    def createSquareGraph(sizeX: int, sizeY: int) -> "Graph[T]":
+    def createGraph(sizeX: int, sizeY: int) -> "Graph[T]":
         """Creates a graph of the specified X and Y size.
 
         Args:
@@ -100,7 +100,7 @@ class Graph(Generic[T]):
         Returns:
             Graph[T]: The (empty) graph object (of the given size).
 
-        >>> graph = Graph.createSquareGraph(2, 2)
+        >>> graph = Graph.createGraph(2, 2)
         >>> [i for i in map(str, graph)]
         ['None -> []', 'None -> []', 'None -> []', 'None -> []']
         """
