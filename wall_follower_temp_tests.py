@@ -1,9 +1,8 @@
 import logging
-from modules.data_structures.maze.maze import Maze
 
-# from modules.maze_solvers.solvers.random_mouse import RandomMouse
+from modules.maze_solvers.solvers.random_mouse import RandomMouse
 
-from modules.maze_generation.algorithms.recursive_backtracker import (
+from modules.maze_generation.recursive_backtracker import (
     RecursiveBacktracker,
 )
 
@@ -18,26 +17,23 @@ logging.basicConfig(format=FORMAT, level=LEVEL)
 log = logging.getLogger()
 
 rb = RecursiveBacktracker(XY(15, 5))
-maze = rb.generate(XY(0, 0))
+maze = rb.generate()
 
 # maze = Maze(5, 5, walls=False)
-solver = WallFollower(maze, XY(0, 0))
+wallFollower = WallFollower(maze, XY(0, 0))
+randomMouse = RandomMouse(maze, XY(0, 0))
 
 i = 0
-lastCell = XY(-1, -1)
 
 print("GO")
 while True:
-    solver.advance()
-    cell = solver.getCurrentState().currentCell
+    wallFollower.advance()
+    wallFollowerCell = wallFollower.getCurrentState().currentCell
 
-    print(cell.toTuple())
+    randomMouse.advance()
+    randomMouseCell = randomMouse.getCurrentState().currentCell
 
-    i += 1
-    if lastCell != cell:
-        assert True
+    print("Wall Follower\t" + str(wallFollowerCell.toTuple()))
+    print("Random Mouse\t" + str(randomMouseCell.toTuple()))
 
-    lastCell = cell
-
-commands = solver.getCompletedCommandsList()
-assert ()
+=    i += 1
