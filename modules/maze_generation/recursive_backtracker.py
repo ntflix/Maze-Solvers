@@ -26,6 +26,9 @@ class RecursiveBacktracker(MazeGenerator):
     __positionsStack: Stack[int]
 
     def __init__(self, size: XY) -> None:
+        # check size is valid
+        self._testSizeIsValidWithException(size)
+
         self.__size = size
         # initialize a Maze full of walls
         self.__maze = Maze(self.__size.x, self.__size.y, walls=True)
@@ -75,7 +78,7 @@ class RecursiveBacktracker(MazeGenerator):
                 checkIsVisited: Callable[
                     [int], bool
                 ] = lambda cellIndex: not self.__visitedOrNotCells[cellIndex]
-                # and filter the neighbourCells by this lambda, and put it into the list variable `unvisitedWalls`
+                # …and filter the neighbourCells by this lambda, and put it into the list `unvisitedWalls`
                 unvisitedWalls = list(filter(checkIsVisited, neighbourCells))
 
                 # check that there are unvisited walls
