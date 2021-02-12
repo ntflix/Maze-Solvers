@@ -1,0 +1,52 @@
+Maze RecursiveBacktracker(maze: Maze) {
+    set start to (0, 0);
+    set positionsStack to a new Stack of type Integer;
+    set visitedCells to an array of False of length Maze.cells.length;
+
+    set startPosIndex to maze.getIndexFromCoordinates(start);
+    push startPosIndex to positionsStack;
+
+    set visitedCells[startPosIndex] to True;
+
+    while positionsStack is not empty {
+        initialise optional Integer variable randomCellChoice to null;
+        
+        while randomCellChoice is null {
+            if positionsStack is empty {
+                // we have ran out of positions to backtrack to.
+                // therefore we've gone through the whole maze - finished!
+                break;
+            }
+        }
+
+        set currentPos to positionsStack.peek();
+        set neighbouringCells to maze.getNeighboursOfCell(currentPos);
+        
+        filter neighbouringCells by cells that have not been visited in visitedCells;
+
+        if (length of neighbouringCells) is greater than 0 {
+            set randomCellChoice to (random element from neighbouringCells);
+            set visitedCells[randomCellChoice] to True;
+        } else {
+            // all the cells here have been visited
+            // so 'back up' to the last cell, by popping the stack
+            positionsStack.pop();
+        }
+
+        if randomCellChoice is null {
+            // no cell has been chosen, therefore we've explored the entire maze
+            break;
+        }
+
+        // carve a passage through to the chosen adjacent cell
+        maze.removeWallBetween(
+            positionsStack.peek(),
+            randomCellChoice,
+        );
+
+        // push the choice to the positionsStack so it is the next cell to visit
+        positionsStack.push(randomCellChoice)
+    }
+    
+    return maze
+}

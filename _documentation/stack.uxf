@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <help_text>fontfamily=Monospaced
+style=autoresize</help_text>
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>230</x>
+      <y>170</y>
+      <w>190</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>Stack&lt;T&gt;
+--
+-__stack: List&lt;Optional&lt;T\&gt;&gt;
+-__top: int
++pop() : T
++peek() : T
++push(item: T) : void
++isEmpty() : boolean
+style=autoresize</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
