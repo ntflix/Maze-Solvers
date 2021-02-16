@@ -1,4 +1,4 @@
-#!python3.10
+# type: ignore
 
 # support type hinting in my editor and code
 from typing import Generator, Generic, List, Optional, TypeVar

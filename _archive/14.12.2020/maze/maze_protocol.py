@@ -1,3 +1,4 @@
+# type: ignore
 from modules.data_structures.maze.maze_cell.maze_cell import MazeCell
 from typing import Iterator, List, Protocol
 from modules.common_structures.xy import XY

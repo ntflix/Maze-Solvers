@@ -1,3 +1,4 @@
+# type: ignore
 #!python3.10
 
 from typing import Generator, Generic, Optional, TypeVar

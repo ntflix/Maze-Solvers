@@ -1,11 +1,10 @@
 from modules.file_handling.serializable import Serializable
 from typing import Generic, Protocol, TypeVar
 
-
 T = TypeVar("T", bound=Serializable)
 
 
-class FileHandler(Generic[T], Protocol):
+class FileHandler(Generic[T], Protocol):  # type: ignore # had some errors conforming to both `Generic` _and_ `Protocol`
     """A file handler protocol for any FileHandler objects to conform to. Abstract only."""
 
     def __init__(self, path: str) -> None:

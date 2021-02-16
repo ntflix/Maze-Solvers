@@ -1,3 +1,5 @@
+# type: ignore
+
 from typing import Generic, TypeVar
 
 T = TypeVar("T")
@@ -43,4 +45,3 @@ class Node(Generic[T]):
         return str(
             str(self.data) + " -> (" + ", ".join(map(str, self.connections)) + ")"
         )
-
