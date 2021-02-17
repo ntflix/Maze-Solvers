@@ -1,13 +1,13 @@
 from abc import abstractmethod
 import copy
 import logging
+from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_solvers.relative_direction import RelativeDirection
 from modules.maze_solvers.commands.results.detection_command_result import (
     DetectionCommandResult,
 )
 from modules.common_structures.xy import XY
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
-from modules.data_structures.maze.maze import Maze
 from modules.maze_solvers.maze_solver_state import MazeSolverState
 from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolverCommand
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
@@ -24,14 +24,14 @@ class MazeSolver:
     _state: MazeSolverState
 
     # the actual maze
-    __maze: Maze
+    __maze: MazeProtocol
 
     # stage of algorithm
     __step = 0
 
     def __init__(
         self,
-        maze: Maze,
+        maze: MazeProtocol,
         startingPosition: XY,
         startingDirection: AbsoluteDirection = AbsoluteDirection.north,
     ) -> None:

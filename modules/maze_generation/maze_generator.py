@@ -1,4 +1,4 @@
-from modules.data_structures.maze.maze import Maze
+from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.common_structures.xy import XY
 from typing import Protocol
 
@@ -12,7 +12,7 @@ class MazeGenerator(Protocol):
         """
         raise NotImplementedError()
 
-    def generate(self) -> Maze:
+    def generate(self) -> MazeProtocol:
         """Generate the maze with a given start position.
 
         Returns:

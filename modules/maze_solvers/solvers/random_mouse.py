@@ -1,4 +1,5 @@
 import logging
+from modules.data_structures.maze.maze_protocol import MazeProtocol
 import random
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
@@ -8,7 +9,6 @@ from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
 )
-from modules.data_structures.maze.maze import Maze
 from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolverCommand
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 
@@ -16,7 +16,7 @@ from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 class RandomMouse(MazeSolver):
     def __init__(
         self,
-        maze: Maze,
+        maze: MazeProtocol,
         startingPosition: XY,
         startingDirection: AbsoluteDirection = AbsoluteDirection.north,
     ) -> None:

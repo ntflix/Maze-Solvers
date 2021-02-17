@@ -1,9 +1,9 @@
+from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_generation.maze_generator import MazeGenerator
 from modules.data_structures.stack.stack import Stack
 from random import choice as randomChoice
 from typing import Callable, List, Optional
 from modules.common_structures.xy import XY
-from modules.data_structures.maze.maze import Maze
 
 
 class RecursiveBacktracker(MazeGenerator):
@@ -19,7 +19,7 @@ class RecursiveBacktracker(MazeGenerator):
     > Source - http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
     """
 
-    __maze: Maze
+    __maze: MazeProtocol
     __visitedOrNotCells: List[bool]  # the cell index is the position in the list
     __size: XY
     # the stack of positions
@@ -31,7 +31,7 @@ class RecursiveBacktracker(MazeGenerator):
 
         self.__size = size
         # initialize a Maze full of walls
-        self.__maze = Maze(self.__size.x, self.__size.y, walls=True)
+        self.__maze = MazeProtocol(self.__size.x, self.__size.y, walls=True)
 
         # get the last cell index of the maze, so we can initialise __visitedOrNotCells to a list of False (nothing visited yet)
         lastIndex = self.__maze.getIndexFromCoordinates(
@@ -40,7 +40,7 @@ class RecursiveBacktracker(MazeGenerator):
         # init __visitedOrNotCells to a list of False with the length of the max index of cells
         self.__visitedOrNotCells = [False] * (lastIndex + 1)
 
-    def generate(self) -> Maze:
+    def generate(self) -> MazeProtocol:
         # start our maze generator in the top left of the maze
         start = XY(0, 0)
 
