@@ -1,3 +1,9 @@
+from modules.user_interface.ui_translation_data_structures.maze_solver_specification import (
+    MazeSolverSpecification,
+)
+from modules.user_interface.ui_translation_data_structures.maze_generation_specification import (
+    MazeGenerationSpecification,
+)
 from modules.user_interface.maze_view.maze_view_controller import MazeViewController
 from modules.user_interface.maze_view.controls.maze_view_controls_view import (
     MazeViewControlsView,
@@ -51,9 +57,25 @@ class MazeSolverUIApplication:
         separator.setFrameShadow(QFrame.Shadow.Sunken)
         layout.addWidget(separator)
 
-        layout.addWidget(MazeViewControlsView())
+        layout.addWidget(
+            MazeViewControlsView(
+                onMazeGenerateButtonPressed=self.__onMazeGenerateButtonPressed,
+                onMazeSolverSolveButtonPressed=self.__onMazeSolverSolveButtonPressed,
+            )
+        )
 
         return layout
+
+    def __onMazeGenerateButtonPressed(
+        self, mazeSpec: MazeGenerationSpecification
+    ) -> None:
+        return None
+
+    def __onMazeSolverSolveButtonPressed(
+        self, mazeSolverSpec: MazeSolverSpecification
+    ) -> None:
+        print("Pressed Solve")
+        return None
 
 
 main = MazeSolverUIApplication()

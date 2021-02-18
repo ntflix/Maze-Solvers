@@ -1,4 +1,7 @@
-from typing import Any, Optional, Tuple
+from modules.user_interface.ui_translation_data_structures.maze_generation_specification import (
+    MazeGenerationSpecification,
+)
+from typing import Any, Callable, Optional, Tuple
 from PyQt6.QtWidgets import (
     QCheckBox,
     QFormLayout,
@@ -15,6 +18,10 @@ from PyQt6.QtWidgets import (
 class GenerateMazeGroupView(QWidget):
     def __init__(
         self,
+        onGenerateButtonPressed: Callable[
+            [MazeGenerationSpecification],
+            None,
+        ],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -41,6 +48,7 @@ class GenerateMazeGroupView(QWidget):
         simplyConnectedCheckbox.setChecked(True)
 
         generateButton = QPushButton("Generate")
+        generateButton.clicked.connect(onGenerateButtonPressed)  # type: ignore
 
         vbox.addRow("Size", mazeSizePicker)
         vbox.addRow("Simply Connected", simplyConnectedCheckbox)
