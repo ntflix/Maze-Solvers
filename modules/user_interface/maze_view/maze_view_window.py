@@ -1,7 +1,7 @@
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6.QtCore import QSize
 from modules.user_interface.maze_view.maze_view import MazeView
-from typing import Any, Tuple
+from typing import Any, Optional, Tuple
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QMainWindow,
@@ -12,8 +12,8 @@ from PyQt6.QtWidgets import (
 class MazeViewWindow(QMainWindow):
     def __init__(
         self,
-        parent: QWidget,
         maze: MazeProtocol,
+        parent: Optional[QWidget] = None,
         minimumSize: QSize = QSize(500, 500),
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],

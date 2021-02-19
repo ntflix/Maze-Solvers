@@ -1,3 +1,4 @@
+from modules.data_structures.maze.maze import Maze
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_generation.maze_generator import MazeGenerator
 from modules.data_structures.stack.stack import Stack
@@ -31,7 +32,7 @@ class RecursiveBacktracker(MazeGenerator):
 
         self.__size = size
         # initialize a Maze full of walls
-        self.__maze = MazeProtocol(self.__size.x, self.__size.y, walls=True)
+        self.__maze = Maze(self.__size.x, self.__size.y, walls=True)
 
         # get the last cell index of the maze, so we can initialise __visitedOrNotCells to a list of False (nothing visited yet)
         lastIndex = self.__maze.getIndexFromCoordinates(

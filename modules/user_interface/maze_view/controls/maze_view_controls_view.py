@@ -1,7 +1,7 @@
-from modules.user_interface.ui_translation_data_structures.maze_solver_specification import (
+from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
-from modules.user_interface.ui_translation_data_structures.maze_generation_specification import (
+from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
 from modules.user_interface.maze_view.controls.generate_maze_group_view import (
@@ -16,8 +16,6 @@ class MazeViewControlsView(QWidget):
 
     def __init__(
         self,
-        # `Awaitable`s mean that a callable function is asynchronous.
-        # Async functions, in this context, free up the UI to respond to events and do not block the main thread.
         onMazeGenerateButtonPressed: Callable[
             [MazeGenerationSpecification],
             None,
@@ -39,10 +37,7 @@ class MazeViewControlsView(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addWidget(
-            GenerateMazeGroupView(
-                onMazeGenerateButtonPressed,
-                parent=self,
-            )
+            GenerateMazeGroupView(parent=self),
         )
 
     def setMazeSolverOptionsEnabled(self, enabled: bool) -> None:

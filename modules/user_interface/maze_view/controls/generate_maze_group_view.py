@@ -1,7 +1,10 @@
-from modules.user_interface.ui_translation_data_structures.maze_generation_specification import (
+from modules.data_structures.maze.maze import Maze
+from modules.data_structures.maze.maze_protocol import MazeProtocol
+from PyQt6 import QtCore
+from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
-from typing import Any, Callable, Optional, Tuple
+from typing import Any, Optional, Tuple
 from PyQt6.QtWidgets import (
     QCheckBox,
     QFormLayout,
@@ -16,12 +19,10 @@ from PyQt6.QtWidgets import (
 
 
 class GenerateMazeGroupView(QWidget):
+    mazeGenerated = QtCore.pyqtSignal(MazeProtocol)
+
     def __init__(
         self,
-        onGenerateButtonPressed: Callable[
-            [MazeGenerationSpecification],
-            None,
-        ],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -32,9 +33,6 @@ class GenerateMazeGroupView(QWidget):
         super().__init__(parent=parent, *args, **kwargs)
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        self.setLayout(layout)
 
         groupbox = QGroupBox("Generate Maze")
         layout.addWidget(groupbox)
@@ -48,11 +46,14 @@ class GenerateMazeGroupView(QWidget):
         simplyConnectedCheckbox.setChecked(True)
 
         generateButton = QPushButton("Generate")
-        generateButton.clicked.connect(onGenerateButtonPressed)  # type: ignore
+        generateButton.clicked.connect(self.__onGenerateButtonPressed)  # type: ignore
 
         vbox.addRow("Size", mazeSizePicker)
         vbox.addRow("Simply Connected", simplyConnectedCheckbox)
         vbox.addRow(generateButton)
+
+        self.setLayout(layout)
+        self.setMinimumSize(300, 150)
 
     def __getMazeSizePickerLayout(self) -> QHBoxLayout:
         mazeSizePickerLayout = QHBoxLayout()
@@ -71,3 +72,8 @@ class GenerateMazeGroupView(QWidget):
         mazeSizePickerLayout.addWidget(ySpinBox)
 
         return mazeSizePickerLayout
+
+    def __onGenerateButtonPressed(self, p0: MazeGenerationSpecification) -> None:
+        print("generate button pressed")
+        self.mazeGenerated.emit(Maze(10, 10))
+        # raise NotImplementedError()

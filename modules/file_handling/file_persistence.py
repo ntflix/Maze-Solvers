@@ -52,4 +52,6 @@ class FilePersistence(Generic[T]):
             # serialize it because `object` is of type `T` which conforms to `Serializable`
             shelf[key] = object.serialize()
 
+        shelf.close()
+
         logging.debug(f"Saved object '{object}' to '{self.__path}' with key '{key}'.")
