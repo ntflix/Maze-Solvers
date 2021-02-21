@@ -36,6 +36,7 @@ class MazeSolverUI(QApplication):
         print(self.__maze)
         raise Exception("did it!")
 
+
 FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
 LEVEL = logging.INFO
 logging.basicConfig(format=FORMAT, level=LEVEL)
