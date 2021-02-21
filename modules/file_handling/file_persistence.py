@@ -14,6 +14,12 @@ class FilePersistence(Generic[T]):
         self.__path = path
 
     def load(self, key: str) -> T:
+        # remove '.db' from end of path so the Shelve module can load it properly (the Shelve module auto adds extension…)
+        # if file ends with ".db"
+        if self.__path[-3:] == ".db":
+            # then remove the last part
+            self.__path = self.__path[:-3]
+
         logging.debug(f"Loading object from '{self.__path}'")
         # define `loaded` variable here to be used in function scope
         loaded: T

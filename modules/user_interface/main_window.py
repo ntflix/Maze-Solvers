@@ -33,6 +33,7 @@ class MazeSolverUI(QApplication):
     def __onMazeLoad(self, p0: MazeProtocol) -> None:
         self.__maze = p0
         print(self.__maze)
+        raise Exception("did it!")
 
 
 a = MazeSolverUI()

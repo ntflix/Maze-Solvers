@@ -70,6 +70,8 @@ class MazeLoaderView(QWidget):
             except RuntimeError as invalidFileError:
                 print(f"invalid maze file?? have a look: {invalidFileError}")
 
+        self.gotMaze.emit(maze)
+
     def __onGenerateMazeButtonPressed(self) -> None:
         mazeGeneratorWindow = MazeGeneratorWindow(self)
         mazeGeneratorWindow.gotMaze.connect(self.gotMaze)

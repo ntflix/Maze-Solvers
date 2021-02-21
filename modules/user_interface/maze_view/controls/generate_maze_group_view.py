@@ -1,3 +1,5 @@
+from modules.common_structures.xy import XY
+from modules.maze_generation.recursive_backtracker import RecursiveBacktracker
 from modules.data_structures.maze.maze import Maze
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6 import QtCore
@@ -75,5 +77,15 @@ class GenerateMazeGroupView(QWidget):
 
     def __onGenerateButtonPressed(self, p0: MazeGenerationSpecification) -> None:
         print("generate button pressed")
-        self.mazeGenerated.emit(Maze(10, 10))
-        # raise NotImplementedError()
+        self.mazeGenerated.emit(self.__generateMaze(p0))
+
+    def __generateMaze(self, mazeSpec: MazeGenerationSpecification) -> MazeProtocol:
+        maze: MazeProtocol
+        if p0.simplyConnected:
+            # generate a simply connected maze
+            mazeGenerator = RecursiveBacktracker(mazeSpec.size)
+            maze = mazeGenerator.generate()
+        else:
+            mazeGenerator = RecursiveBacktracker(mazeSpec.size)
+            maze = mazeGenerator.generate()
+        return maze
