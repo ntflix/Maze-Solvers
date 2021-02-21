@@ -81,7 +81,7 @@ class GenerateMazeGroupView(QWidget):
 
     def __generateMaze(self, mazeSpec: MazeGenerationSpecification) -> MazeProtocol:
         maze: MazeProtocol
-        if p0.simplyConnected:
+        if mazeSpec.simplyConnected:
             # generate a simply connected maze
             mazeGenerator = RecursiveBacktracker(mazeSpec.size)
             maze = mazeGenerator.generate()

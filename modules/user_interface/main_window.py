@@ -4,6 +4,7 @@ from modules.user_interface.maze_loader_windows.maze_loader_window import (
 )
 from typing import List
 from PyQt6.QtWidgets import QApplication
+import logging
 
 
 class MazeSolverUI(QApplication):
@@ -35,5 +36,9 @@ class MazeSolverUI(QApplication):
         print(self.__maze)
         raise Exception("did it!")
 
+FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
+LEVEL = logging.INFO
+logging.basicConfig(format=FORMAT, level=LEVEL)
+log = logging.getLogger()
 
 a = MazeSolverUI()

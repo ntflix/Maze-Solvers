@@ -8,6 +8,7 @@ from modules.user_interface.maze_loader_windows.maze_generator_window import (
 )
 from typing import Any, List, Optional, Tuple
 from PyQt6.QtWidgets import QFileDialog, QPushButton, QVBoxLayout, QWidget
+import logging
 
 
 class MazeLoaderView(QWidget):
@@ -66,11 +67,13 @@ class MazeLoaderView(QWidget):
                 maze = fileHandler.load()
                 mazeIsValid = True
             except FileNotFoundError as noFileError:
-                print(f"bruh that file does not exist – {noFileError}")
+                logging.error(f"Maze file does not exist: {noFileError}")
+                raise FileNotFoundError()
             except RuntimeError as invalidFileError:
-                print(f"invalid maze file?? have a look: {invalidFileError}")
-
-        self.gotMaze.emit(maze)
+                logging.error(f"Invalid maze file: {invalidFileError}")
+                raise FileNotFoundError()
+        
+        self.gotMaze.emit(maze) # type: ignore
 
     def __onGenerateMazeButtonPressed(self) -> None:
         mazeGeneratorWindow = MazeGeneratorWindow(self)
@@ -82,19 +85,3 @@ class MazeLoaderView(QWidget):
         mazeGenerator = RecursiveBacktracker(XY(10, 10))
         maze = mazeGenerator.generate()
         self.gotMaze.emit(maze)
-
-    def __loadMazeFromPath(self, path: str) -> MazeProtocol:
-        print(path)
-        maze: MazeProtocol
-        mazeIsValid = False
-
-        while not mazeIsValid:
-            try:
-                maze = fileHandler.load()
-                mazeIsValid = True
-            except FileNotFoundError as noFileError:
-                print(f"bruh that file does not exist – {noFileError}")
-            except RuntimeError as invalidFileError:
-                print(f"invalid maze file?? have a look: {invalidFileError}")
-
-        return maze
