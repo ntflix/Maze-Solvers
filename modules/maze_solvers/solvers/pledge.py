@@ -59,32 +59,33 @@ class PledgeSolver(MazeSolver):
             13      BREAK
             14  ELSE:
             15      GOTO step 1
-
+        ```
+        ```pseudocode
         > Step 0
-            SET angle_counter TO 1
+            SET angle_counter to 0
         > Step 1
-            IF angle_counter != 0:
-                SET angle_counter TO 0
-                DETECT forward:
-                    CLEAR:
+            GO forward
+                Collision?
+                    NO:
+                        GOTO #1 (if repeat)
+                    YES:
+        > Step 2
+                        DETECT front
+                        IF front is not clear:
+        > Step 3
+                            TURN right
+                            GOTO step 1
+        > Step 4
                         GO forward
-                    NOT CLEAR:
-                        TURN right
-                        DETECT forward:
-                            CLEAR:
-                                angle_counter += 90
-                            NOT CLEAR:
-                                TURN left
-                                TURN left
-                                DETECT forward:
-                                    CLEAR:
-                                        angle_counter -= 90
-                                    NOT CLEAR:
-                                        TURN left
-
-                        GOTO step 2
-
-                GOTO step 1
+        > Step 5
+                        TURN left
+        > Step 6
+                        GO forward
+                            Collision?
+                                YES:
+                                    GOTO step 1
+                                NO:
+                                    GOTO step 4
             GOTO step 0
         ```
         """
