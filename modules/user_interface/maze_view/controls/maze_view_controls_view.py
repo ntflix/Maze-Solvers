@@ -1,3 +1,6 @@
+from modules.user_interface.maze_view.controls.solve_maze_group_view import (
+    SolveMazeGroupView,
+)
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
@@ -12,8 +15,6 @@ from PyQt6.QtWidgets import QVBoxLayout, QWidget
 
 
 class MazeViewControlsView(QWidget):
-    __mazeSolverOptionsEnabled: bool
-
     def __init__(
         self,
         onMazeGenerateButtonPressed: Callable[
@@ -24,24 +25,23 @@ class MazeViewControlsView(QWidget):
             [MazeSolverSpecification],
             None,
         ],
-        mazeSolverOptionsEnabled: bool = False,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
     ) -> None:
         super().__init__(parent=parent, *args, **kwargs)
+        self.setMaximumWidth(400)
+        self.setContentsMargins(0, 0, 0, 0)
 
-        self.__mazeSolverOptionsEnabled = mazeSolverOptionsEnabled
+        generateMazeGroupView = GenerateMazeGroupView(parent=self)
+        solveMazeGroupView = SolveMazeGroupView(parent=self)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        layout.addWidget(
-            GenerateMazeGroupView(parent=self),
-        )
+        layout.addWidget(generateMazeGroupView)
+        layout.addWidget(solveMazeGroupView)
 
-    def setMazeSolverOptionsEnabled(self, enabled: bool) -> None:
-        if self.__mazeSolverOptionsEnabled != enabled:
-            self.__mazeSolverOptionsEnabled = enabled
-        else:
-            raise ValueError("Maze Solver Options are already enabled")
+        # add a vertical stretch to the end so all widgets are at the top
+        layout.insertStretch(-1)
+        self.setLayout(layout)

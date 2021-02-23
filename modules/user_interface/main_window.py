@@ -1,14 +1,17 @@
+from modules.user_interface.maze_view.maze_view_window import MazeViewWindow
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.user_interface.maze_loader_windows.maze_loader_window import (
     MazeLoaderWindow,
 )
-from typing import List
+from typing import List, Optional
 from PyQt6.QtWidgets import QApplication
 import logging
 
 
 class MazeSolverUI(QApplication):
     __maze: MazeProtocol
+    __mazeLoaderWindow: Optional[MazeLoaderWindow]
+    __mazeViewWindow: Optional[MazeViewWindow]
 
     def __init__(
         self,
@@ -21,20 +24,30 @@ class MazeSolverUI(QApplication):
         """
         super(MazeSolverUI, self).__init__(argv)
 
-        self.__presentMazeLoader()
-
-    def __presentMazeLoader(self) -> None:
-        mazeLoaderWindow = MazeLoaderWindow()
-        # connect to method to call when maze is loaded
-        mazeLoaderWindow.gotMaze.connect(self.__onMazeLoad)
-
-        mazeLoaderWindow.show()
+        self.__showMazeLoader()
         self.exec()
+
+    def __showMazeLoader(self) -> None:
+        # construct a maze loader view
+        self.__mazeLoaderWindow = MazeLoaderWindow()
+        # connect to method to call when maze is loaded
+        self.__mazeLoaderWindow.gotMaze.connect(self.__onMazeLoad)
+        self.__mazeLoaderWindow.show()
+
+    def __showMazeViewWindow(self) -> None:
+        self.__mazeViewWindow = MazeViewWindow(maze=self.__maze)
+        self.__mazeViewWindow.show()
 
     def __onMazeLoad(self, p0: MazeProtocol) -> None:
         self.__maze = p0
-        print(self.__maze)
-        raise Exception("did it!")
+
+        # destroy the maze loader view
+        self.__mazeLoaderWindow.destroy(  # type: ignore # override optional
+            True,  # destroy window
+            True,  # destroy sub-windows
+        )
+
+        self.__showMazeViewWindow()
 
 
 FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
