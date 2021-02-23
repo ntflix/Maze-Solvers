@@ -1,3 +1,4 @@
+from modules.common_structures.xy import XY
 from modules.user_interface.maze_view.controls.xy_size_picker import XYPicker
 from modules.maze_generation.recursive_backtracker import RecursiveBacktracker
 from modules.data_structures.maze.maze_protocol import MazeProtocol
@@ -41,7 +42,12 @@ class GenerateMazeGroupView(QWidget):
         vbox = QFormLayout()
         groupbox.setLayout(vbox)
 
-        mazeSizePicker = XYPicker(self)
+        mazeSizePicker = XYPicker(
+            minimum=XY(2, 2),
+            maximum=XY(250, 250),
+            initialValue=XY(2, 2),
+            parent=self,
+        )
 
         simplyConnectedCheckbox = QCheckBox()
         simplyConnectedCheckbox.setChecked(True)

@@ -1,3 +1,7 @@
+from modules.common_structures.xy import XY
+from modules.user_interface.maze_view.controls.solver_controls_dropdown import (
+    SolverControlsView,
+)
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
@@ -17,9 +21,11 @@ class SolveMazeGroupView(QWidget):
     onSolveButtonPressed = QtCore.pyqtSignal(MazeSolverSpecification)
     __startPosition: XYPicker
     __endPosition: XYPicker
+    __mazeSize: XY
 
     def __init__(
         self,
+        mazeSize: XY,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -27,6 +33,8 @@ class SolveMazeGroupView(QWidget):
         """
         Grouped controls box for controls for solving mazes
         """
+        self.__mazeSize = mazeSize
+
         super().__init__(parent=parent, *args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
 
@@ -39,10 +47,23 @@ class SolveMazeGroupView(QWidget):
         vbox = QFormLayout()
         groupbox.setLayout(vbox)
 
-        self.__startPosition = XYPicker(self)
-        self.__endPosition = XYPicker(self)
+        self.__startPosition = XYPicker(
+            minimum=XY(0, 0),
+            maximum=self.__mazeSize,
+            initialValue=XY(0, 0),
+            parent=self,
+            label="•",
+        )
 
-        solveButton = QPushButton("Generate")
+        self.__endPosition = XYPicker(
+            minimum=XY(0, 0),
+            maximum=self.__mazeSize,
+            initialValue=XY(0, 0),
+            parent=self,
+            label="•",
+        )
+
+        solveButton = QPushButton("Solve")
         solveButton.clicked.connect(  # type: ignore
             lambda: self.__onSolveButtonPressed(
                 p0=MazeSolverSpecification(
@@ -52,9 +73,12 @@ class SolveMazeGroupView(QWidget):
             )
         )
 
+        solverControlsDropdown = SolverControlsView(self)
+
         vbox.addRow("Start Position", self.__startPosition)
         vbox.addRow("End Position", self.__endPosition)
         vbox.addRow(solveButton)
+        vbox.addRow(solverControlsDropdown)
 
         self.setLayout(layout)
 

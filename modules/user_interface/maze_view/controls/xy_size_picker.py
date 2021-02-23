@@ -9,13 +9,28 @@ class XYPicker(QWidget):
 
     def __init__(
         self,
+        minimum: XY,
+        maximum: XY,
+        initialValue: XY,
         parent: Optional[QWidget] = None,
+        label: str = "by",
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
     ) -> None:
         """
         A horizontal dual spin box widget designed for the XY size of a maze.
         """
+        valid = True
+        if (initialValue.x < minimum.x) or (initialValue.y > maximum.y):
+            valid = False
+        elif (initialValue.x < minimum.x) or (initialValue.y > maximum.y):
+            valid = False
+
+        if not valid:
+            raise ValueError(
+                f"Initial value for XYPicker must be between {minimum} and {maximum}."
+            )
+
         super(XYPicker, self).__init__(parent=parent, *args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
 
@@ -25,14 +40,17 @@ class XYPicker(QWidget):
         self.__xSpinBox = QSpinBox()
         self.__ySpinBox = QSpinBox()
 
-        self.__xSpinBox.setMinimum(2)
-        self.__ySpinBox.setMinimum(2)
+        self.__xSpinBox.setMinimum(minimum.x)
+        self.__ySpinBox.setMinimum(minimum.y)
 
-        self.__xSpinBox.setMaximum(250)
-        self.__ySpinBox.setMaximum(250)
+        self.__xSpinBox.setMaximum(maximum.x)
+        self.__ySpinBox.setMaximum(maximum.y)
+
+        self.__xSpinBox.setValue(initialValue.x)
+        self.__ySpinBox.setValue(initialValue.y)
 
         mazeSizePickerLayout.addWidget(self.__xSpinBox)
-        mazeSizePickerLayout.addWidget(QLabel("by"))
+        mazeSizePickerLayout.addWidget(QLabel(label))
         mazeSizePickerLayout.addWidget(self.__ySpinBox)
 
         self.setLayout(mazeSizePickerLayout)

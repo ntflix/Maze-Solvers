@@ -1,3 +1,4 @@
+from modules.common_structures.xy import XY
 from modules.user_interface.maze_view.controls.solve_maze_group_view import (
     SolveMazeGroupView,
 )
@@ -34,7 +35,7 @@ class MazeViewControlsView(QWidget):
         self.setContentsMargins(0, 0, 0, 0)
 
         generateMazeGroupView = GenerateMazeGroupView(parent=self)
-        solveMazeGroupView = SolveMazeGroupView(parent=self)
+        solveMazeGroupView = SolveMazeGroupView(mazeSize=XY(25, 25), parent=self)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
