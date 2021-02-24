@@ -36,7 +36,10 @@ class MazeLoaderView(QWidget):
         self.__onMazeLoaded = onMazeLoaded
         self.__onMazeSpecificationChosen = onMazeSpecificationChosen
 
+        # create layout
         layout = QVBoxLayout()
+
+        # add all the buttons to the layout
         for button in self.__getButtons():
             layout.addWidget(button)
 
