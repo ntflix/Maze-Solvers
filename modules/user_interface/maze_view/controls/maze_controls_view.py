@@ -15,7 +15,7 @@ from typing import Any, Callable, Optional, Tuple
 from PyQt6.QtWidgets import QVBoxLayout, QWidget
 
 
-class MazeViewControlsView(QWidget):
+class MazeControlsView(QWidget):
     def __init__(
         self,
         onMazeGenerateButtonPressed: Callable[

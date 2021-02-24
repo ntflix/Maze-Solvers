@@ -23,7 +23,6 @@ class MazeSolverUI(QApplication):
             • The Maze that has (or has not yet) been generated
         """
         super(MazeSolverUI, self).__init__(argv)
-
         self.__showMazeLoader()
         self.exec()
 

@@ -4,8 +4,8 @@ from modules.user_interface.ui_translation.maze_solver_specification import (
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
-from modules.user_interface.maze_view.controls.maze_view_controls_view import (
-    MazeViewControlsView,
+from modules.user_interface.maze_view.controls.maze_controls_view import (
+    MazeControlsView,
 )
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6.QtCore import QSize
@@ -30,15 +30,13 @@ class MazeViewWindow(QWidget):
         **kwargs: Tuple[Any, Any],
     ) -> None:
         """
-        A separate window for displaying a MazeView. No controls.
+        A MazeView with controls.
         """
         super(MazeViewWindow, self).__init__(parent)
-        # self.setMinimumSize(minimumSize)
 
         self.__maze = maze
 
         layout = QHBoxLayout()
-        # layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addWidget(
             MazeView(
@@ -55,7 +53,7 @@ class MazeViewWindow(QWidget):
         layout.addWidget(separator)
 
         layout.addWidget(
-            MazeViewControlsView(
+            MazeControlsView(
                 onMazeGenerateButtonPressed=self.__onMazeGenerateButtonPressed,
                 onMazeSolverSolveButtonPressed=self.__onMazeSolverSolveButtonPressed,
             )

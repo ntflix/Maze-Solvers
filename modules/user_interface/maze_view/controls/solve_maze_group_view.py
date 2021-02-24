@@ -83,5 +83,5 @@ class SolveMazeGroupView(QWidget):
         self.setLayout(layout)
 
     def __onSolveButtonPressed(self, p0: MazeSolverSpecification) -> None:
-        print("generate button pressed")
+        print("solve button pressed")
         self.onSolveButtonPressed.emit(p0)
