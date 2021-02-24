@@ -1,8 +1,9 @@
+from modules.user_interface.ui_translation.maze_generation_specification import (
+    MazeGenerationSpecification,
+)
+from modules.user_interface.maze_loader_windows.maze_loader_view import MazeLoaderView
 from modules.user_interface.maze_view.maze_view_window import MazeViewWindow
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from modules.user_interface.maze_loader_windows.maze_loader_window import (
-    MazeLoaderWindow,
-)
 from typing import List, Optional
 from PyQt6.QtWidgets import QApplication
 import logging
@@ -10,7 +11,7 @@ import logging
 
 class MazeSolverUI(QApplication):
     __maze: MazeProtocol
-    __mazeLoaderWindow: Optional[MazeLoaderWindow]
+    __mazeLoaderWindow: Optional[MazeLoaderView]
     __mazeViewWindow: Optional[MazeViewWindow]
 
     def __init__(
@@ -28,10 +29,20 @@ class MazeSolverUI(QApplication):
 
     def __showMazeLoader(self) -> None:
         # construct a maze loader view
-        self.__mazeLoaderWindow = MazeLoaderWindow()
+        self.__mazeLoaderWindow = MazeLoaderView(
+            onMazeLoaded=self.__onMazeLoad,
+            onLoadLastMazePressed=self.__onLoadLastMazeChosen,
+            onMazeSpecificationChosen=self.__onMazeSpecificationChosen,
+        )
         # connect to method to call when maze is loaded
-        self.__mazeLoaderWindow.gotMaze.connect(self.__onMazeLoad)
+        # self.__mazeLoaderWindow.gotMaze.connect(self.__onMazeLoad)
         self.__mazeLoaderWindow.show()
+
+    def __onMazeSpecificationChosen(self, p0: MazeGenerationSpecification) -> None:
+        print(p0)
+
+    def __onLoadLastMazeChosen(self) -> None:
+        print("load last selected")
 
     def __showMazeViewWindow(self) -> None:
         self.__mazeViewWindow = MazeViewWindow(maze=self.__maze)

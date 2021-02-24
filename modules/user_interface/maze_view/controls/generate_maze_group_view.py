@@ -1,8 +1,6 @@
 from modules.common_structures.xy import XY
 from modules.user_interface.maze_view.controls.xy_size_picker import XYPicker
-from modules.maze_generation.recursive_backtracker import RecursiveBacktracker
-from modules.data_structures.maze.maze_protocol import MazeProtocol
-from PyQt6 import QtCore
+from PyQt6.QtCore import pyqtSlot
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
@@ -15,14 +13,16 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-import logging
 
 
 class GenerateMazeGroupView(QWidget):
-    mazeGenerated = QtCore.pyqtSignal(MazeProtocol)
+    __simplyConnectedCheckbox: QCheckBox
+    __mazeSizePicker: XYPicker
+    __onGenerateButtonPressedSlot: pyqtSlot(MazeGenerationSpecification)
 
     def __init__(
         self,
+        onGenerateButtonPressed: pyqtSlot(MazeGenerationSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -32,6 +32,7 @@ class GenerateMazeGroupView(QWidget):
         """
         super().__init__(parent=parent, *args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
+        self.__onGenerateButtonPressedSlot = onGenerateButtonPressed
 
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -42,51 +43,47 @@ class GenerateMazeGroupView(QWidget):
         vbox = QFormLayout()
         groupbox.setLayout(vbox)
 
-        mazeSizePicker = XYPicker(
+        self.__mazeSizePicker = XYPicker(
             minimum=XY(2, 2),
             maximum=XY(250, 250),
             initialValue=XY(2, 2),
             parent=self,
         )
 
-        simplyConnectedCheckbox = QCheckBox()
-        simplyConnectedCheckbox.setChecked(True)
+        self.__simplyConnectedCheckbox = QCheckBox()
+        self.__simplyConnectedCheckbox.setChecked(True)
 
         generateButton = QPushButton("Generate")
-        generateButton.clicked.connect(  # type: ignore
-            lambda: self.__onGenerateButtonPressed(
-                p0=MazeGenerationSpecification(
-                    size=mazeSizePicker.getValues(),
-                    simplyConnected=simplyConnectedCheckbox.isChecked(),
-                ),
-            )
-        )
+        generateButton.clicked.connect(self.__onGenerateButtonPressed)  # type: ignore
 
-        vbox.addRow("Size", mazeSizePicker)
-        vbox.addRow("Simply Connected", simplyConnectedCheckbox)
+        vbox.addRow("Size", self.__mazeSizePicker)
+        vbox.addRow("Simply Connected", self.__simplyConnectedCheckbox)
         vbox.addRow(generateButton)
 
         self.setLayout(layout)
 
-    def __onGenerateButtonPressed(self, p0: MazeGenerationSpecification) -> None:
-        print("generate button pressed")
-        maze = self.__generateMaze(mazeSpec=p0)
-        self.mazeGenerated.emit(maze)
+    def __onGenerateButtonPressed(self) -> None:
+        self.__onGenerateButtonPressedSlot(
+            MazeGenerationSpecification(
+                self.__mazeSizePicker.getValues(),
+                self.__simplyConnectedCheckbox.isChecked(),
+            ),
+        ),
 
-    def __generateMaze(self, mazeSpec: MazeGenerationSpecification) -> MazeProtocol:
-        maze: MazeProtocol
-        # log to debug
-        logging.debug(
-            "Generating a "
-            + ("non-" if mazeSpec.simplyConnected else "")
-            + f"simply-connected maze of size {mazeSpec.size}."
-        )
+    # def __generateMaze(self, mazeSpec: MazeGenerationSpecification) -> MazeProtocol:
+    #     maze: MazeProtocol
+    #     # log to debug
+    #     logging.debug(
+    #         "Generating a "
+    #         + ("non-" if mazeSpec.simplyConnected else "")
+    #         + f"simply-connected maze of size {mazeSpec.size}."
+    #     )
 
-        if mazeSpec.simplyConnected:
-            # generate a simply connected maze
-            mazeGenerator = RecursiveBacktracker(mazeSpec.size)
-            maze = mazeGenerator.generate()
-        else:
-            mazeGenerator = RecursiveBacktracker(mazeSpec.size)
-            maze = mazeGenerator.generate()
-        return maze
+    #     if mazeSpec.simplyConnected:
+    #         # generate a simply connected maze
+    #         mazeGenerator = RecursiveBacktracker(mazeSpec.size)
+    #         maze = mazeGenerator.generate()
+    #     else:
+    #         mazeGenerator = RecursiveBacktracker(mazeSpec.size)
+    #         maze = mazeGenerator.generate()
+    #     return maze

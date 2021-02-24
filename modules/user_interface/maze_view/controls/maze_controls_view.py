@@ -1,4 +1,7 @@
-from PyQt6.QtCore import PYQT_SLOT
+from modules.user_interface.ui_translation.maze_generation_specification import (
+    MazeGenerationSpecification,
+)
+from PyQt6.QtCore import pyqtSlot
 from modules.common_structures.xy import XY
 from modules.user_interface.maze_view.controls.solve_maze_group_view import (
     SolveMazeGroupView,
@@ -13,13 +16,14 @@ from PyQt6.QtWidgets import QVBoxLayout, QWidget
 class MazeControlsView(QWidget):
     def __init__(
         self,
-        onPlayButtonPressed: PYQT_SLOT,
-        onPauseButtonPressed: PYQT_SLOT,
-        onStepButtonPressed: PYQT_SLOT,
-        onRestartButtonPressed: PYQT_SLOT,
-        onSpeedControlValueChanged: PYQT_SLOT,
-        onOpenLogButtonPressed: PYQT_SLOT,
-        onAgentVarsButtonPressed: PYQT_SLOT,
+        onPlayButtonPressed: pyqtSlot(),
+        onPauseButtonPressed: pyqtSlot(),
+        onStepButtonPressed: pyqtSlot(),
+        onRestartButtonPressed: pyqtSlot(),
+        onSpeedControlValueChanged: pyqtSlot(int),
+        onOpenLogButtonPressed: pyqtSlot(),
+        onAgentVarsButtonPressed: pyqtSlot(),
+        onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -28,7 +32,11 @@ class MazeControlsView(QWidget):
         self.setMaximumWidth(400)
         self.setContentsMargins(0, 0, 0, 0)
 
-        generateMazeGroupView = GenerateMazeGroupView(parent=self)
+        generateMazeGroupView = GenerateMazeGroupView(
+            onGenerateButtonPressed=onGenerateMazeButtonPressed,
+            parent=self,
+        )
+
         solveMazeGroupView = SolveMazeGroupView(
             onPlayButtonPressed=onPlayButtonPressed,
             onPauseButtonPressed=onPauseButtonPressed,

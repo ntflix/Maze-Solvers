@@ -1,22 +1,30 @@
-from modules.file_handling.maze.maze_file_handler import MazeFileHandler
-from modules.data_structures.maze.maze_protocol import MazeProtocol
-from modules.common_structures.xy import XY
-from modules.maze_generation.recursive_backtracker import RecursiveBacktracker
-from PyQt6 import QtCore
 from modules.user_interface.maze_loader_windows.maze_generator_window import (
     MazeGeneratorWindow,
 )
+from modules.user_interface.ui_translation.maze_generation_specification import (
+    MazeGenerationSpecification,
+)
+from modules.user_interface.maze_view.controls.generate_maze_group_view import (
+    GenerateMazeGroupView,
+)
+from modules.file_handling.maze.maze_file_handler import MazeFileHandler
+from modules.data_structures.maze.maze_protocol import MazeProtocol
+from PyQt6.QtCore import pyqtSlot
 from typing import Any, List, Optional, Tuple
 from PyQt6.QtWidgets import QFileDialog, QPushButton, QVBoxLayout, QWidget
 import logging
 
 
 class MazeLoaderView(QWidget):
-    gotMaze = QtCore.pyqtSignal(MazeProtocol)
+    __onMazeSpecificationChosen: pyqtSlot(MazeGenerationSpecification)
+    __onMazeLoaded: pyqtSlot(MazeProtocol)
+    __onLoadLastMazeChosen: pyqtSlot()
 
     def __init__(
         self,
-        lastSaveMazePath: str,
+        onLoadLastMazePressed: pyqtSlot(),
+        onMazeLoaded: pyqtSlot(MazeProtocol),
+        onMazeSpecificationChosen: pyqtSlot(MazeGenerationSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -25,7 +33,11 @@ class MazeLoaderView(QWidget):
         The view used for prompting the user to load, generate or load last maze.
         """
         super(MazeLoaderView, self).__init__(parent=parent, *args, **kwargs)
-        self.__parent = parent
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.__onLoadLastMazeChosen = onLoadLastMazePressed
+        self.__onMazeLoaded = onMazeLoaded
+        self.__onMazeSpecificationChosen = onMazeSpecificationChosen
 
         layout = QVBoxLayout()
         for button in self.__getButtons():
@@ -33,26 +45,28 @@ class MazeLoaderView(QWidget):
 
         self.setLayout(layout)
 
-    def __getButtons(self) -> List[QPushButton]:
+    def __getButtons(
+        self,
+    ) -> List[QPushButton]:
         loadMazeButton = QPushButton("Load Maze…")
         loadMazeButton.clicked.connect(self.__onLoadMazeButtonPressed)  # type: ignore
 
         generateMazeButton = QPushButton("Generate Maze…")
         generateMazeButton.clicked.connect(self.__onGenerateMazeButtonPressed)  # type: ignore
 
-        loadLastConfigButton = QPushButton("Load Last Maze")
-        loadLastConfigButton.clicked.connect(self.__onLoadLastMazeButtonPressed)  # type: ignore
+        loadLastMazeButton = QPushButton("Load Last Maze")
+        loadLastMazeButton.clicked.connect(self.__onLoadLastMazeChosen)  # type: ignore
 
         elements: List[QPushButton] = [
             loadMazeButton,
             generateMazeButton,
-            loadLastConfigButton,
+            loadLastMazeButton,
         ]
 
         return elements
 
     def __onLoadMazeButtonPressed(self) -> None:
-        fileDialog = QFileDialog(self.__parent, "Open a maze file…")
+        fileDialog = QFileDialog(self, "Open a maze file…")
         filesFilter = "Maze files (*.maze, *.db)"
         fileDialog.setFileMode(QFileDialog.FileMode.ExistingFile)
 
@@ -72,16 +86,19 @@ class MazeLoaderView(QWidget):
             except RuntimeError as invalidFileError:
                 logging.error(f"Invalid maze file: {invalidFileError}")
                 raise FileNotFoundError()
-        
-        self.gotMaze.emit(maze) # type: ignore
+
+        self.__onMazeLoaded(
+            maze,  # type: ignore
+        )
 
     def __onGenerateMazeButtonPressed(self) -> None:
-        mazeGeneratorWindow = MazeGeneratorWindow(self)
-        mazeGeneratorWindow.gotMaze.connect(self.gotMaze)
+        """
+        Presents a "Generate Maze" window to the user and connects the result signal to `self.__mazeGenerateButtonPressedWithSpecification`.
+        """
+        mazeGeneratorWindow = MazeGeneratorWindow(
+            onMazeGenerateButtonPressedWithSpecification=(
+                self.__onMazeSpecificationChosen,
+            ),
+            parent=self,
+        )
         mazeGeneratorWindow.show()
-
-    def __onLoadLastMazeButtonPressed(self) -> None:
-        print("load button pressed")
-        mazeGenerator = RecursiveBacktracker(XY(10, 10))
-        maze = mazeGenerator.generate()
-        self.gotMaze.emit(maze)

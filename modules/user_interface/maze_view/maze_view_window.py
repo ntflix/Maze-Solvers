@@ -1,6 +1,3 @@
-from modules.user_interface.ui_translation.maze_solver_specification import (
-    MazeSolverSpecification,
-)
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
@@ -54,15 +51,39 @@ class MazeViewWindow(QWidget):
 
         layout.addWidget(
             MazeControlsView(
-                onMazeGenerateButtonPressed=self.__onMazeGenerateButtonPressed,
-                onMazeSolverSolveButtonPressed=self.__onMazeSolverSolveButtonPressed,
+                onPlayButtonPressed=self.__onPlayButtonPressed,
+                onPauseButtonPressed=self.__onPauseButtonPressed,
+                onStepButtonPressed=self.__onStepButtonPressed,
+                onRestartButtonPressed=self.__onRestartButtonPressed,
+                onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
+                onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
+                onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
+                onGenerateMazeButtonPressed=self.__onMazeGenerateButtonPressed,
             )
         )
 
         self.setLayout(layout)
 
-    def __onMazeGenerateButtonPressed(self, spec: MazeGenerationSpecification) -> None:
-        print(spec)
+    def __onMazeGenerateButtonPressed(self, p0: MazeGenerationSpecification) -> None:
+        print(p0)
 
-    def __onMazeSolverSolveButtonPressed(self, spec: MazeSolverSpecification) -> None:
-        print(spec)
+    def __onPlayButtonPressed(self) -> None:
+        print("thing")
+
+    def __onPauseButtonPressed(self) -> None:
+        print("thing")
+
+    def __onStepButtonPressed(self) -> None:
+        print("thing")
+
+    def __onRestartButtonPressed(self) -> None:
+        print("thing")
+
+    def __onSpeedControlValueChanged(self) -> None:
+        print("thing")
+
+    def __onOpenLogButtonPressed(self) -> None:
+        print("thing")
+
+    def __onAgentVarsButtonPressed(self) -> None:
+        print("thing")

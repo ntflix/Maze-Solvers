@@ -6,7 +6,7 @@ from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
 from modules.user_interface.maze_view.controls.xy_size_picker import XYPicker
-from PyQt6.QtCore import pyqtSignal, PYQT_SLOT
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from typing import Any, Optional, Tuple
 from PyQt6.QtWidgets import (
     QFormLayout,
@@ -26,13 +26,13 @@ class SolveMazeGroupView(QWidget):
 
     def __init__(
         self,
-        onPlayButtonPressed: PYQT_SLOT,
-        onPauseButtonPressed: PYQT_SLOT,
-        onStepButtonPressed: PYQT_SLOT,
-        onRestartButtonPressed: PYQT_SLOT,
-        onSpeedControlValueChanged: PYQT_SLOT,
-        onOpenLogButtonPressed: PYQT_SLOT,
-        onAgentVarsButtonPressed: PYQT_SLOT,
+        onPlayButtonPressed: pyqtSlot(),
+        onPauseButtonPressed: pyqtSlot(),
+        onStepButtonPressed: pyqtSlot(),
+        onRestartButtonPressed: pyqtSlot(),
+        onSpeedControlValueChanged: pyqtSlot(int),
+        onOpenLogButtonPressed: pyqtSlot(),
+        onAgentVarsButtonPressed: pyqtSlot(),
         mazeSize: XY,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
