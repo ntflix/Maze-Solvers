@@ -129,10 +129,12 @@ class MazeSolverSpeedControlView(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         slider = QSlider(Qt.Orientations.Horizontal)
-        # minimum of 1 op/s
-        slider.setMinimum(1)
+        # minimum of 0 op/s
+        slider.setMinimum(0)
         # maximum of 50 op/s
         slider.setMaximum(50)
+        # initial value in the middle
+        slider.setValue(25)
 
         # slow/fast horizontal labels view
         slowFastLabelsLayout = QHBoxLayout()
