@@ -32,10 +32,8 @@ class MazeControlsView(QWidget):
         self.setMaximumWidth(400)
         self.setContentsMargins(0, 0, 0, 0)
 
-        generateMazeGroupView = GenerateMazeGroupView(
-            onGenerateButtonPressed=onGenerateMazeButtonPressed,
-            parent=self,
-        )
+        generateMazeGroupView = GenerateMazeGroupView(parent=self)
+        generateMazeGroupView.onMazeSpecChosen.connect(onGenerateMazeButtonPressed)
 
         solveMazeGroupView = SolveMazeGroupView(
             onPlayButtonPressed=onPlayButtonPressed,

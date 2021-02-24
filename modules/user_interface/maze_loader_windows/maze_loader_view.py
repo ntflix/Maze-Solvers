@@ -4,9 +4,6 @@ from modules.user_interface.maze_loader_windows.maze_generator_window import (
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
-from modules.user_interface.maze_view.controls.generate_maze_group_view import (
-    GenerateMazeGroupView,
-)
 from modules.file_handling.maze.maze_file_handler import MazeFileHandler
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6.QtCore import pyqtSlot
@@ -95,10 +92,6 @@ class MazeLoaderView(QWidget):
         """
         Presents a "Generate Maze" window to the user and connects the result signal to `self.__mazeGenerateButtonPressedWithSpecification`.
         """
-        mazeGeneratorWindow = MazeGeneratorWindow(
-            onMazeGenerateButtonPressedWithSpecification=(
-                self.__onMazeSpecificationChosen,
-            ),
-            parent=self,
-        )
+        mazeGeneratorWindow = MazeGeneratorWindow(parent=self)
+        mazeGeneratorWindow.onMazeSpecChosen.connect(self.__onMazeSpecificationChosen)
         mazeGeneratorWindow.show()

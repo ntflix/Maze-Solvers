@@ -1,6 +1,6 @@
 from modules.common_structures.xy import XY
 from modules.user_interface.maze_view.controls.xy_size_picker import XYPicker
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSignal
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
@@ -16,13 +16,12 @@ from PyQt6.QtWidgets import (
 
 
 class GenerateMazeGroupView(QWidget):
+    onMazeSpecChosen = pyqtSignal(MazeGenerationSpecification)
     __simplyConnectedCheckbox: QCheckBox
     __mazeSizePicker: XYPicker
-    __onGenerateButtonPressedSlot: pyqtSlot(MazeGenerationSpecification)
 
     def __init__(
         self,
-        onGenerateButtonPressed: pyqtSlot(MazeGenerationSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -30,9 +29,8 @@ class GenerateMazeGroupView(QWidget):
         """
         Grouped controls box for generating mazes
         """
-        super().__init__(parent=parent, *args, **kwargs)
+        super(GenerateMazeGroupView, self).__init__(parent=parent, *args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
-        self.__onGenerateButtonPressedSlot = onGenerateButtonPressed
 
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -63,7 +61,7 @@ class GenerateMazeGroupView(QWidget):
         self.setLayout(layout)
 
     def __onGenerateButtonPressed(self) -> None:
-        self.__onGenerateButtonPressedSlot(
+        self.onMazeSpecChosen.emit(
             MazeGenerationSpecification(
                 self.__mazeSizePicker.getValues(),
                 self.__simplyConnectedCheckbox.isChecked(),
