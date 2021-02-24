@@ -1,9 +1,13 @@
+from modules.user_interface.maze_view.controls.solver_windows_buttons_view import (
+    SolverWindowsButtonsView,
+)
 from modules.user_interface.maze_view.controls.labelled_icon_button import (
     LabelledIconButton,
 )
 from typing import Any, Optional, Tuple
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
+    PYQT_SLOT,
     QHBoxLayout,
     QLabel,
     QSlider,
@@ -16,6 +20,13 @@ from PyQt6.QtWidgets import (
 class SolverControlsView(QWidget):
     def __init__(
         self,
+        onPlayButtonPressed: PYQT_SLOT,
+        onPauseButtonPressed: PYQT_SLOT,
+        onStepButtonPressed: PYQT_SLOT,
+        onRestartButtonPressed: PYQT_SLOT,
+        onSpeedControlValueChanged: PYQT_SLOT,
+        onOpenLogButtonPressed: PYQT_SLOT,
+        onAgentVarsButtonPressed: PYQT_SLOT,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -29,34 +40,50 @@ class SolverControlsView(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        stateControlBoxView = SolverControlButtonsView(self)
-        speedControl = MazeSolverSpeedControlView(self)
+        stateControlBoxView = SolverControlButtonsView(
+            onPlayButtonPressed=onPlayButtonPressed,
+            onPauseButtonPressed=onPauseButtonPressed,
+            onStepButtonPressed=onStepButtonPressed,
+            onRestartButtonPressed=onRestartButtonPressed,
+            parent=self,
+        )
+
+        speedControl = MazeSolverSpeedControlView(
+            onValueChanged=onSpeedControlValueChanged,
+            parent=self,
+        )
+
+        solverWindowsButtons = SolverWindowsButtonsView(
+            onOpenLogButtonPressed=onOpenLogButtonPressed,
+            onAgentVarsButtonPressed=onAgentVarsButtonPressed,
+            parent=self,
+        )
 
         layout.addWidget(stateControlBoxView)
         layout.addWidget(speedControl)
+        layout.addWidget(solverWindowsButtons)
+
+        self.setLayout(layout)
 
 
 class SolverControlButtonsView(QWidget):
-    def __onPlayButtonPressed(self) -> None:
-        print("play pressed")
-
-    def __onPauseButtonPressed(self) -> None:
-        print("pause pressed")
-
-    def __onStepButtonPressed(self) -> None:
-        print("play pressed")
-
-    def __onRestartButtonPressed(self) -> None:
-        print("restart pressed")
+    # onPlayButtonPressed = pyqtSignal(bool)
+    # onPauseButtonPressed = pyqtSignal(bool)
+    # onStepButtonPressed = pyqtSignal(bool)
+    # onRestartButtonPressed = pyqtSignal(bool)
 
     def __init__(
         self,
+        onPlayButtonPressed: PYQT_SLOT,
+        onPauseButtonPressed: PYQT_SLOT,
+        onStepButtonPressed: PYQT_SLOT,
+        onRestartButtonPressed: PYQT_SLOT,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
     ) -> None:
         """
-        Description
+        The play, pause, step and restart buttons for the solver
         """
         super(SolverControlButtonsView, self).__init__(parent=parent, *args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
@@ -73,36 +100,28 @@ class SolverControlButtonsView(QWidget):
             labelText="Play",
             parent=self,
         )
-        playButton.onButtonPressed.connect(  # type: ignore
-            self.__onPlayButtonPressed,
-        )
+        playButton.onButtonPressed.connect(onPlayButtonPressed)  # type: ignore
 
         pauseButton = LabelledIconButton(
             icon=QStyle.StandardPixmap.SP_MediaPause,
             labelText="Pause",
             parent=self,
         )
-        pauseButton.onButtonPressed.connect(  # type: ignore
-            self.__onPauseButtonPressed,
-        )
+        pauseButton.onButtonPressed.connect(onPauseButtonPressed)  # type: ignore
 
         stepButton = LabelledIconButton(
             icon=QStyle.StandardPixmap.SP_ArrowForward,
             labelText="Step",
             parent=self,
         )
-        stepButton.onButtonPressed.connect(  # type: ignore
-            self.__onStepButtonPressed,
-        )
+        stepButton.onButtonPressed.connect(onStepButtonPressed)  # type: ignore
 
         restartButton = LabelledIconButton(
             icon=QStyle.StandardPixmap.SP_BrowserReload,
             labelText="Restart",
             parent=self,
         )
-        restartButton.onButtonPressed.connect(  # type: ignore
-            self.__onRestartButtonPressed,
-        )
+        restartButton.onButtonPressed.connect(onRestartButtonPressed)  # type: ignore
 
         buttonsLayout.addWidget(playButton)
         buttonsLayout.addWidget(pauseButton)
@@ -115,12 +134,13 @@ class SolverControlButtonsView(QWidget):
 class MazeSolverSpeedControlView(QWidget):
     def __init__(
         self,
+        onValueChanged: PYQT_SLOT,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
     ) -> None:
         """
-        Description
+        Slow/fast slider for maze solver agents speed
         """
         super(MazeSolverSpeedControlView, self).__init__(parent=parent, *args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
