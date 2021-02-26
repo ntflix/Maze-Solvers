@@ -31,6 +31,7 @@ class MazeLoaderView(QWidget):
         """
         super(MazeLoaderView, self).__init__(parent=parent, *args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
+        self.setWindowTitle("Load a Maze")
 
         self.__onLoadLastMazeChosen = onLoadLastMazePressed
         self.__onMazeLoaded = onMazeLoaded
@@ -95,6 +96,15 @@ class MazeLoaderView(QWidget):
         """
         Presents a "Generate Maze" window to the user and connects the result signal to `self.__mazeGenerateButtonPressedWithSpecification`.
         """
-        mazeGeneratorWindow = MazeGeneratorWindow(parent=self)
-        mazeGeneratorWindow.onMazeSpecChosen.connect(self.__onMazeSpecificationChosen)
-        mazeGeneratorWindow.show()
+        self.__mazeGeneratorWindow = MazeGeneratorWindow(parent=self)
+        self.__mazeGeneratorWindow.onMazeSpecChosen.connect(
+            self.__onMazeSpecificationChosen
+        )
+        self.__mazeGeneratorWindow.show()
+
+    def destroy(self, destroyWindow: bool, destroySubWindows: bool) -> None:
+        if destroySubWindows:
+            self.__mazeGeneratorWindow.destroy(True, destroySubWindows)
+        return super().destroy(
+            destroyWindow=destroyWindow, destroySubWindows=destroySubWindows
+        )

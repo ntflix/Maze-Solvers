@@ -1,28 +1,19 @@
-from modules.user_interface.ui_translation.maze_generation_specification import (
-    MazeGenerationSpecification,
-)
-from modules.user_interface.maze_view.controls.maze_controls_view import (
-    MazeControlsView,
-)
+from PyQt6.QtGui import QAction, QKeySequence
+from modules.user_interface.maze_view.maze_view_controller import MazeViewController
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from PyQt6.QtCore import QSize
-from modules.user_interface.maze_view.maze_view import MazeView
 from typing import Any, Optional, Tuple
 from PyQt6.QtWidgets import (
-    QFrame,
-    QHBoxLayout,
+    QMainWindow,
+    QMenuBar,
     QWidget,
 )
 
 
-class MazeViewWindow(QWidget):
-    __maze: MazeProtocol
-
+class MazeViewWindow(QMainWindow):
     def __init__(
         self,
         maze: MazeProtocol,
         parent: Optional[QWidget] = None,
-        minimumSize: QSize = QSize(400, 400),
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
     ) -> None:
@@ -31,59 +22,35 @@ class MazeViewWindow(QWidget):
         """
         super(MazeViewWindow, self).__init__(parent)
 
-        self.__maze = maze
-
-        layout = QHBoxLayout()
-
-        layout.addWidget(
-            MazeView(
-                minimumSize=minimumSize,
-                maze=self.__maze,
-                parent=self,
-                keepAspectRatio=False,
-            )
+        mazeViewController = MazeViewController(
+            maze=maze,
+            parent=self,
+            *args,
+            **kwargs,
         )
 
-        separator = QFrame()
-        separator.setFrameShape(QFrame.Shape.VLine)
-        separator.setFrameShadow(QFrame.Shadow.Sunken)
-        layout.addWidget(separator)
+        self.setMenuBar(self.__getMenuBar())
+        self.setCentralWidget(mazeViewController)
 
-        layout.addWidget(
-            MazeControlsView(
-                onPlayButtonPressed=self.__onPlayButtonPressed,
-                onPauseButtonPressed=self.__onPauseButtonPressed,
-                onStepButtonPressed=self.__onStepButtonPressed,
-                onRestartButtonPressed=self.__onRestartButtonPressed,
-                onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
-                onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
-                onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
-                onGenerateMazeButtonPressed=self.__onMazeGenerateButtonPressed,
-            )
+    def __getMenuBar(self) -> QMenuBar:
+        bar = self.menuBar()
+
+        file = bar.addMenu("File")
+        file.addAction("New")
+
+        save = QAction("Save", self)
+        save.setShortcut(QKeySequence.StandardKey.Save)
+        file.addAction(save)
+
+        edit = bar.addMenu("Edit")
+        edit.addAction("copy")
+        edit.addAction("paste")
+
+        quit = QAction("Quit", self)
+        file.addAction(quit)
+
+        file.triggered.connect(  # type: ignore
+            lambda x: print(x),
         )
 
-        self.setLayout(layout)
-
-    def __onMazeGenerateButtonPressed(self, p0: MazeGenerationSpecification) -> None:
-        print(p0)
-
-    def __onPlayButtonPressed(self) -> None:
-        print("thing")
-
-    def __onPauseButtonPressed(self) -> None:
-        print("thing")
-
-    def __onStepButtonPressed(self) -> None:
-        print("thing")
-
-    def __onRestartButtonPressed(self) -> None:
-        print("thing")
-
-    def __onSpeedControlValueChanged(self) -> None:
-        print("thing")
-
-    def __onOpenLogButtonPressed(self) -> None:
-        print("thing")
-
-    def __onAgentVarsButtonPressed(self) -> None:
-        print("thing")
+        return bar
