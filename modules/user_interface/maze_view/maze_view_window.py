@@ -50,7 +50,7 @@ class MazeViewWindow(QMainWindow):
         file.addAction(quit)
 
         file.triggered.connect(  # type: ignore
-            lambda x: print(x),
+            lambda x: print(x),  #  type: ignore
         )
 
         return bar

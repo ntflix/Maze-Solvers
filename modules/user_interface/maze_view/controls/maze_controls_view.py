@@ -28,6 +28,21 @@ class MazeControlsView(QWidget):
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
     ) -> None:
+        """A vertical view of maze generator and solver agent controls views.
+
+        Parameters
+        ----------
+        onPlayButtonPressed : pyqtSlot()
+        onPauseButtonPressed : pyqtSlot()
+        onStepButtonPressed : pyqtSlot()
+        onRestartButtonPressed : pyqtSlot()
+        onSpeedControlValueChanged : pyqtSlot()
+        onOpenLogButtonPressed : pyqtSlot()
+        onAgentVarsButtonPressed : pyqtSlot()
+        onGenerateMazeButtonPressed : pyqtSlot(MazeGenerationSpecification)
+        parent : Optional[QWidget], optional
+            Parent widget, by default None
+        """
         super().__init__(parent=parent, *args, **kwargs)
         self.setMaximumWidth(400)
         self.setContentsMargins(0, 0, 0, 0)
