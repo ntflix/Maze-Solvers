@@ -1,3 +1,7 @@
+from modules.maze_solvers.solvers.random_mouse import RandomMouse
+
+# from modules.maze_solvers.solvers.pledge import PledgeSolver
+from modules.maze_solvers.solvers.wall_follower import WallFollower
 from modules.common_structures.xy import XY
 from modules.user_interface.maze_view.controls.solver_controls_dropdown import (
     SolverControlsView,
@@ -9,6 +13,7 @@ from modules.user_interface.maze_view.controls.xy_size_picker import XYPicker
 from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from typing import Any, Optional, Tuple
 from PyQt6.QtWidgets import (
+    QComboBox,
     QFormLayout,
     QGroupBox,
     QPushButton,
@@ -75,10 +80,15 @@ class SolveMazeGroupView(QWidget):
         self.__endPosition = XYPicker(
             minimum=XY(0, 0),
             maximum=self.__maximumXY,
-            initialValue=XY(0, 0),
+            initialValue=self.__maximumXY,
             parent=self,
             label="•",
         )
+
+        self.__solverTypePicker = QComboBox(self)
+        self.__solverTypePicker.addItem("Wall Follower", WallFollower)
+        # self.__solverTypePicker.addItem("Pledge Solver", PledgeSolver)
+        self.__solverTypePicker.addItem("Random Mouse", RandomMouse)
 
         solveButton = QPushButton("Solve")
         solveButton.clicked.connect(  # type: ignore
@@ -86,6 +96,7 @@ class SolveMazeGroupView(QWidget):
                 MazeSolverSpecification(
                     startPosition=self.__startPosition.getValues(),
                     endPosition=self.__endPosition.getValues(),
+                    solverType=self.__solverTypePicker.currentData(),
                 ),
             )
         )
@@ -100,13 +111,14 @@ class SolveMazeGroupView(QWidget):
             onAgentVarsButtonPressed=onAgentVarsButtonPressed,
             parent=self,
         )
-        # connect enable/disable signal to child view
+        #  connect enable/disable signal to child view
         self.setMazeSolverControlsEnabled.connect(
             self.__solverControlsDropdown.setMazeSolverControlsEnabled
         )
 
         vbox.addRow("Start Position", self.__startPosition)
         vbox.addRow("End Position", self.__endPosition)
+        vbox.addRow("Solver Type", self.__solverTypePicker)
         vbox.addRow(solveButton)
         vbox.addRow(self.__solverControlsDropdown)
 

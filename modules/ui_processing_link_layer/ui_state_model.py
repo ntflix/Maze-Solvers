@@ -1,4 +1,3 @@
-from modules.maze_solvers.solvers.wall_follower import WallFollower
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
@@ -67,15 +66,15 @@ class UIStateModel:
                 break
 
     def __onPlayButtonPressed(self) -> None:
-        result = self.__agent.advance()
-        logging.debug(result)
-
         print("__onPlayButtonPressed")
 
     def __onPauseButtonPressed(self) -> None:
         print("__onPauseButtonPressed")
 
     def __onStepButtonPressed(self) -> None:
+        # Step through the maze solver by one command
+        result = self.__agent.advance()
+        logging.debug(result)
         print("__onStepButtonPressed")
 
     def __onRestartButtonPressed(self) -> None:
@@ -117,7 +116,7 @@ class UIStateModel:
         self, solverSpecification: MazeSolverSpecification
     ) -> MazeSolver:
         # TODO: add option to UI for wall follower/pledge/random mouse algorithm
-        return WallFollower(
+        return solverSpecification.solverType(  # see how awesome protocols are? you can do stuff like this with complete safety!
             maze=self.__maze,  # type: ignore # maze is not optional here, as the solver controls view is only present when a MazeView is present
             startingPosition=solverSpecification.startPosition,
         )

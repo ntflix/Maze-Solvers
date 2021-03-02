@@ -18,7 +18,7 @@ python3 modules/ui_processing_link_layer/ui_processing_link_layer.py
 
 When running this, you're presented with a 'Load a Maze' window. For now, just hit `Load Maze…`, and select the `simply_connected_maze.db` file. The program will load this preset maze and then you can:
 * see the maze view drawn
-* press `Solve`, and then the `Play` button (watch your terminal for solver progress!)
+* press `Solve`, and then the `Step` button (watch your terminal for solver progress!)
 
 ## Dependencies
 
