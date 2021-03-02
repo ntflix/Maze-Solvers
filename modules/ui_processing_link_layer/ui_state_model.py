@@ -17,6 +17,7 @@ class UIStateModel:
     __ui: MazeSolverUI
     __maze: Optional[MazeProtocol]
     __agent: MazeSolver
+    __solverSpecification: Optional[MazeSolverSpecification]
 
     def __init__(self) -> None:
         self.__initUI()
@@ -41,6 +42,7 @@ class UIStateModel:
         self.__maze = maze
 
         self.__ui.showMazeViewWindow(self.__maze)
+        self.__ui.setMazeSolverControlsEnabled.emit(False)
 
     def __onLoadLastMazePressed(self) -> None:
         print("__onLoadLastMazePressed")
@@ -79,6 +81,10 @@ class UIStateModel:
     def __onRestartButtonPressed(self) -> None:
         print("__onRestartButtonPressed")
 
+        self.__onSolveButtonPressed(
+            self.__solverSpecification,  # type: ignore
+        )
+
     def __onSpeedControlValueChanged(self, newValue: int) -> None:
         print("__onSpeedControlValueChanged")
 
@@ -102,11 +108,15 @@ class UIStateModel:
         solverSpecification: MazeSolverSpecification,
     ):
         print("__onSolveButtonPressed", solverSpecification)
+        self.__solverSpecification = solverSpecification
         self.__agent = self.__instantiateSolver(solverSpecification)
+        self.__ui.setMazeSolverControlsEnabled.emit(True)
+        # self.__ui.setMazeSolverControlsEnabled.emit(True)
 
     def __instantiateSolver(
         self, solverSpecification: MazeSolverSpecification
     ) -> MazeSolver:
+        # TODO: add option to UI for wall follower/pledge/random mouse algorithm
         return WallFollower(
             maze=self.__maze,  # type: ignore # maze is not optional here, as the solver controls view is only present when a MazeView is present
             startingPosition=solverSpecification.startPosition,

@@ -5,7 +5,7 @@ from modules.user_interface.maze_view.controls.labelled_icon_button import (
     LabelledIconButton,
 )
 from typing import Any, Optional, Tuple
-from PyQt6.QtCore import Qt, pyqtSlot
+from PyQt6.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -39,7 +39,7 @@ class SolverControlsView(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        stateControlBoxView = SolverControlButtonsView(
+        self.__stateControlBoxView = SolverControlButtonsView(
             onPlayButtonPressed=onPlayButtonPressed,
             onPauseButtonPressed=onPauseButtonPressed,
             onStepButtonPressed=onStepButtonPressed,
@@ -47,22 +47,27 @@ class SolverControlsView(QWidget):
             parent=self,
         )
 
-        speedControl = MazeSolverSpeedControlView(
+        self.__speedControl = MazeSolverSpeedControlView(
             onValueChanged=onSpeedControlValueChanged,
             parent=self,
         )
 
-        solverWindowsButtons = SolverWindowsButtonsView(
+        self.__solverWindowsButtons = SolverWindowsButtonsView(
             onOpenLogButtonPressed=onOpenLogButtonPressed,
             onAgentVarsButtonPressed=onAgentVarsButtonPressed,
             parent=self,
         )
 
-        layout.addWidget(stateControlBoxView)
-        layout.addWidget(speedControl)
-        layout.addWidget(solverWindowsButtons)
+        layout.addWidget(self.__stateControlBoxView)
+        layout.addWidget(self.__speedControl)
+        layout.addWidget(self.__solverWindowsButtons)
 
         self.setLayout(layout)
+
+    def setMazeSolverControlsEnabled(self, enabled: bool) -> None:
+        self.__stateControlBoxView.setEnabled(enabled)
+        self.__speedControl.setEnabled(enabled)
+        self.__solverWindowsButtons.setEnabled(enabled)
 
 
 class SolverControlButtonsView(QWidget):
@@ -89,38 +94,38 @@ class SolverControlButtonsView(QWidget):
         ### Play, pause, step and restart buttons
         ###
 
-        playButton = LabelledIconButton(
+        self.__playButton = LabelledIconButton(
             icon=QStyle.StandardPixmap.SP_MediaPlay,
             labelText="Play",
             parent=self,
         )
-        playButton.onButtonPressed.connect(onPlayButtonPressed)  # type: ignore
+        self.__playButton.onButtonPressed.connect(onPlayButtonPressed)  # type: ignore
 
-        pauseButton = LabelledIconButton(
+        self.__pauseButton = LabelledIconButton(
             icon=QStyle.StandardPixmap.SP_MediaPause,
             labelText="Pause",
             parent=self,
         )
-        pauseButton.onButtonPressed.connect(onPauseButtonPressed)  # type: ignore
+        self.__pauseButton.onButtonPressed.connect(onPauseButtonPressed)  # type: ignore
 
-        stepButton = LabelledIconButton(
+        self.__stepButton = LabelledIconButton(
             icon=QStyle.StandardPixmap.SP_ArrowForward,
             labelText="Step",
             parent=self,
         )
-        stepButton.onButtonPressed.connect(onStepButtonPressed)  # type: ignore
+        self.__stepButton.onButtonPressed.connect(onStepButtonPressed)  # type: ignore
 
-        restartButton = LabelledIconButton(
+        self.__restartButton = LabelledIconButton(
             icon=QStyle.StandardPixmap.SP_BrowserReload,
             labelText="Restart",
             parent=self,
         )
-        restartButton.onButtonPressed.connect(onRestartButtonPressed)  # type: ignore
+        self.__restartButton.onButtonPressed.connect(onRestartButtonPressed)  # type: ignore
 
-        buttonsLayout.addWidget(playButton)
-        buttonsLayout.addWidget(pauseButton)
-        buttonsLayout.addWidget(stepButton)
-        buttonsLayout.addWidget(restartButton)
+        buttonsLayout.addWidget(self.__playButton)
+        buttonsLayout.addWidget(self.__pauseButton)
+        buttonsLayout.addWidget(self.__stepButton)
+        buttonsLayout.addWidget(self.__restartButton)
 
         self.setLayout(buttonsLayout)
 

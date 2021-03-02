@@ -1,7 +1,7 @@
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
@@ -27,6 +27,9 @@ class MazeSolverUI(QApplication):
     __onAgentVarsButtonPressed: pyqtSlot()
     __onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification)
     __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
+
+    setMazeSolverControlsEnabled = pyqtSignal(bool)
+    setMazeGeneratorControlsEnabled = pyqtSignal(bool)
 
     def __init__(
         self,
@@ -93,14 +96,12 @@ class MazeSolverUI(QApplication):
                 "Attempted to load a maze that had not yet been instantiated."
             )
 
+        # connect enable/disable view signals
+        self.setMazeSolverControlsEnabled.connect(
+            self.__mazeViewWindow.setMazeSolverControlsEnabled
+        )
+        self.setMazeGeneratorControlsEnabled.connect(
+            self.__mazeViewWindow.setMazeGeneratorControlsEnabled
+        )
+
         self.__mazeViewWindow.show()
-
-    # def __onMazeLoad(self, p0: MazeProtocol) -> None:
-
-    #     # destroy the maze loader view
-    #     self.__mazeLoaderWindow.destroy(  # type: ignore # override optional
-    #         True,  # destroy window
-    #         True,  # destroy sub-windows
-    #     )
-
-    #     self.__showMazeViewWindow(p0)

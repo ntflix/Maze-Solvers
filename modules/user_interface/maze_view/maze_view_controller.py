@@ -8,7 +8,7 @@ from modules.user_interface.maze_view.controls.maze_controls_view import (
     MazeControlsView,
 )
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from PyQt6.QtCore import QSize, pyqtSlot
+from PyQt6.QtCore import QSize, pyqtSignal, pyqtSlot
 from modules.user_interface.maze_view.maze_view import MazeView
 from typing import Any, Optional, Tuple
 from PyQt6.QtWidgets import (
@@ -20,6 +20,9 @@ from typing import Any, Optional, Tuple
 
 
 class MazeViewController(QWidget):
+    setMazeSolverControlsEnabled = pyqtSignal(bool)
+    setMazeGeneratorControlsEnabled = pyqtSignal(bool)
+
     def __init__(
         self,
         maze: MazeProtocol,
@@ -56,32 +59,40 @@ class MazeViewController(QWidget):
 
         layout = QHBoxLayout()
 
-        layout.addWidget(
-            MazeView(
-                minimumSize=minimumMazeSize,
-                maze=self.__maze,
-                parent=self,
-                keepAspectRatio=False,
-            )
+        self.__mazeView = MazeView(
+            minimumSize=minimumMazeSize,
+            maze=self.__maze,
+            parent=self,
+            keepAspectRatio=False,
         )
+
+        layout.addWidget(self.__mazeView)
 
         separator = QFrame()
         separator.setFrameShape(QFrame.Shape.VLine)
         separator.setFrameShadow(QFrame.Shadow.Sunken)
         layout.addWidget(separator)
 
-        layout.addWidget(
-            MazeControlsView(
-                onPlayButtonPressed=self.__onPlayButtonPressed,
-                onPauseButtonPressed=self.__onPauseButtonPressed,
-                onStepButtonPressed=self.__onStepButtonPressed,
-                onRestartButtonPressed=self.__onRestartButtonPressed,
-                onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
-                onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
-                onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
-                onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
-                onSolveButtonPressed=self.__onSolveButtonPressed,
-            )
+        self.__mazeControlsView = MazeControlsView(
+            onPlayButtonPressed=self.__onPlayButtonPressed,
+            onPauseButtonPressed=self.__onPauseButtonPressed,
+            onStepButtonPressed=self.__onStepButtonPressed,
+            onRestartButtonPressed=self.__onRestartButtonPressed,
+            onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
+            onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
+            onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
+            onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
+            onSolveButtonPressed=self.__onSolveButtonPressed,
         )
 
+        layout.addWidget(self.__mazeControlsView)
+
         self.setLayout(layout)
+
+        # connect the signals
+        self.setMazeGeneratorControlsEnabled.connect(
+            self.__mazeControlsView.setMazeGeneratorControlsEnabled
+        )
+        self.setMazeSolverControlsEnabled.connect(
+            self.__mazeControlsView.setMazeSolverControlsEnabled
+        )

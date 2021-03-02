@@ -4,7 +4,7 @@ from modules.user_interface.ui_translation.maze_solver_specification import (
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from modules.common_structures.xy import XY
 from modules.user_interface.maze_view.controls.solve_maze_group_view import (
     SolveMazeGroupView,
@@ -17,6 +17,9 @@ from PyQt6.QtWidgets import QVBoxLayout, QWidget
 
 
 class MazeControlsView(QWidget):
+    setMazeSolverControlsEnabled = pyqtSignal(bool)
+    setMazeGeneratorControlsEnabled = pyqtSignal(bool)
+
     def __init__(
         self,
         onPlayButtonPressed: pyqtSlot(),
@@ -54,6 +57,8 @@ class MazeControlsView(QWidget):
 
         generateMazeGroupView = GenerateMazeGroupView(parent=self)
         generateMazeGroupView.onMazeSpecChosen.connect(onGenerateMazeButtonPressed)
+        # connect the enable/disable generateMazeGroupView signal to a lambda that enables/disables the generateMazeGroupView
+        self.setMazeGeneratorControlsEnabled.connect(generateMazeGroupView.setEnabled)
 
         solveMazeGroupView = SolveMazeGroupView(
             onPlayButtonPressed=onPlayButtonPressed,
@@ -66,6 +71,10 @@ class MazeControlsView(QWidget):
             onSolveButtonPressed=onSolveButtonPressed,
             mazeSize=XY(25, 25),
             parent=self,
+        )
+        # connect the enable/disable solver controls signal to a lambda that enables/disables the solver controls
+        self.setMazeSolverControlsEnabled.connect(
+            solveMazeGroupView.setMazeSolverControlsEnabled
         )
 
         layout = QVBoxLayout(self)

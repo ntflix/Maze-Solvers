@@ -18,6 +18,8 @@ from PyQt6.QtWidgets import (
 
 
 class SolveMazeGroupView(QWidget):
+    setMazeSolverControlsEnabled = pyqtSignal(bool)
+
     __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
     __startPosition: XYPicker
     __endPosition: XYPicker
@@ -88,7 +90,7 @@ class SolveMazeGroupView(QWidget):
             )
         )
 
-        solverControlsDropdown = SolverControlsView(
+        self.__solverControlsDropdown = SolverControlsView(
             onPlayButtonPressed=onPlayButtonPressed,
             onPauseButtonPressed=onPauseButtonPressed,
             onStepButtonPressed=onStepButtonPressed,
@@ -98,10 +100,14 @@ class SolveMazeGroupView(QWidget):
             onAgentVarsButtonPressed=onAgentVarsButtonPressed,
             parent=self,
         )
+        # connect enable/disable signal to child view
+        self.setMazeSolverControlsEnabled.connect(
+            self.__solverControlsDropdown.setMazeSolverControlsEnabled
+        )
 
         vbox.addRow("Start Position", self.__startPosition)
         vbox.addRow("End Position", self.__endPosition)
         vbox.addRow(solveButton)
-        vbox.addRow(solverControlsDropdown)
+        vbox.addRow(self.__solverControlsDropdown)
 
         self.setLayout(layout)

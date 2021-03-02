@@ -5,7 +5,7 @@ from modules.user_interface.ui_translation.maze_generation_specification import 
     MazeGenerationSpecification,
 )
 from PyQt6.QtGui import QAction, QKeySequence
-from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSignal, pyqtSlot
 from modules.user_interface.maze_view.maze_view_controller import MazeViewController
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from typing import Any, Optional, Tuple
@@ -26,6 +26,9 @@ class MazeViewWindow(QMainWindow):
     __onAgentVarsButtonPressed: pyqtSlot()
     __onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification)
     __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
+
+    setMazeSolverControlsEnabled = pyqtSignal(bool)
+    setMazeGeneratorControlsEnabled = pyqtSignal(bool)
 
     def __init__(
         self,
@@ -72,6 +75,13 @@ class MazeViewWindow(QMainWindow):
             parent=self,
             *args,
             **kwargs,
+        )
+        # connect enable/disable view signals
+        self.setMazeGeneratorControlsEnabled.connect(
+            mazeViewController.setMazeGeneratorControlsEnabled
+        )
+        self.setMazeSolverControlsEnabled.connect(
+            mazeViewController.setMazeSolverControlsEnabled
         )
 
         self.setMenuBar(self.__getMenuBar())
