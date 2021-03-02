@@ -1,4 +1,6 @@
-from typing import Any, Optional, Tuple
+from modules.maze_solvers.absolute_direction import AbsoluteDirection
+from modules.common_structures.xy import XY
+from typing import Any, Optional, Set, Tuple
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6.QtGui import (
     QPainter,
@@ -56,7 +58,14 @@ class MazeView(QWidget):
         self.__painter.end()
 
     def __createMazePath(self) -> QPainterPath:
+        cellSize = (
+            self.width() / self.__maze.size.x,
+            self.height() / self.__maze.size.y,
+        )
+
         path = QPainterPath(QPointF(0, 0))
+
+        # draw outline of maze
         path.addRect(
             0,
             0,
@@ -64,34 +73,78 @@ class MazeView(QWidget):
             self.height() - 1,
         )
 
-        for x in range(self.__maze.size.x):
-            path.moveTo(
-                QPointF(
-                    (x * (self.width() / self.__maze.size.x)),
-                    0,
-                ),
-            )
+        for y in range(self.__maze.size.y):
+            currentY = y * cellSize[1]
 
-            path.lineTo(
-                QPointF(
-                    (x * (self.width() / self.__maze.size.x)),
-                    self.height(),
-                ),
-            )
+            for x in range(self.__maze.size.y):
+                currentX = x * cellSize[0]
 
-            for y in range(self.__maze.size.y):
-                path.moveTo(
-                    QPointF(
-                        0,
-                        (y * (self.height() / self.__maze.size.y)),
-                    )
-                )
+                # get the list of walls surrounding this cell
+                thisCellsWalls: Set[
+                    AbsoluteDirection
+                ] = self.__maze.getWallsOfCellAtCoordinate(XY(x, y))
 
-                path.lineTo(
-                    QPointF(
-                        self.width(),
-                        (y * (self.height() / self.__maze.size.y)),
-                    )
-                )
+                # draw north and west walls only, because the next iterations will draw the south and east walls for us (don't wanna waste paint /s)
+                if AbsoluteDirection.west in thisCellsWalls:
+                    path.moveTo(currentX, currentY)
+                    path.lineTo(currentX, currentY + cellSize[1])
+
+                if AbsoluteDirection.north in thisCellsWalls:
+                    path.moveTo(currentX, currentY)
+                    path.lineTo(currentX + cellSize[0], currentY)
 
         return path
+
+    # def __createMazePath(
+    #     self,
+    # ) -> QPainterPath:
+    #     cellSize = (
+    #         self.width() / self.__maze.size.x,
+    #         self.height() / self.__maze.size.y,
+    #     )
+
+    #     path = QPainterPath(QPointF(0, 0))
+
+    #     # draw outline of maze
+    #     path.addRect(
+    #         0,
+    #         0,
+    #         self.width() - 1,
+    #         self.height() - 1,
+    #     )
+
+    #     for x in range(self.__maze.size.x):
+    #         currentX = x * cellSize[0]
+
+    #         path.moveTo(
+    #             QPointF(
+    #                 currentX,
+    #                 0,
+    #             ),
+    #         )
+
+    #         path.lineTo(
+    #             QPointF(
+    #                 currentX,
+    #                 self.height(),
+    #             ),
+    #         )
+
+    #         for y in range(self.__maze.size.y):
+    #             currentY = y * cellSize[1]
+
+    #             path.moveTo(
+    #                 QPointF(
+    #                     0,
+    #                     currentY,
+    #                 )
+    #             )
+
+    #             path.lineTo(
+    #                 QPointF(
+    #                     self.width(),
+    #                     currentY,
+    #                 )
+    #             )
+
+    #     return path
