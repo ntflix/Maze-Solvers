@@ -67,21 +67,3 @@ class GenerateMazeGroupView(QWidget):
                 self.__simplyConnectedCheckbox.isChecked(),
             ),
         ),
-
-    # def __generateMaze(self, mazeSpec: MazeGenerationSpecification) -> MazeProtocol:
-    #     maze: MazeProtocol
-    #     # log to debug
-    #     logging.debug(
-    #         "Generating a "
-    #         + ("non-" if mazeSpec.simplyConnected else "")
-    #         + f"simply-connected maze of size {mazeSpec.size}."
-    #     )
-
-    #     if mazeSpec.simplyConnected:
-    #         # generate a simply connected maze
-    #         mazeGenerator = RecursiveBacktracker(mazeSpec.size)
-    #         maze = mazeGenerator.generate()
-    #     else:
-    #         mazeGenerator = RecursiveBacktracker(mazeSpec.size)
-    #         maze = mazeGenerator.generate()
-    #     return maze
