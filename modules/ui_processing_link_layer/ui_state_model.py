@@ -1,16 +1,19 @@
+from modules.user_interface.ui_translation.maze_solver_specification import (
+    MazeSolverSpecification,
+)
+from typing import Optional
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.file_handling.maze.maze_file_handler import MazeFileHandler
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
-from typing import Protocol
-from PyQt6.QtWidgets import QWidget
 from modules.user_interface.main_window import MazeSolverUI
 import logging
 
 
 class UIStateModel:
     __ui: MazeSolverUI
+    __maze: Optional[MazeProtocol]
 
     def __init__(self) -> None:
         self.__initUI()
@@ -27,10 +30,14 @@ class UIStateModel:
             onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
             onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
             onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
+            onSolveButtonPressed=self.__onSolveButtonPressed,
         )
 
     def __onMazeInstantiated(self, maze: MazeProtocol) -> None:
-        print(maze)
+        logging.debug(f"Maze {maze} instantiated")
+        self.__maze = maze
+
+        self.__ui.showMazeViewWindow(self.__maze)
 
     def __onLoadLastMazePressed(self) -> None:
         print("__onLoadLastMazePressed")
@@ -51,7 +58,6 @@ class UIStateModel:
                 raise FileNotFoundError()
             else:
                 logging.debug(f"Maze loaded from `{filePath}` successfully.")
-                print("__onMazeLoaded")
                 self.__onMazeInstantiated(maze)
                 break
 
@@ -85,16 +91,12 @@ class UIStateModel:
         )
         print("__onGenerateMazeButtonPressed", mazeSpecification)
 
+    def __onSolveButtonPressed(
+        self,
+        solverSpecification: MazeSolverSpecification,
+    ):
+        print("__onSolveButtonPressed", solverSpecification)
+
     def startApplication(self) -> int:
+        self.__ui.showMazeLoader()
         return self.__ui.exec()
-
-
-class UIWidgetState(Protocol):
-    def __init__(self, parent: QWidget) -> None:
-        raise NotImplementedError("Tried calling initializer method on Protocol class")
-
-    def getAsParent(self) -> QWidget:
-        raise NotImplementedError("Tried calling `getAsParent` on Protocol class")
-
-    def showView(self) -> None:
-        raise NotImplementedError("Tried calling `showView` on Protocol class")

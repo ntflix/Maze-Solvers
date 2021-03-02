@@ -1,3 +1,6 @@
+from modules.user_interface.ui_translation.maze_solver_specification import (
+    MazeSolverSpecification,
+)
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
@@ -24,6 +27,7 @@ class MazeControlsView(QWidget):
         onOpenLogButtonPressed: pyqtSlot(),
         onAgentVarsButtonPressed: pyqtSlot(),
         onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
+        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -40,6 +44,7 @@ class MazeControlsView(QWidget):
         onOpenLogButtonPressed : pyqtSlot()
         onAgentVarsButtonPressed : pyqtSlot()
         onGenerateMazeButtonPressed : pyqtSlot(MazeGenerationSpecification)
+        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
         parent : Optional[QWidget], optional
             Parent widget, by default None
         """
@@ -58,6 +63,7 @@ class MazeControlsView(QWidget):
             onSpeedControlValueChanged=onSpeedControlValueChanged,
             onOpenLogButtonPressed=onOpenLogButtonPressed,
             onAgentVarsButtonPressed=onAgentVarsButtonPressed,
+            onSolveButtonPressed=onSolveButtonPressed,
             mazeSize=XY(25, 25),
             parent=self,
         )

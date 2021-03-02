@@ -1,3 +1,6 @@
+from modules.user_interface.ui_translation.maze_solver_specification import (
+    MazeSolverSpecification,
+)
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
@@ -28,6 +31,7 @@ class MazeViewController(QWidget):
         onOpenLogButtonPressed: pyqtSlot(),
         onAgentVarsButtonPressed: pyqtSlot(),
         onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
+        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
         parent: Optional[QWidget] = None,
         minimumMazeSize: QSize = QSize(400, 400),
         *args: Tuple[Any, Any],
@@ -37,6 +41,16 @@ class MazeViewController(QWidget):
         The view controller for the MazeView and its controls bar.
         """
         super(MazeViewController, self).__init__(parent=parent, *args, **kwargs)
+
+        self.__onPlayButtonPressed = onPlayButtonPressed
+        self.__onPauseButtonPressed = onPauseButtonPressed
+        self.__onStepButtonPressed = onStepButtonPressed
+        self.__onRestartButtonPressed = onRestartButtonPressed
+        self.__onSpeedControlValueChanged = onSpeedControlValueChanged
+        self.__onOpenLogButtonPressed = onOpenLogButtonPressed
+        self.__onAgentVarsButtonPressed = onAgentVarsButtonPressed
+        self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
+        self.__onSolveButtonPressed = onSolveButtonPressed
 
         self.__maze = maze
 
@@ -66,31 +80,8 @@ class MazeViewController(QWidget):
                 onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
                 onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
                 onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
+                onSolveButtonPressed=self.__onSolveButtonPressed,
             )
         )
 
         self.setLayout(layout)
-
-    def __onGenerateMazeButtonPressed(self, p0: MazeGenerationSpecification) -> None:
-        print(p0)
-
-    def __onPlayButtonPressed(self) -> None:
-        print("__onPlayButtonPressed")
-
-    def __onPauseButtonPressed(self) -> None:
-        print("__onPauseButtonPressed")
-
-    def __onStepButtonPressed(self) -> None:
-        print("__onStepButtonPressed")
-
-    def __onRestartButtonPressed(self) -> None:
-        print("__onRestartButtonPressed")
-
-    def __onSpeedControlValueChanged(self) -> None:
-        print("__onSpeedControlValueChanged")
-
-    def __onOpenLogButtonPressed(self) -> None:
-        print("__onOpenLogButtonPressed")
-
-    def __onAgentVarsButtonPressed(self) -> None:
-        print("__onAgentVarsButtonPressed")

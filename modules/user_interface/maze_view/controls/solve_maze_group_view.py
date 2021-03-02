@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import (
 
 
 class SolveMazeGroupView(QWidget):
-    onSolveButtonPressed = pyqtSignal(MazeSolverSpecification)
+    __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
     __startPosition: XYPicker
     __endPosition: XYPicker
     __mazeSize: XY
@@ -33,6 +33,7 @@ class SolveMazeGroupView(QWidget):
         onSpeedControlValueChanged: pyqtSlot(int),
         onOpenLogButtonPressed: pyqtSlot(),
         onAgentVarsButtonPressed: pyqtSlot(),
+        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
         mazeSize: XY,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
@@ -41,6 +42,8 @@ class SolveMazeGroupView(QWidget):
         """
         Grouped controls box for controls for solving mazes
         """
+        self.__onSolveButtonPressed = onSolveButtonPressed
+
         self.__mazeSize = mazeSize
         self.__maximumXY = XY(
             self.__mazeSize.x - 1,
@@ -78,7 +81,7 @@ class SolveMazeGroupView(QWidget):
         solveButton = QPushButton("Solve")
         solveButton.clicked.connect(  # type: ignore
             lambda: self.__onSolveButtonPressed(
-                p0=MazeSolverSpecification(
+                MazeSolverSpecification(
                     startPosition=self.__startPosition.getValues(),
                     endPosition=self.__endPosition.getValues(),
                 ),
@@ -102,7 +105,3 @@ class SolveMazeGroupView(QWidget):
         vbox.addRow(solverControlsDropdown)
 
         self.setLayout(layout)
-
-    def __onSolveButtonPressed(self, p0: MazeSolverSpecification) -> None:
-        print("solve button pressed")
-        self.onSolveButtonPressed.emit(p0)

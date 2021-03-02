@@ -1,3 +1,6 @@
+from modules.user_interface.ui_translation.maze_solver_specification import (
+    MazeSolverSpecification,
+)
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
@@ -22,6 +25,7 @@ class MazeViewWindow(QMainWindow):
     __onOpenLogButtonPressed: pyqtSlot()
     __onAgentVarsButtonPressed: pyqtSlot()
     __onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification)
+    __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
 
     def __init__(
         self,
@@ -34,6 +38,7 @@ class MazeViewWindow(QMainWindow):
         onOpenLogButtonPressed: pyqtSlot(),
         onAgentVarsButtonPressed: pyqtSlot(),
         onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
+        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -51,6 +56,7 @@ class MazeViewWindow(QMainWindow):
         self.__onOpenLogButtonPressed = onOpenLogButtonPressed
         self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
         self.__onAgentVarsButtonPressed = onAgentVarsButtonPressed
+        self.__onSolveButtonPressed = onSolveButtonPressed
 
         mazeViewController = MazeViewController(
             maze=maze,
@@ -62,6 +68,7 @@ class MazeViewWindow(QMainWindow):
             onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
             onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
             onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
+            onSolveButtonPressed=self.__onSolveButtonPressed,
             parent=self,
             *args,
             **kwargs,

@@ -1,3 +1,6 @@
+from modules.user_interface.ui_translation.maze_solver_specification import (
+    MazeSolverSpecification,
+)
 from PyQt6.QtCore import pyqtSlot
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
@@ -23,6 +26,7 @@ class MazeSolverUI(QApplication):
     __onOpenLogButtonPressed: pyqtSlot()
     __onAgentVarsButtonPressed: pyqtSlot()
     __onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification)
+    __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
 
     def __init__(
         self,
@@ -36,6 +40,7 @@ class MazeSolverUI(QApplication):
         onOpenLogButtonPressed: pyqtSlot(),
         onAgentVarsButtonPressed: pyqtSlot(),
         onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
+        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
         argv: List[str] = [],
     ) -> None:
         """
@@ -55,10 +60,9 @@ class MazeSolverUI(QApplication):
         self.__onOpenLogButtonPressed = onOpenLogButtonPressed
         self.__onAgentVarsButtonPressed = onAgentVarsButtonPressed
         self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
+        self.__onSolveButtonPressed = onSolveButtonPressed
 
-        self.__showMazeLoader()
-
-    def __showMazeLoader(self) -> None:
+    def showMazeLoader(self) -> None:
         # construct a maze loader view
         self.__mazeLoaderWindow = MazeLoaderView(
             onMazeFilePathChosen=self.__onMazeFilePathChosen,
@@ -68,7 +72,7 @@ class MazeSolverUI(QApplication):
         # connect to method to call when maze is loaded
         self.__mazeLoaderWindow.show()
 
-    def __showMazeViewWindow(self, maze: MazeProtocol) -> None:
+    def showMazeViewWindow(self, maze: MazeProtocol) -> None:
         self.__mazeLoaderWindow.destroy(True, True)
 
         try:
@@ -82,6 +86,7 @@ class MazeSolverUI(QApplication):
                 onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
                 onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
                 onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
+                onSolveButtonPressed=self.__onSolveButtonPressed,
             )
         except:
             raise UnboundLocalError(
