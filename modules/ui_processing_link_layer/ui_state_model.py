@@ -1,3 +1,5 @@
+from modules.maze_solvers.solvers.wall_follower import WallFollower
+from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
@@ -14,6 +16,7 @@ import logging
 class UIStateModel:
     __ui: MazeSolverUI
     __maze: Optional[MazeProtocol]
+    __agent: MazeSolver
 
     def __init__(self) -> None:
         self.__initUI()
@@ -62,6 +65,9 @@ class UIStateModel:
                 break
 
     def __onPlayButtonPressed(self) -> None:
+        result = self.__agent.advance()
+        logging.debug(result)
+
         print("__onPlayButtonPressed")
 
     def __onPauseButtonPressed(self) -> None:
@@ -96,6 +102,15 @@ class UIStateModel:
         solverSpecification: MazeSolverSpecification,
     ):
         print("__onSolveButtonPressed", solverSpecification)
+        self.__agent = self.__instantiateSolver(solverSpecification)
+
+    def __instantiateSolver(
+        self, solverSpecification: MazeSolverSpecification
+    ) -> MazeSolver:
+        return WallFollower(
+            maze=self.__maze,  # type: ignore # maze is not optional here, as the solver controls view is only present when a MazeView is present
+            startingPosition=solverSpecification.startPosition,
+        )
 
     def startApplication(self) -> int:
         self.__ui.showMazeLoader()
