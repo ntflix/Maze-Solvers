@@ -12,3 +12,7 @@ class MazeGenerationSpecification:
     ) -> None:
         self.size = size
         self.simplyConnected = simplyConnected
+
+    def __str__(self) -> str:
+        text = f"MazeGenerationSpecification(size: {self.size}, simplyConnected: {self.simplyConnected})"
+        return text

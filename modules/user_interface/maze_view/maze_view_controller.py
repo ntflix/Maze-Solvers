@@ -5,7 +5,7 @@ from modules.user_interface.maze_view.controls.maze_controls_view import (
     MazeControlsView,
 )
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, pyqtSlot
 from modules.user_interface.maze_view.maze_view import MazeView
 from typing import Any, Optional, Tuple
 from PyQt6.QtWidgets import (
@@ -20,6 +20,14 @@ class MazeViewController(QWidget):
     def __init__(
         self,
         maze: MazeProtocol,
+        onPlayButtonPressed: pyqtSlot(),
+        onPauseButtonPressed: pyqtSlot(),
+        onStepButtonPressed: pyqtSlot(),
+        onRestartButtonPressed: pyqtSlot(),
+        onSpeedControlValueChanged: pyqtSlot(int),
+        onOpenLogButtonPressed: pyqtSlot(),
+        onAgentVarsButtonPressed: pyqtSlot(),
+        onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
         parent: Optional[QWidget] = None,
         minimumMazeSize: QSize = QSize(400, 400),
         *args: Tuple[Any, Any],
@@ -57,33 +65,32 @@ class MazeViewController(QWidget):
                 onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
                 onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
                 onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
-                onGenerateMazeButtonPressed=self.__onMazeGenerateButtonPressed,
+                onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
             )
         )
 
         self.setLayout(layout)
-        # self.show()
 
-    def __onMazeGenerateButtonPressed(self, p0: MazeGenerationSpecification) -> None:
+    def __onGenerateMazeButtonPressed(self, p0: MazeGenerationSpecification) -> None:
         print(p0)
 
     def __onPlayButtonPressed(self) -> None:
-        print("thing")
+        print("__onPlayButtonPressed")
 
     def __onPauseButtonPressed(self) -> None:
-        print("thing")
+        print("__onPauseButtonPressed")
 
     def __onStepButtonPressed(self) -> None:
-        print("thing")
+        print("__onStepButtonPressed")
 
     def __onRestartButtonPressed(self) -> None:
-        print("thing")
+        print("__onRestartButtonPressed")
 
     def __onSpeedControlValueChanged(self) -> None:
-        print("thing")
+        print("__onSpeedControlValueChanged")
 
     def __onOpenLogButtonPressed(self) -> None:
-        print("thing")
+        print("__onOpenLogButtonPressed")
 
     def __onAgentVarsButtonPressed(self) -> None:
-        print("thing")
+        print("__onAgentVarsButtonPressed")

@@ -1,4 +1,8 @@
+from modules.user_interface.ui_translation.maze_generation_specification import (
+    MazeGenerationSpecification,
+)
 from PyQt6.QtGui import QAction, QKeySequence
+from PyQt6.QtCore import pyqtSlot
 from modules.user_interface.maze_view.maze_view_controller import MazeViewController
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from typing import Any, Optional, Tuple
@@ -10,9 +14,26 @@ from PyQt6.QtWidgets import (
 
 
 class MazeViewWindow(QMainWindow):
+    __onPlayButtonPressed: pyqtSlot()
+    __onPauseButtonPressed: pyqtSlot()
+    __onStepButtonPressed: pyqtSlot()
+    __onRestartButtonPressed: pyqtSlot()
+    __onSpeedControlValueChanged: pyqtSlot(int)
+    __onOpenLogButtonPressed: pyqtSlot()
+    __onAgentVarsButtonPressed: pyqtSlot()
+    __onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification)
+
     def __init__(
         self,
         maze: MazeProtocol,
+        onPlayButtonPressed: pyqtSlot(),
+        onPauseButtonPressed: pyqtSlot(),
+        onStepButtonPressed: pyqtSlot(),
+        onRestartButtonPressed: pyqtSlot(),
+        onSpeedControlValueChanged: pyqtSlot(int),
+        onOpenLogButtonPressed: pyqtSlot(),
+        onAgentVarsButtonPressed: pyqtSlot(),
+        onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -22,8 +43,25 @@ class MazeViewWindow(QMainWindow):
         """
         super(MazeViewWindow, self).__init__(parent)
 
+        self.__onPlayButtonPressed = onPlayButtonPressed
+        self.__onPauseButtonPressed = onPauseButtonPressed
+        self.__onStepButtonPressed = onStepButtonPressed
+        self.__onRestartButtonPressed = onRestartButtonPressed
+        self.__onSpeedControlValueChanged = onSpeedControlValueChanged
+        self.__onOpenLogButtonPressed = onOpenLogButtonPressed
+        self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
+        self.__onAgentVarsButtonPressed = onAgentVarsButtonPressed
+
         mazeViewController = MazeViewController(
             maze=maze,
+            onPlayButtonPressed=self.__onPlayButtonPressed,
+            onPauseButtonPressed=self.__onPauseButtonPressed,
+            onStepButtonPressed=self.__onStepButtonPressed,
+            onRestartButtonPressed=self.__onRestartButtonPressed,
+            onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
+            onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
+            onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
+            onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
             parent=self,
             *args,
             **kwargs,

@@ -4,25 +4,23 @@ from modules.user_interface.maze_loader_windows.maze_generator_window import (
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
-from modules.file_handling.maze.maze_file_handler import MazeFileHandler
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6.QtCore import pyqtSlot
 from typing import Any, List, Optional, Tuple
 from PyQt6.QtWidgets import QFileDialog, QPushButton, QVBoxLayout, QWidget
-import logging
 
 
 class MazeLoaderView(QWidget):
     __onMazeSpecificationChosen: pyqtSlot(MazeGenerationSpecification)
-    __onMazeLoaded: pyqtSlot(MazeProtocol)
+    __onMazeFilePathChosen: pyqtSlot(MazeProtocol)
     __onLoadLastMazeChosen: pyqtSlot()
     __mazeGeneratorWindow: MazeGeneratorWindow
-    __hasMazeGeneratorWindow: bool = False
+    __hasMazeGeneratorSubwindow: bool = False
 
     def __init__(
         self,
         onLoadLastMazePressed: pyqtSlot(),
-        onMazeLoaded: pyqtSlot(MazeProtocol),
+        onMazeFilePathChosen: pyqtSlot(str),
         onMazeSpecificationChosen: pyqtSlot(MazeGenerationSpecification),
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
@@ -36,7 +34,7 @@ class MazeLoaderView(QWidget):
         self.setWindowTitle("Load a Maze")
 
         self.__onLoadLastMazeChosen = onLoadLastMazePressed
-        self.__onMazeLoaded = onMazeLoaded
+        self.__onMazeFilePathChosen = onMazeFilePathChosen
         self.__onMazeSpecificationChosen = onMazeSpecificationChosen
 
         # create layout
@@ -74,31 +72,15 @@ class MazeLoaderView(QWidget):
         fileDialog.setFileMode(QFileDialog.FileMode.ExistingFile)
 
         filePath: str = ""
-        maze: MazeProtocol
-        mazeIsValid = False
 
-        while not mazeIsValid:
-            filePath = fileDialog.getOpenFileName(filter=filesFilter)[0]
-            fileHandler = MazeFileHandler(filePath)
-            try:
-                maze = fileHandler.load()
-                mazeIsValid = True
-            except FileNotFoundError as noFileError:
-                logging.error(f"Maze file does not exist: {noFileError}")
-                raise FileNotFoundError()
-            except RuntimeError as invalidFileError:
-                logging.error(f"Invalid maze file: {invalidFileError}")
-                raise FileNotFoundError()
-
-        self.__onMazeLoaded(
-            maze,  # type: ignore
-        )
+        filePath = fileDialog.getOpenFileName(filter=filesFilter)[0]
+        self.__onMazeFilePathChosen(filePath)
 
     def __onGenerateMazeButtonPressed(self) -> None:
         """
         Presents a "Generate Maze" window to the user and connects the result signal to `self.__mazeGenerateButtonPressedWithSpecification`.
         """
-        self.__hasMazeGeneratorWindow = True
+        self.__hasMazeGeneratorSubwindow = True
         self.__mazeGeneratorWindow = MazeGeneratorWindow(parent=self)
         self.__mazeGeneratorWindow.onMazeSpecChosen.connect(
             self.__onMazeSpecificationChosen
@@ -106,7 +88,7 @@ class MazeLoaderView(QWidget):
         self.__mazeGeneratorWindow.show()
 
     def destroy(self, destroyWindow: bool, destroySubWindows: bool) -> None:
-        if self.__hasMazeGeneratorWindow:
+        if self.__hasMazeGeneratorSubwindow:
             if destroySubWindows:
                 self.__mazeGeneratorWindow.destroy(True, destroySubWindows)
             return super().destroy(
