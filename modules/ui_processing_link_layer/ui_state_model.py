@@ -106,7 +106,7 @@ class UIStateModel:
         self,
         solverSpecification: MazeSolverSpecification,
     ):
-        print("__onSolveButtonPressed", solverSpecification)
+        print(f"__onSolveButtonPressed {solverSpecification}")
         self.__solverSpecification = solverSpecification
         self.__agent = self.__instantiateSolver(solverSpecification)
         self.__ui.setMazeSolverControlsEnabled.emit(True)

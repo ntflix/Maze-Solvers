@@ -14,3 +14,6 @@ class MazeSolverSpecification:
         self.startPosition = startPosition
         self.endPosition = endPosition
         self.solverType = solverType
+
+    def __str__(self) -> str:
+        return f"MazeSolverSpecification(startPosition: {self.startPosition}, endPosition: {self.endPosition}, solverType: {self.solverType})"
