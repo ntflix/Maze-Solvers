@@ -8,9 +8,9 @@ from modules.user_interface.maze_view.controls.maze_controls_view import (
     MazeControlsView,
 )
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from PyQt6.QtCore import QSize, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QSize, pyqtSignal
 from modules.user_interface.maze_view.maze_view import MazeView
-from typing import Any, Optional, Tuple
+from typing import Any, Callable, Optional, Tuple
 from PyQt6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -26,15 +26,15 @@ class MazeViewController(QWidget):
     def __init__(
         self,
         maze: MazeProtocol,
-        onPlayButtonPressed: pyqtSlot(),
-        onPauseButtonPressed: pyqtSlot(),
-        onStepButtonPressed: pyqtSlot(),
-        onRestartButtonPressed: pyqtSlot(),
-        onSpeedControlValueChanged: pyqtSlot(int),
-        onOpenLogButtonPressed: pyqtSlot(),
-        onAgentVarsButtonPressed: pyqtSlot(),
-        onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
-        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
+        onPlayButtonPressed: Callable[[], None],
+        onPauseButtonPressed: Callable[[], None],
+        onStepButtonPressed: Callable[[], None],
+        onRestartButtonPressed: Callable[[], None],
+        onSpeedControlValueChanged: Callable[[int], None],
+        onOpenLogButtonPressed: Callable[[], None],
+        onAgentVarsButtonPressed: Callable[[], None],
+        onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None],
+        onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
         parent: Optional[QWidget] = None,
         minimumMazeSize: QSize = QSize(400, 400),
         *args: Tuple[Any, Any],

@@ -4,24 +4,22 @@ from modules.user_interface.maze_loader_windows.maze_generator_window import (
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
-from modules.data_structures.maze.maze_protocol import MazeProtocol
-from PyQt6.QtCore import pyqtSlot
-from typing import Any, List, Optional, Tuple
+from typing import Any, Callable, List, Optional, Tuple
 from PyQt6.QtWidgets import QFileDialog, QPushButton, QVBoxLayout, QWidget
 
 
 class MazeLoaderView(QWidget):
-    __onMazeSpecificationChosen: pyqtSlot(MazeGenerationSpecification)
-    __onMazeFilePathChosen: pyqtSlot(MazeProtocol)
-    __onLoadLastMazeChosen: pyqtSlot()
+    __onMazeSpecificationChosen: Callable[[MazeGenerationSpecification], None]
+    __onMazeFilePathChosen: Callable[[str], None]
+    __onLoadLastMazeChosen: Callable[[], None]
     __mazeGeneratorWindow: MazeGeneratorWindow
     __hasMazeGeneratorSubwindow: bool = False
 
     def __init__(
         self,
-        onLoadLastMazePressed: pyqtSlot(),
-        onMazeFilePathChosen: pyqtSlot(str),
-        onMazeSpecificationChosen: pyqtSlot(MazeGenerationSpecification),
+        onLoadLastMazePressed: Callable[[], None],
+        onMazeLoadedFromPath: Callable[[str], None],
+        onMazeSpecificationChosen: Callable[[MazeGenerationSpecification], None],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -34,7 +32,7 @@ class MazeLoaderView(QWidget):
         self.setWindowTitle("Load a Maze")
 
         self.__onLoadLastMazeChosen = onLoadLastMazePressed
-        self.__onMazeFilePathChosen = onMazeFilePathChosen
+        self.__onMazeFilePathChosen = onMazeLoadedFromPath
         self.__onMazeSpecificationChosen = onMazeSpecificationChosen
 
         # create layout

@@ -1,14 +1,14 @@
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtCore import pyqtSignal
 from modules.user_interface.ui_translation.maze_generation_specification import (
     MazeGenerationSpecification,
 )
 from modules.user_interface.maze_loader_windows.maze_loader_view import MazeLoaderView
 from modules.user_interface.maze_view.maze_view_window import MazeViewWindow
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from typing import List
+from typing import Callable, List
 from PyQt6.QtWidgets import QApplication
 
 
@@ -16,34 +16,34 @@ class MazeSolverUI(QApplication):
     __mazeLoaderWindow: MazeLoaderView
     __mazeViewWindow: MazeViewWindow
 
-    __onLoadLastMazePressed: pyqtSlot()
-    __onMazeFilePathChosen: pyqtSlot(str)
-    __onPlayButtonPressed: pyqtSlot()
-    __onPauseButtonPressed: pyqtSlot()
-    __onStepButtonPressed: pyqtSlot()
-    __onRestartButtonPressed: pyqtSlot()
-    __onSpeedControlValueChanged: pyqtSlot(int)
-    __onOpenLogButtonPressed: pyqtSlot()
-    __onAgentVarsButtonPressed: pyqtSlot()
-    __onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification)
-    __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
+    __onLoadLastMazePressed: Callable[[], None]
+    __onMazeFilePathChosen: Callable[[str], None]
+    __onPlayButtonPressed: Callable[[], None]
+    __onPauseButtonPressed: Callable[[], None]
+    __onStepButtonPressed: Callable[[], None]
+    __onRestartButtonPressed: Callable[[], None]
+    __onSpeedControlValueChanged: Callable[[int], None]
+    __onOpenLogButtonPressed: Callable[[], None]
+    __onAgentVarsButtonPressed: Callable[[], None]
+    __onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None]
+    __onSolveButtonPressed: Callable[[MazeSolverSpecification], None]
 
     setMazeSolverControlsEnabled = pyqtSignal(bool)
     setMazeGeneratorControlsEnabled = pyqtSignal(bool)
 
     def __init__(
         self,
-        onLoadLastMazePressed: pyqtSlot(),
-        onMazeFilePathChosen: pyqtSlot(str),
-        onPlayButtonPressed: pyqtSlot(),
-        onPauseButtonPressed: pyqtSlot(),
-        onStepButtonPressed: pyqtSlot(),
-        onRestartButtonPressed: pyqtSlot(),
-        onSpeedControlValueChanged: pyqtSlot(int),
-        onOpenLogButtonPressed: pyqtSlot(),
-        onAgentVarsButtonPressed: pyqtSlot(),
-        onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
-        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
+        onLoadLastMazePressed: Callable[[], None],
+        onMazeFilePathChosen: Callable[[str], None],
+        onPlayButtonPressed: Callable[[], None],
+        onPauseButtonPressed: Callable[[], None],
+        onStepButtonPressed: Callable[[], None],
+        onRestartButtonPressed: Callable[[], None],
+        onSpeedControlValueChanged: Callable[[int], None],
+        onOpenLogButtonPressed: Callable[[], None],
+        onAgentVarsButtonPressed: Callable[[], None],
+        onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None],
+        onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
         argv: List[str] = [],
     ) -> None:
         """
@@ -68,7 +68,7 @@ class MazeSolverUI(QApplication):
     def showMazeLoader(self) -> None:
         # construct a maze loader view
         self.__mazeLoaderWindow = MazeLoaderView(
-            onMazeFilePathChosen=self.__onMazeFilePathChosen,
+            onMazeLoadedFromPath=self.__onMazeFilePathChosen,
             onLoadLastMazePressed=self.__onLoadLastMazePressed,
             onMazeSpecificationChosen=self.__onGenerateMazeButtonPressed,
         )

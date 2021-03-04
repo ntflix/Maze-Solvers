@@ -5,10 +5,10 @@ from modules.user_interface.ui_translation.maze_generation_specification import 
     MazeGenerationSpecification,
 )
 from PyQt6.QtGui import QAction, QKeySequence
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
+from PyQt6.QtCore import pyqtSignal
 from modules.user_interface.maze_view.maze_view_controller import MazeViewController
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from typing import Any, Optional, Tuple
+from typing import Any, Callable, Optional, Tuple
 from PyQt6.QtWidgets import (
     QMainWindow,
     QMenuBar,
@@ -17,15 +17,15 @@ from PyQt6.QtWidgets import (
 
 
 class MazeViewWindow(QMainWindow):
-    __onPlayButtonPressed: pyqtSlot()
-    __onPauseButtonPressed: pyqtSlot()
-    __onStepButtonPressed: pyqtSlot()
-    __onRestartButtonPressed: pyqtSlot()
-    __onSpeedControlValueChanged: pyqtSlot(int)
-    __onOpenLogButtonPressed: pyqtSlot()
-    __onAgentVarsButtonPressed: pyqtSlot()
-    __onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification)
-    __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
+    __onPlayButtonPressed: Callable[[], None]
+    __onPauseButtonPressed: Callable[[], None]
+    __onStepButtonPressed: Callable[[], None]
+    __onRestartButtonPressed: Callable[[], None]
+    __onSpeedControlValueChanged: Callable[[int], None]
+    __onOpenLogButtonPressed: Callable[[], None]
+    __onAgentVarsButtonPressed: Callable[[], None]
+    __onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None]
+    __onSolveButtonPressed: Callable[[MazeSolverSpecification], None]
 
     setMazeSolverControlsEnabled = pyqtSignal(bool)
     setMazeGeneratorControlsEnabled = pyqtSignal(bool)
@@ -33,15 +33,15 @@ class MazeViewWindow(QMainWindow):
     def __init__(
         self,
         maze: MazeProtocol,
-        onPlayButtonPressed: pyqtSlot(),
-        onPauseButtonPressed: pyqtSlot(),
-        onStepButtonPressed: pyqtSlot(),
-        onRestartButtonPressed: pyqtSlot(),
-        onSpeedControlValueChanged: pyqtSlot(int),
-        onOpenLogButtonPressed: pyqtSlot(),
-        onAgentVarsButtonPressed: pyqtSlot(),
-        onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
-        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
+        onPlayButtonPressed: Callable[[], None],
+        onPauseButtonPressed: Callable[[], None],
+        onStepButtonPressed: Callable[[], None],
+        onRestartButtonPressed: Callable[[], None],
+        onSpeedControlValueChanged: Callable[[int], None],
+        onOpenLogButtonPressed: Callable[[], None],
+        onAgentVarsButtonPressed: Callable[[], None],
+        onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None],
+        onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],

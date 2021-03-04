@@ -4,8 +4,8 @@ from modules.user_interface.maze_view.controls.solver_windows_buttons_view impor
 from modules.user_interface.maze_view.controls.labelled_icon_button import (
     LabelledIconButton,
 )
-from typing import Any, Optional, Tuple
-from PyQt6.QtCore import Qt, pyqtSlot
+from typing import Any, Callable, Optional, Tuple
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -19,13 +19,13 @@ from PyQt6.QtWidgets import (
 class SolverControlsView(QWidget):
     def __init__(
         self,
-        onPlayButtonPressed: pyqtSlot(),
-        onPauseButtonPressed: pyqtSlot(),
-        onStepButtonPressed: pyqtSlot(),
-        onRestartButtonPressed: pyqtSlot(),
-        onSpeedControlValueChanged: pyqtSlot(int),
-        onOpenLogButtonPressed: pyqtSlot(),
-        onAgentVarsButtonPressed: pyqtSlot(),
+        onPlayButtonPressed: Callable[[], None],
+        onPauseButtonPressed: Callable[[], None],
+        onStepButtonPressed: Callable[[], None],
+        onRestartButtonPressed: Callable[[], None],
+        onSpeedControlValueChanged: Callable[[int], None],
+        onOpenLogButtonPressed: Callable[[], None],
+        onAgentVarsButtonPressed: Callable[[], None],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -73,10 +73,10 @@ class SolverControlsView(QWidget):
 class SolverControlButtonsView(QWidget):
     def __init__(
         self,
-        onPlayButtonPressed: pyqtSlot(),
-        onPauseButtonPressed: pyqtSlot(),
-        onStepButtonPressed: pyqtSlot(),
-        onRestartButtonPressed: pyqtSlot(),
+        onPlayButtonPressed: Callable[[], None],
+        onPauseButtonPressed: Callable[[], None],
+        onStepButtonPressed: Callable[[], None],
+        onRestartButtonPressed: Callable[[], None],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -133,7 +133,7 @@ class SolverControlButtonsView(QWidget):
 class MazeSolverSpeedControlView(QWidget):
     def __init__(
         self,
-        onValueChanged: pyqtSlot(int),
+        onValueChanged: Callable[[int], None],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],

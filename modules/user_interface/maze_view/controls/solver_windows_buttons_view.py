@@ -1,13 +1,13 @@
-from typing import Any, Optional, Tuple
-from PyQt6.QtCore import Qt, pyqtSlot
+from typing import Any, Callable, Optional, Tuple
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QWidget
 
 
 class SolverWindowsButtonsView(QWidget):
     def __init__(
         self,
-        onOpenLogButtonPressed: pyqtSlot(),
-        onAgentVarsButtonPressed: pyqtSlot(),
+        onOpenLogButtonPressed: Callable[[], None],
+        onAgentVarsButtonPressed: Callable[[], None],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],

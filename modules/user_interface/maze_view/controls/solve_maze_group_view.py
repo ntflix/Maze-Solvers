@@ -10,8 +10,8 @@ from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
 from modules.user_interface.maze_view.controls.xy_size_picker import XYPicker
-from PyQt6.QtCore import pyqtSignal, pyqtSlot
-from typing import Any, Optional, Tuple
+from PyQt6.QtCore import pyqtSignal
+from typing import Any, Callable, Optional, Tuple
 from PyQt6.QtWidgets import (
     QComboBox,
     QFormLayout,
@@ -25,7 +25,7 @@ from PyQt6.QtWidgets import (
 class SolveMazeGroupView(QWidget):
     setMazeSolverControlsEnabled = pyqtSignal(bool)
 
-    __onSolveButtonPressed: pyqtSlot(MazeSolverSpecification)
+    __onSolveButtonPressed: Callable[[MazeSolverSpecification], None]
     __startPosition: XYPicker
     __endPosition: XYPicker
     __mazeSize: XY
@@ -33,14 +33,14 @@ class SolveMazeGroupView(QWidget):
 
     def __init__(
         self,
-        onPlayButtonPressed: pyqtSlot(),
-        onPauseButtonPressed: pyqtSlot(),
-        onStepButtonPressed: pyqtSlot(),
-        onRestartButtonPressed: pyqtSlot(),
-        onSpeedControlValueChanged: pyqtSlot(int),
-        onOpenLogButtonPressed: pyqtSlot(),
-        onAgentVarsButtonPressed: pyqtSlot(),
-        onSolveButtonPressed: pyqtSlot(MazeSolverSpecification),
+        onPlayButtonPressed: Callable[[], None],
+        onPauseButtonPressed: Callable[[], None],
+        onStepButtonPressed: Callable[[], None],
+        onRestartButtonPressed: Callable[[], None],
+        onSpeedControlValueChanged: Callable[[int], None],
+        onOpenLogButtonPressed: Callable[[], None],
+        onAgentVarsButtonPressed: Callable[[], None],
+        onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
         mazeSize: XY,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
