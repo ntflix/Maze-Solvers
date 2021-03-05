@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
@@ -13,6 +14,9 @@ from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolve
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 
 
+WALLFOLLOWERSTEP_KEY = "wallFollowerStep"
+
+
 class WallFollower(MazeSolver):
     def __init__(
         self,
@@ -24,7 +28,7 @@ class WallFollower(MazeSolver):
         super().__init__(maze, startingPosition, startingDirection)
 
         # set our algorithmStep to 0 as we're on the 1st step of the wall follower algorithm
-        self._setAlgorithmStep(0)
+        self._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 0)
 
         logging.debug(
             f"Initialized Wall Follower maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
@@ -41,49 +45,76 @@ class WallFollower(MazeSolver):
         > Step 0
             1   GO forward
             2       Collision?
-            3           NO:
+            3       NO:
             4               GOTO #1 (if repeat)
-            5           YES:
+            5       YES:
         > Step 1
-            6               DETECT front
-            7               IF front is not clear:
+            6           DETECT front
+            7           IF front is not clear:
         > Step 2
-            8                   TURN right
-            9                   GOTO step 1
+            8               TURN right
+            9               GOTO step 1
         > Step 3
-            10              GO forward
+            10          GO forward
         > Step 4
-            11              TURN left
+            11          TURN left
         > Step 5
-            12              GO forward
-            13                  Collision?
-            14                      YES:
-            15                          GOTO step 1
-            16                      NO:
-            17                          GOTO step 4
+            12          GO forward
+            13              Collision?
+            14                  YES:
+            15                      GOTO step 1
+            16                  NO:
+            17                      GOTO step 4
         ```
         """
 
-        # initialise result var to return later on
-        result = MazeSolverCommandResult(True, "", self._state)
+        algorithmStep = self._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY][1]
+
+        logging.info(
+            f"Attempting to advance the Wall Follower. Current step: {algorithmStep}"
+        )
+
+        # use this class' static wall-follower algorithm to perform the heavy lifting
+        command, wallFollowerCommandResult = self.performAlgorithmOn(self)
+
+        # add to command history
+        self._saveCommandToHistory(command)
+
+        logging.info(
+            f"{command.humanDescription}: {wallFollowerCommandResult.humanDescription}"
+        )
+
+        return wallFollowerCommandResult
+
+    @staticmethod
+    def performAlgorithmOn(
+        solver: MazeSolver,
+    ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
+
+        # init `result` and `command` for reassignment later
+        result = MazeSolverCommandResult(True, "", solver._state)
+
         command = MazeSolverCommand(
             "",
             MazeSolverCommandType.detection,
             None,
         )
 
-        algorithmStep = self._getAlgorithmStep()
-
-        logging.info(
-            f"Attempting to advance the Wall Follower. Current step: {algorithmStep}"
-        )
+        algorithmStep: int
+        try:
+            algorithmStep = solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY][
+                1
+            ]
+        except KeyError:
+            solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 0)
+            algorithmStep = 0
 
         if algorithmStep == 0:
             # Go forward and detect if a collision ocurred.
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Move forward"
             # GO forward
-            forward = self._moveForward()
+            forward = solver._moveForward()
             # check for collision
             if forward.success:
                 # no collision, keep the algorithmStep the same to repeat
@@ -92,7 +123,7 @@ class WallFollower(MazeSolver):
             else:
                 # collision ocurred
                 # move to step 1
-                self._setAlgorithmStep(1)
+                solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 1)
                 result.success = False
                 result.humanDescription = (
                     "Detected collision while attempting to move forward"
@@ -105,13 +136,13 @@ class WallFollower(MazeSolver):
             command.commandType = MazeSolverCommandType.detection
             command.humanDescription = "Detect obstacle in front"
 
-            if self._detectForward().obstacleExists:
+            if solver._detectForward().obstacleExists:
                 #  goto step 2
-                self._setAlgorithmStep(2)
+                solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 2)
                 result.humanDescription = "Detected obstacle in front"
             else:
                 # nothing in the way, goto step 3
-                self._setAlgorithmStep(3)
+                solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 3)
                 result.humanDescription = "Nothing detected in front"
 
         elif algorithmStep == 2:
@@ -119,12 +150,12 @@ class WallFollower(MazeSolver):
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Turn right"
             # TURN right
-            self._turn(RelativeDirection.right)
+            solver._turn(RelativeDirection.right)
             # go back to detecting (step 1)
-            self._setAlgorithmStep(1)
+            solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 1)
             result.success = True
             result.humanDescription = (
-                f"Turned right to face {self._state.facingDirection}"
+                f"Turned right to face {solver._state.facingDirection}"
             )
 
         elif algorithmStep == 3:
@@ -132,9 +163,9 @@ class WallFollower(MazeSolver):
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Move forward"
             # GO forward
-            forward = self._moveForward()
+            forward = solver._moveForward()
             # goto step 4 where we turn left
-            self._setAlgorithmStep(4)
+            solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 4)
             result.success = True
             result.humanDescription = "Moved forward"
 
@@ -143,8 +174,8 @@ class WallFollower(MazeSolver):
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Turn left"
             # Actually turn left
-            self._turn(RelativeDirection.left)
-            self._setAlgorithmStep(5)
+            solver._turn(RelativeDirection.left)
+            solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 5)
             result.success = True
             result.humanDescription = "Turned left"
 
@@ -153,15 +184,15 @@ class WallFollower(MazeSolver):
             command.commandType = MazeSolverCommandType.movement
             command.humanDescription = "Move forward"
 
-            forward = self._moveForward()
+            forward = solver._moveForward()
             if forward.success:
                 # GOTO step 4 where we turn left again
-                self._setAlgorithmStep(4)
+                solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 4)
                 result.success = True
                 result.humanDescription = "Moved forward"
             else:
                 # GOTO step 1 where we turn right for a bit
-                self._setAlgorithmStep(1)
+                solver._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 1)
                 result.success = False
                 result.humanDescription = (
                     "Detected collision while attempting to move forward"
@@ -170,7 +201,7 @@ class WallFollower(MazeSolver):
         wallFollowerCommandResult = MazeSolverCommandResult(
             result.success,  # type: ignore  # for static type checking
             result.humanDescription,  # type: ignore  # for static type checking
-            self._state,
+            solver._state,
         )
 
         command = MazeSolverCommand(
@@ -179,11 +210,21 @@ class WallFollower(MazeSolver):
             commandResult=wallFollowerCommandResult,
         )
 
-        # add to command history
-        self._saveCommandToHistory(command)
+        return (command, wallFollowerCommandResult)
 
-        logging.info(
-            f"{command.humanDescription}: {wallFollowerCommandResult.humanDescription}"
-        )
 
-        return wallFollowerCommandResult
+if __name__ == "__main__":
+    from modules.data_structures.maze.maze import Maze
+
+    maze = Maze(10, 10, False)
+    wf = WallFollower(maze, XY(0, 0))
+
+    FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
+    LEVEL = 0
+    logging.basicConfig(format=FORMAT, level=LEVEL)
+    logging.getLogger().setLevel(LEVEL)
+    log = logging.getLogger()
+
+    while True:
+        wf.advance()
+        print(wf.getCurrentState().currentCell)

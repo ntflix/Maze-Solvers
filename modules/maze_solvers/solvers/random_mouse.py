@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 import random
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
@@ -23,9 +24,6 @@ class RandomMouse(MazeSolver):
         # init superclass
         super().__init__(maze, startingPosition, startingDirection)
 
-        # set our algorithmStep to 0 as we're on the 1st step of the wall follower algorithm
-        self._setAlgorithmStep(0)
-
         logging.debug(
             f"Initialized Random Mouse maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
         )
@@ -44,22 +42,31 @@ class RandomMouse(MazeSolver):
         ```
         """
 
-        algorithmStep = self._getAlgorithmStep()
+        logging.info("Advancing the random mouse.")
 
-        logging.info(
-            f"Attempting to advance the Wall Follower. Current step: {algorithmStep}"
-        )
+        command, result = self.performAlgorithmOn(self)
 
+        # add to command history
+        self._saveCommandToHistory(command)
+
+        logging.info(f"{command.humanDescription}: {result.humanDescription}")
+
+        return result
+
+    @staticmethod
+    def performAlgorithmOn(
+        solver: "MazeSolver",
+    ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
         # choose random direction to go in
         # absolute direction is less expensive than relative
         movementDirection = random.choice(AbsoluteDirection.allCases())
-        self._turnAbsolute(movementDirection)
-        forward = self._moveForward()
+        solver._turnAbsolute(movementDirection)
+        forward = solver._moveForward()
 
         result = MazeSolverCommandResult(
             forward.success,
             f"Turned {movementDirection} and attempted to move forward",
-            self._state,
+            solver._state,
         )
 
         command = MazeSolverCommand(
@@ -68,9 +75,21 @@ class RandomMouse(MazeSolver):
             result,
         )
 
-        # add to command history
-        self._saveCommandToHistory(command)
+        return (command, result)
 
-        logging.info(f"{command.humanDescription}: {result.humanDescription}")
 
-        return result
+if __name__ == "__main__":
+    from modules.data_structures.maze.maze import Maze
+
+    maze = Maze(10, 10, False)
+    rm = RandomMouse(maze, XY(0, 0))
+
+    FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
+    LEVEL = 0
+    logging.basicConfig(format=FORMAT, level=LEVEL)
+    logging.getLogger().setLevel(LEVEL)
+    log = logging.getLogger()
+
+    while True:
+        rm.advance()
+        print(rm.getCurrentState().currentCell)

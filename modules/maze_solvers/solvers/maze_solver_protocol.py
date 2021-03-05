@@ -13,7 +13,7 @@ from modules.maze_solvers.commands.commands.maze_solver_command import MazeSolve
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
     MazeSolverCommandResult,
 )
-from typing import List
+from typing import List, Tuple
 
 
 class MazeSolver:
@@ -25,9 +25,6 @@ class MazeSolver:
 
     # the actual maze
     __maze: MazeProtocol
-
-    # stage of algorithm
-    __step = 0
 
     def __init__(
         self,
@@ -44,9 +41,6 @@ class MazeSolver:
         )
         # init commands list to an empty list
         self._commands = []
-
-        # init step to 0 by default
-        self._setAlgorithmStep(0)
 
     def _moveForward(self) -> MazeSolverCommandResult:
         logging.info(
@@ -185,12 +179,6 @@ class MazeSolver:
         # (and the history of MazeSolverStates so the user can see the progress of the solver in more depth)
         return self._commands
 
-    def _setAlgorithmStep(self, stage: int) -> None:
-        self.__step = stage
-
-    def _getAlgorithmStep(self) -> int:
-        return self.__step
-
     @abstractmethod
     def advance(self) -> MazeSolverCommandResult:
         """Used to `advance` the solver by one solver instruction.
@@ -198,6 +186,13 @@ class MazeSolver:
         Returns:
             MazeSolverCommandResult: The result of the next instruction.
         """
+        raise NotImplementedError()
+
+    @staticmethod
+    @abstractmethod
+    def performAlgorithmOn(
+        solver: "MazeSolver",
+    ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
         raise NotImplementedError()
 
     def getCurrentState(self) -> MazeSolverState:
