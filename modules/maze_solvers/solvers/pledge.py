@@ -178,6 +178,7 @@ class PledgeSolver(MazeSolver):
 
 
 if __name__ == "__main__":
+    # Test out the Pledge maze solver
     from modules.data_structures.maze.maze import Maze
 
     maze = Maze(10, 10, False)
