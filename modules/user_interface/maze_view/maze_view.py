@@ -1,14 +1,16 @@
+from modules.maze_solvers.maze_solver_state import MazeSolverState
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.common_structures.xy import XY
 from typing import Any, Optional, Set, Tuple
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6.QtGui import (
+    QColorConstants,
     QPainter,
     QPainterPath,
     QPaintEvent,
     QResizeEvent,
 )
-from PyQt6.QtCore import QPointF, QSize
+from PyQt6.QtCore import QPointF, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget
 
 
@@ -16,11 +18,15 @@ class MazeView(QWidget):
     __painter: QPainter
     __maze: MazeProtocol
     __keepAspectRatio: bool
+    __solverState: Optional[MazeSolverState]
+
+    onMazeSolverAgentUpdate = pyqtSignal(MazeSolverState)
 
     def __init__(
         self,
         minimumSize: QSize,
         maze: MazeProtocol,
+        solverState: Optional[MazeSolverState],
         parent: Optional[QWidget] = None,
         keepAspectRatio: bool = True,
         *args: Tuple[Any, Any],
@@ -30,10 +36,20 @@ class MazeView(QWidget):
 
         self.__keepAspectRatio = keepAspectRatio
         self.__maze = maze
+        self.__solverState = solverState
 
         self.setContentsMargins(0, 0, 0, 0)
 
         self.setMinimumSize(minimumSize)
+
+        # connect the onMazeSolverAgentUpdate signal with our internal method
+        self.onMazeSolverAgentUpdate.connect(self.__onMazeSolverAgentUpdate)
+
+    def __onMazeSolverAgentUpdate(self, newState: MazeSolverState) -> None:
+        print("__onMazeSolverAgentUpdate called in MazeView")
+        self.__solverState = newState
+        self.update()
+        # self.__drawAgent(self.__solverState)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
         if self.__keepAspectRatio:
@@ -52,10 +68,55 @@ class MazeView(QWidget):
         # Initialise a painter to paint on this widget
         self.__painter = QPainter(self)
 
+        # only draw the agent if the solverState is bound
+        # if self.__solverState is not None:
+        # it is a bound variable so draw it
+        try:
+            agent = self.__drawAgent(self.__solverState)  # type: ignore # that's why we're in a try block
+            self.__painter.setBackground(QColorConstants.Black)
+            self.__painter.drawPath(agent)
+        except:
+            pass
+
         mazePath = self.__createMazePath()
         self.__painter.drawPath(mazePath)
 
         self.__painter.end()
+
+    def __drawAgent(
+        self,
+        solverState: MazeSolverState,
+    ) -> QPainterPath:
+        # solverAgentPainter = QPainter(self)
+        # Calculate size of each cell to be able to draw to proper scale
+        cellSize = (
+            self.width() / self.__maze.size.x,
+            self.height() / self.__maze.size.y,
+        )
+
+        # set colour of painter
+        # solverAgentPainter.setBackground(QColorConstants.DarkCyan)
+
+        solverAgent = QPainterPath()
+
+        # draw the agent shape
+        currentPosition = (
+            solverState.currentCell.x * cellSize[0],
+            solverState.currentCell.y * cellSize[1],
+        )
+
+        solverAgent.addEllipse(
+            currentPosition[0],
+            currentPosition[1],
+            cellSize[0],
+            cellSize[1],
+        )
+
+        # get the direction of the solver and rotate the paint by that amount
+        # direction = solverState.facingDirection.toDegrees()
+        # solverAgentPainter.rotate(direction)
+
+        return solverAgent
 
     def __createMazePath(self) -> QPainterPath:
         cellSize = (
@@ -94,57 +155,3 @@ class MazeView(QWidget):
                     path.lineTo(currentX + cellSize[0], currentY)
 
         return path
-
-    # def __createMazePath(
-    #     self,
-    # ) -> QPainterPath:
-    #     cellSize = (
-    #         self.width() / self.__maze.size.x,
-    #         self.height() / self.__maze.size.y,
-    #     )
-
-    #     path = QPainterPath(QPointF(0, 0))
-
-    #     # draw outline of maze
-    #     path.addRect(
-    #         0,
-    #         0,
-    #         self.width() - 1,
-    #         self.height() - 1,
-    #     )
-
-    #     for x in range(self.__maze.size.x):
-    #         currentX = x * cellSize[0]
-
-    #         path.moveTo(
-    #             QPointF(
-    #                 currentX,
-    #                 0,
-    #             ),
-    #         )
-
-    #         path.lineTo(
-    #             QPointF(
-    #                 currentX,
-    #                 self.height(),
-    #             ),
-    #         )
-
-    #         for y in range(self.__maze.size.y):
-    #             currentY = y * cellSize[1]
-
-    #             path.moveTo(
-    #                 QPointF(
-    #                     0,
-    #                     currentY,
-    #                 )
-    #             )
-
-    #             path.lineTo(
-    #                 QPointF(
-    #                     self.width(),
-    #                     currentY,
-    #                 )
-    #             )
-
-    #     return path

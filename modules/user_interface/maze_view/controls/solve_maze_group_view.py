@@ -1,3 +1,4 @@
+from modules.maze_solvers.solvers.pledge import PledgeSolver
 from modules.maze_solvers.solvers.random_mouse import RandomMouse
 
 # from modules.maze_solvers.solvers.pledge import PledgeSolver
@@ -87,7 +88,7 @@ class SolveMazeGroupView(QWidget):
 
         self.__solverTypePicker = QComboBox(self)
         self.__solverTypePicker.addItem("Wall Follower", WallFollower)
-        # self.__solverTypePicker.addItem("Pledge Solver", PledgeSolver)
+        self.__solverTypePicker.addItem("Pledge Solver", PledgeSolver)
         self.__solverTypePicker.addItem("Random Mouse", RandomMouse)
 
         solveButton = QPushButton("Solve")

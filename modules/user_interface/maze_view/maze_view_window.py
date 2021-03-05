@@ -1,3 +1,4 @@
+from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
@@ -27,12 +28,14 @@ class MazeViewWindow(QMainWindow):
     __onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None]
     __onSolveButtonPressed: Callable[[MazeSolverSpecification], None]
 
+    onMazeSolverAgentUpdate = pyqtSignal(MazeSolver)
     setMazeSolverControlsEnabled = pyqtSignal(bool)
     setMazeGeneratorControlsEnabled = pyqtSignal(bool)
 
     def __init__(
         self,
         maze: MazeProtocol,
+        solver: Optional[MazeSolver],
         onPlayButtonPressed: Callable[[], None],
         onPauseButtonPressed: Callable[[], None],
         onStepButtonPressed: Callable[[], None],
@@ -63,6 +66,7 @@ class MazeViewWindow(QMainWindow):
 
         mazeViewController = MazeViewController(
             maze=maze,
+            solver=solver,
             onPlayButtonPressed=self.__onPlayButtonPressed,
             onPauseButtonPressed=self.__onPauseButtonPressed,
             onStepButtonPressed=self.__onStepButtonPressed,
@@ -76,12 +80,20 @@ class MazeViewWindow(QMainWindow):
             *args,
             **kwargs,
         )
-        # connect enable/disable view signals
-        self.setMazeGeneratorControlsEnabled.connect(
-            mazeViewController.setMazeGeneratorControlsEnabled
+
+        # connect the onMazeSolverAgentUpdate signal to the mazeViewController
+        self.onMazeSolverAgentUpdate.connect(
+            mazeViewController.onMazeSolverAgentUpdate,
         )
+
+        # connect enable/disable view signal for maze generator controls enabled
+        self.setMazeGeneratorControlsEnabled.connect(
+            mazeViewController.setMazeGeneratorControlsEnabled,
+        )
+
+        # connect enable/disable view signal for maze solver controls enabled
         self.setMazeSolverControlsEnabled.connect(
-            mazeViewController.setMazeSolverControlsEnabled
+            mazeViewController.setMazeSolverControlsEnabled,
         )
 
         self.setMenuBar(self.__getMenuBar())

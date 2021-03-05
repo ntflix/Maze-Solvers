@@ -15,7 +15,7 @@ import logging
 class UIStateModel:
     __ui: MazeSolverUI
     __maze: Optional[MazeProtocol]
-    __agent: MazeSolver
+    __agent: Optional[MazeSolver] = None
     __solverSpecification: Optional[MazeSolverSpecification]
 
     def __init__(self) -> None:
@@ -23,6 +23,7 @@ class UIStateModel:
 
     def __initUI(self) -> None:
         self.__ui = MazeSolverUI(
+            solver=self.__agent,
             onLoadLastMazePressed=self.__onLoadLastMazePressed,
             onMazeFilePathChosen=self.__onMazeFilePathChosen,
             onPlayButtonPressed=self.__onPlayButtonPressed,
@@ -73,8 +74,10 @@ class UIStateModel:
 
     def __onStepButtonPressed(self) -> None:
         # Step through the maze solver by one command
-        result = self.__agent.advance()
+        result = self.__agent.advance()  # type: ignore # maze solver agent is bound here so we can unwrap optional value
         logging.debug(result)
+        # update UI
+        self.__ui.onMazeSolverAgentUpdate.emit(self.__agent)
         print("__onStepButtonPressed")
 
     def __onRestartButtonPressed(self) -> None:
@@ -110,6 +113,8 @@ class UIStateModel:
         self.__solverSpecification = solverSpecification
         self.__agent = self.__instantiateSolver(solverSpecification)
         self.__ui.setMazeSolverControlsEnabled.emit(True)
+        # send the mazeSolverUpdate event to the UI with our new solver agent
+        self.__ui.onMazeSolverAgentUpdate.emit(self.__agent)
         # self.__ui.setMazeSolverControlsEnabled.emit(True)
 
     def __instantiateSolver(

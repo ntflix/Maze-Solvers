@@ -1,3 +1,5 @@
+from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
+from modules.maze_solvers.maze_solver_state import MazeSolverState
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
@@ -22,10 +24,12 @@ from typing import Any, Optional, Tuple
 class MazeViewController(QWidget):
     setMazeSolverControlsEnabled = pyqtSignal(bool)
     setMazeGeneratorControlsEnabled = pyqtSignal(bool)
+    onMazeSolverAgentUpdate = pyqtSignal(MazeSolver)
 
     def __init__(
         self,
         maze: MazeProtocol,
+        solver: Optional[MazeSolver],
         onPlayButtonPressed: Callable[[], None],
         onPauseButtonPressed: Callable[[], None],
         onStepButtonPressed: Callable[[], None],
@@ -59,12 +63,33 @@ class MazeViewController(QWidget):
 
         layout = QHBoxLayout()
 
+        # safely unwrap optional solver state
+        # init solverState as None so it is not unbound
+        solverState: Optional[MazeSolverState] = None
+        if solver is not None:
+            # solver has been passed to class
+            # check it is of type MazeSolverState (mainly for static type analysis)
+            if type(solver) == MazeSolverState:
+                # set solverState to the current state of our solver
+                solverState = solver.getCurrentState()
+
         self.__mazeView = MazeView(
             minimumSize=minimumMazeSize,
             maze=self.__maze,
+            solverState=solverState,
             parent=self,
             keepAspectRatio=False,
         )
+
+        # define a method to connect solver state updates with the MazeView
+        updateMazeViewWithNewAgentState: Callable[
+            [MazeSolver], None
+        ] = lambda agent: self.__mazeView.onMazeSolverAgentUpdate.emit(
+            # send the current state to the mazeview so it can draw new state
+            agent.getCurrentState()
+        )
+        # connect said method to the onSolveAgentUpdate signal
+        self.onMazeSolverAgentUpdate.connect(updateMazeViewWithNewAgentState)
 
         layout.addWidget(self.__mazeView)
 

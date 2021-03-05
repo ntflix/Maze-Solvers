@@ -1,3 +1,4 @@
+from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
@@ -8,13 +9,14 @@ from modules.user_interface.ui_translation.maze_generation_specification import 
 from modules.user_interface.maze_loader_windows.maze_loader_view import MazeLoaderView
 from modules.user_interface.maze_view.maze_view_window import MazeViewWindow
 from modules.data_structures.maze.maze_protocol import MazeProtocol
-from typing import Callable, List
+from typing import Callable, List, Optional
 from PyQt6.QtWidgets import QApplication
 
 
 class MazeSolverUI(QApplication):
     __mazeLoaderWindow: MazeLoaderView
     __mazeViewWindow: MazeViewWindow
+    __solver: Optional[MazeSolver] = None
 
     __onLoadLastMazePressed: Callable[[], None]
     __onMazeFilePathChosen: Callable[[str], None]
@@ -28,11 +30,13 @@ class MazeSolverUI(QApplication):
     __onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None]
     __onSolveButtonPressed: Callable[[MazeSolverSpecification], None]
 
+    onMazeSolverAgentUpdate = pyqtSignal(MazeSolver)
     setMazeSolverControlsEnabled = pyqtSignal(bool)
     setMazeGeneratorControlsEnabled = pyqtSignal(bool)
 
     def __init__(
         self,
+        solver: Optional[MazeSolver],
         onLoadLastMazePressed: Callable[[], None],
         onMazeFilePathChosen: Callable[[str], None],
         onPlayButtonPressed: Callable[[], None],
@@ -53,6 +57,7 @@ class MazeSolverUI(QApplication):
         """
         super(MazeSolverUI, self).__init__(argv)
 
+        self.__solver = solver
         self.__onLoadLastMazePressed = onLoadLastMazePressed
         self.__onMazeFilePathChosen = onMazeFilePathChosen
         self.__onPlayButtonPressed = onPlayButtonPressed
@@ -78,28 +83,34 @@ class MazeSolverUI(QApplication):
     def showMazeViewWindow(self, maze: MazeProtocol) -> None:
         self.__mazeLoaderWindow.destroy(True, True)
 
-        try:
-            self.__mazeViewWindow = MazeViewWindow(
-                maze=maze,
-                onPlayButtonPressed=self.__onPlayButtonPressed,
-                onPauseButtonPressed=self.__onPauseButtonPressed,
-                onStepButtonPressed=self.__onStepButtonPressed,
-                onRestartButtonPressed=self.__onRestartButtonPressed,
-                onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
-                onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
-                onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
-                onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
-                onSolveButtonPressed=self.__onSolveButtonPressed,
-            )
-        except:
-            raise UnboundLocalError(
-                "Attempted to load a maze that had not yet been instantiated."
-            )
+        # try:
+        self.__mazeViewWindow = MazeViewWindow(
+            maze=maze,
+            solver=self.__solver,
+            onPlayButtonPressed=self.__onPlayButtonPressed,
+            onPauseButtonPressed=self.__onPauseButtonPressed,
+            onStepButtonPressed=self.__onStepButtonPressed,
+            onRestartButtonPressed=self.__onRestartButtonPressed,
+            onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
+            onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
+            onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
+            onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
+            onSolveButtonPressed=self.__onSolveButtonPressed,
+        )
+        # except:
+        #     raise UnboundLocalError(
+        #         "Attempted to load a maze that had not yet been instantiated."
+        #     )
 
-        # connect enable/disable view signals
+        # connect the onMazeSolverAgentUpdate signal to the mazeViewController
+        self.onMazeSolverAgentUpdate.connect(
+            self.__mazeViewWindow.onMazeSolverAgentUpdate
+        )
+        # connect enable/disable view signal for maze generator controls enabled
         self.setMazeSolverControlsEnabled.connect(
             self.__mazeViewWindow.setMazeSolverControlsEnabled
         )
+        # connect enable/disable view signal for maze solver controls enabled
         self.setMazeGeneratorControlsEnabled.connect(
             self.__mazeViewWindow.setMazeGeneratorControlsEnabled
         )
