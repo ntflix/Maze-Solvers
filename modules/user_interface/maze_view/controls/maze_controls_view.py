@@ -31,6 +31,7 @@ class MazeControlsView(QWidget):
         onAgentVarsButtonPressed: Callable[[], None],
         onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None],
         onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
+        mazeSize: XY,
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -69,7 +70,7 @@ class MazeControlsView(QWidget):
             onOpenLogButtonPressed=onOpenLogButtonPressed,
             onAgentVarsButtonPressed=onAgentVarsButtonPressed,
             onSolveButtonPressed=onSolveButtonPressed,
-            mazeSize=XY(25, 25),
+            mazeSize=mazeSize,
             parent=self,
         )
         # connect the enable/disable solver controls signal to a lambda that enables/disables the solver controls

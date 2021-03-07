@@ -136,10 +136,12 @@ class MazeView(QWidget):
             # east, so add half the circle size in the X direction
             edgeOfCircle[0] += cellSize[0] * 0.5
 
+        # move to the center of the circle
         solverAgent.moveTo(
             middleOfCircle[0],
             middleOfCircle[1],
         )
+        # draw a line from the center of the circle to the facing direction edge of the circle
         solverAgent.lineTo(
             edgeOfCircle[0],
             edgeOfCircle[1],

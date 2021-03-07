@@ -25,9 +25,8 @@ class MazeFileHandler(FileHandler[MazeProtocol]):
         # try to load file
         loaded = self.__persistence.load(key=self.__key)
 
-        if isinstance(loaded, MazeProtocol):  # type: ignore
-            # type checker says, "Unnecessary isinstance call; "MazeProtocol" is always an instance of "MazeProtocol"
-            # I mean yes, that's what I'm checking, because Python does not enforce strict types. Thanks anyway Pylance.
+        if isinstance(loaded, MazeProtocol):
+            # check the data is of the correct type
             return loaded
         else:
             errorMessage = (

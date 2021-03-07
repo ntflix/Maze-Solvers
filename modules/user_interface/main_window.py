@@ -1,3 +1,4 @@
+from modules.user_interface.agent_windows.agent_variables import AgentVariablesView
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
@@ -16,7 +17,8 @@ from PyQt6.QtWidgets import QApplication
 class MazeSolverUI(QApplication):
     __mazeLoaderWindow: MazeLoaderView
     __mazeViewWindow: MazeViewWindow
-    __solver: Optional[MazeSolver] = None
+    __agent: Optional[MazeSolver] = None
+    __agentVarsWindow: Optional[AgentVariablesView] = None
 
     __onLoadLastMazePressed: Callable[[], None]
     __onMazeFilePathChosen: Callable[[str], None]
@@ -26,17 +28,15 @@ class MazeSolverUI(QApplication):
     __onRestartButtonPressed: Callable[[], None]
     __onSpeedControlValueChanged: Callable[[int], None]
     __onOpenLogButtonPressed: Callable[[], None]
-    __onAgentVarsButtonPressed: Callable[[], None]
     __onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None]
     __onSolveButtonPressed: Callable[[MazeSolverSpecification], None]
 
-    onMazeSolverAgentUpdate = pyqtSignal(MazeSolver)
     setMazeSolverControlsEnabled = pyqtSignal(bool)
     setMazeGeneratorControlsEnabled = pyqtSignal(bool)
 
     def __init__(
         self,
-        solver: Optional[MazeSolver],
+        agent: Optional[MazeSolver],
         onLoadLastMazePressed: Callable[[], None],
         onMazeFilePathChosen: Callable[[str], None],
         onPlayButtonPressed: Callable[[], None],
@@ -45,9 +45,9 @@ class MazeSolverUI(QApplication):
         onRestartButtonPressed: Callable[[], None],
         onSpeedControlValueChanged: Callable[[int], None],
         onOpenLogButtonPressed: Callable[[], None],
-        onAgentVarsButtonPressed: Callable[[], None],
         onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None],
         onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
+        onAgentVariablesButtonPressed: Callable[[], None],
         argv: List[str] = [],
     ) -> None:
         """
@@ -57,7 +57,7 @@ class MazeSolverUI(QApplication):
         """
         super(MazeSolverUI, self).__init__(argv)
 
-        self.__solver = solver
+        self.__agent = agent
         self.__onLoadLastMazePressed = onLoadLastMazePressed
         self.__onMazeFilePathChosen = onMazeFilePathChosen
         self.__onPlayButtonPressed = onPlayButtonPressed
@@ -66,9 +66,9 @@ class MazeSolverUI(QApplication):
         self.__onRestartButtonPressed = onRestartButtonPressed
         self.__onSpeedControlValueChanged = onSpeedControlValueChanged
         self.__onOpenLogButtonPressed = onOpenLogButtonPressed
-        self.__onAgentVarsButtonPressed = onAgentVarsButtonPressed
         self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
         self.__onSolveButtonPressed = onSolveButtonPressed
+        self.__onAgentVariablesButtonPressed = onAgentVariablesButtonPressed
 
     def showMazeLoader(self) -> None:
         # construct a maze loader view
@@ -86,26 +86,27 @@ class MazeSolverUI(QApplication):
         # try:
         self.__mazeViewWindow = MazeViewWindow(
             maze=maze,
-            solver=self.__solver,
+            solver=self.__agent,
             onPlayButtonPressed=self.__onPlayButtonPressed,
             onPauseButtonPressed=self.__onPauseButtonPressed,
             onStepButtonPressed=self.__onStepButtonPressed,
             onRestartButtonPressed=self.__onRestartButtonPressed,
             onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
             onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
-            onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
             onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
             onSolveButtonPressed=self.__onSolveButtonPressed,
+            onAgentVariablesButtonPressed=self.__onAgentVariablesButtonPressed,
         )
+
+        # self.__mazeViewWindow.onMazeSolverAgentUpdate.connect(
+        #     self.onMazeSolverAgentUpdate
+        # )
+
         # except:
         #     raise UnboundLocalError(
         #         "Attempted to load a maze that had not yet been instantiated."
         #     )
 
-        # connect the onMazeSolverAgentUpdate signal to the mazeViewController
-        self.onMazeSolverAgentUpdate.connect(
-            self.__mazeViewWindow.onMazeSolverAgentUpdate
-        )
         # connect enable/disable view signal for maze generator controls enabled
         self.setMazeSolverControlsEnabled.connect(
             self.__mazeViewWindow.setMazeSolverControlsEnabled
@@ -116,3 +117,22 @@ class MazeSolverUI(QApplication):
         )
 
         self.__mazeViewWindow.show()
+
+    def onMazeSolverAgentUpdate(self, agent: MazeSolver) -> None:
+        self.__agent = agent
+        # connect the onMazeSolverAgentUpdate signal to the mazeView Window
+        self.__mazeViewWindow.onMazeSolverAgentUpdate.emit(agent)
+        # connect signal to the agent variables window
+        if self.__agentVarsWindow is not None:
+            self.__agentVarsWindow.onSolverVariablesChange.emit(
+                self.__agent.getCurrentState().solverSpecificVariables
+            )
+            # self.__agentVarsWindow.update()
+
+    def showAgentVariablesWindow(self) -> None:
+        if self.__agent is not None:
+            self.__agentVarsWindow = AgentVariablesView(
+                variables=self.__agent.getCurrentState().solverSpecificVariables,
+            )
+
+            self.__agentVarsWindow.show()

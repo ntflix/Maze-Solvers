@@ -22,6 +22,7 @@ from typing import Any, Optional, Tuple
 
 
 class MazeViewController(QWidget):
+
     setMazeSolverControlsEnabled = pyqtSignal(bool)
     setMazeGeneratorControlsEnabled = pyqtSignal(bool)
     onMazeSolverAgentUpdate = pyqtSignal(MazeSolver)
@@ -36,9 +37,9 @@ class MazeViewController(QWidget):
         onRestartButtonPressed: Callable[[], None],
         onSpeedControlValueChanged: Callable[[int], None],
         onOpenLogButtonPressed: Callable[[], None],
-        onAgentVarsButtonPressed: Callable[[], None],
         onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None],
         onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
+        onAgentVariablesButtonPressed: Callable[[], None],
         parent: Optional[QWidget] = None,
         minimumMazeSize: QSize = QSize(400, 400),
         *args: Tuple[Any, Any],
@@ -55,9 +56,9 @@ class MazeViewController(QWidget):
         self.__onRestartButtonPressed = onRestartButtonPressed
         self.__onSpeedControlValueChanged = onSpeedControlValueChanged
         self.__onOpenLogButtonPressed = onOpenLogButtonPressed
-        self.__onAgentVarsButtonPressed = onAgentVarsButtonPressed
         self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
         self.__onSolveButtonPressed = onSolveButtonPressed
+        self.__onAgentVarsButtonPressed = onAgentVariablesButtonPressed
 
         self.__maze = maze
 
@@ -81,15 +82,8 @@ class MazeViewController(QWidget):
             keepAspectRatio=False,
         )
 
-        # define a method to connect solver state updates with the MazeView
-        updateMazeViewWithNewAgentState: Callable[
-            [MazeSolver], None
-        ] = lambda agent: self.__mazeView.onMazeSolverAgentUpdate.emit(
-            # send the current state to the mazeview so it can draw new state
-            agent.getCurrentState()
-        )
-        # connect said method to the onSolveAgentUpdate signal
-        self.onMazeSolverAgentUpdate.connect(updateMazeViewWithNewAgentState)
+        # connect private method to the onSolverAgentUpdate signal
+        self.onMazeSolverAgentUpdate.connect(self.__onMazeSolverAgentUpdate)
 
         layout.addWidget(self.__mazeView)
 
@@ -108,6 +102,7 @@ class MazeViewController(QWidget):
             onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
             onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
             onSolveButtonPressed=self.__onSolveButtonPressed,
+            mazeSize=self.__maze.size,
         )
 
         layout.addWidget(self.__mazeControlsView)
@@ -120,4 +115,11 @@ class MazeViewController(QWidget):
         )
         self.setMazeSolverControlsEnabled.connect(
             self.__mazeControlsView.setMazeSolverControlsEnabled
+        )
+
+    def __onMazeSolverAgentUpdate(self, solver: MazeSolver) -> None:
+        # define a method to connect solver state updates with the MazeView
+        self.__mazeView.onMazeSolverAgentUpdate.emit(
+            # send the current state to the mazeview so it can draw new state
+            solver.getCurrentState()
         )

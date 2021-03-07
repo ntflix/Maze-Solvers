@@ -24,7 +24,6 @@ class MazeViewWindow(QMainWindow):
     __onRestartButtonPressed: Callable[[], None]
     __onSpeedControlValueChanged: Callable[[int], None]
     __onOpenLogButtonPressed: Callable[[], None]
-    __onAgentVarsButtonPressed: Callable[[], None]
     __onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None]
     __onSolveButtonPressed: Callable[[MazeSolverSpecification], None]
 
@@ -42,9 +41,9 @@ class MazeViewWindow(QMainWindow):
         onRestartButtonPressed: Callable[[], None],
         onSpeedControlValueChanged: Callable[[int], None],
         onOpenLogButtonPressed: Callable[[], None],
-        onAgentVarsButtonPressed: Callable[[], None],
         onGenerateMazeButtonPressed: Callable[[MazeGenerationSpecification], None],
         onSolveButtonPressed: Callable[[MazeSolverSpecification], None],
+        onAgentVariablesButtonPressed: Callable[[], None],
         parent: Optional[QWidget] = None,
         *args: Tuple[Any, Any],
         **kwargs: Tuple[Any, Any],
@@ -61,7 +60,6 @@ class MazeViewWindow(QMainWindow):
         self.__onSpeedControlValueChanged = onSpeedControlValueChanged
         self.__onOpenLogButtonPressed = onOpenLogButtonPressed
         self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
-        self.__onAgentVarsButtonPressed = onAgentVarsButtonPressed
         self.__onSolveButtonPressed = onSolveButtonPressed
 
         mazeViewController = MazeViewController(
@@ -73,18 +71,16 @@ class MazeViewWindow(QMainWindow):
             onRestartButtonPressed=self.__onRestartButtonPressed,
             onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
             onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
-            onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
             onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
             onSolveButtonPressed=self.__onSolveButtonPressed,
+            onAgentVariablesButtonPressed=onAgentVariablesButtonPressed,
             parent=self,
             *args,
             **kwargs,
         )
 
         # connect the onMazeSolverAgentUpdate signal to the mazeViewController
-        self.onMazeSolverAgentUpdate.connect(
-            mazeViewController.onMazeSolverAgentUpdate,
-        )
+        self.onMazeSolverAgentUpdate.connect(mazeViewController.onMazeSolverAgentUpdate)
 
         # connect enable/disable view signal for maze generator controls enabled
         self.setMazeGeneratorControlsEnabled.connect(

@@ -23,7 +23,7 @@ class UIStateModel:
 
     def __initUI(self) -> None:
         self.__ui = MazeSolverUI(
-            solver=self.__agent,
+            agent=self.__agent,
             onLoadLastMazePressed=self.__onLoadLastMazePressed,
             onMazeFilePathChosen=self.__onMazeFilePathChosen,
             onPlayButtonPressed=self.__onPlayButtonPressed,
@@ -32,9 +32,9 @@ class UIStateModel:
             onRestartButtonPressed=self.__onRestartButtonPressed,
             onSpeedControlValueChanged=self.__onSpeedControlValueChanged,
             onOpenLogButtonPressed=self.__onOpenLogButtonPressed,
-            onAgentVarsButtonPressed=self.__onAgentVarsButtonPressed,
             onGenerateMazeButtonPressed=self.__onGenerateMazeButtonPressed,
             onSolveButtonPressed=self.__onSolveButtonPressed,
+            onAgentVariablesButtonPressed=self.__onAgentVariablesButtonPressed,
         )
 
     def __onMazeInstantiated(self, maze: MazeProtocol) -> None:
@@ -77,7 +77,8 @@ class UIStateModel:
         result = self.__agent.advance()  # type: ignore # maze solver agent is bound here so we can unwrap optional value
         logging.debug(result)
         # update UI
-        self.__ui.onMazeSolverAgentUpdate.emit(self.__agent)
+        if self.__agent is not None:
+            self.__ui.onMazeSolverAgentUpdate(self.__agent)
         print("__onStepButtonPressed")
 
     def __onRestartButtonPressed(self) -> None:
@@ -88,13 +89,10 @@ class UIStateModel:
         )
 
     def __onSpeedControlValueChanged(self, newValue: int) -> None:
-        print("__onSpeedControlValueChanged")
+        print(f"__onSpeedControlValueChanged: {newValue}")
 
     def __onOpenLogButtonPressed(self) -> None:
         print("__onOpenLogButtonPressed")
-
-    def __onAgentVarsButtonPressed(self) -> None:
-        print("__onAgentVarsButtonPressed")
 
     def __onGenerateMazeButtonPressed(
         self,
@@ -114,13 +112,11 @@ class UIStateModel:
         self.__agent = self.__instantiateSolver(solverSpecification)
         self.__ui.setMazeSolverControlsEnabled.emit(True)
         # send the mazeSolverUpdate event to the UI with our new solver agent
-        self.__ui.onMazeSolverAgentUpdate.emit(self.__agent)
-        # self.__ui.setMazeSolverControlsEnabled.emit(True)
+        self.__ui.onMazeSolverAgentUpdate(self.__agent)
 
     def __instantiateSolver(
         self, solverSpecification: MazeSolverSpecification
     ) -> MazeSolver:
-        # TODO: add option to UI for wall follower/pledge/random mouse algorithm
         return solverSpecification.solverType(  # see how awesome protocols are? you can do stuff like this with complete safety!
             maze=self.__maze,  # type: ignore # maze is not optional here, as the solver controls view is only present when a MazeView is present
             startingPosition=solverSpecification.startPosition,
@@ -129,3 +125,7 @@ class UIStateModel:
     def startApplication(self) -> int:
         self.__ui.showMazeLoader()
         return self.__ui.exec()
+
+    def __onAgentVariablesButtonPressed(self) -> None:
+        if self.__agent is not None:
+            self.__ui.showAgentVariablesWindow()

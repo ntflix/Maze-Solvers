@@ -155,6 +155,9 @@ class MazeSolverSpeedControlView(QWidget):
         # initial value in the middle
         slider.setValue(25)
 
+        # connect the onValueChange event to the method passed to this widget
+        slider.valueChanged.connect(onValueChanged)  # type: ignore
+
         # slow/fast horizontal labels view
         slowFastLabelsLayout = QHBoxLayout()
         slowFastLabelsLayout.setContentsMargins(0, 0, 0, 0)

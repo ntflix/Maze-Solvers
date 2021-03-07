@@ -1,6 +1,6 @@
 import dbm
 from modules.file_handling.serializable import Serializable
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 import logging
 import shelve
 
@@ -13,7 +13,7 @@ class FilePersistence(Generic[T]):
     def __init__(self, path: str):
         self.__path = path
 
-    def load(self, key: str) -> T:
+    def load(self, key: str) -> Any:
         # remove '.db' from end of path so the Shelve module can load it properly (the Shelve module auto adds extension…)
         # if file ends with ".db"
         if self.__path[-3:] == ".db":
@@ -21,8 +21,8 @@ class FilePersistence(Generic[T]):
             self.__path = self.__path[:-3]
 
         logging.debug(f"Loading object from '{self.__path}'")
-        # define `loaded` variable here to be used in function scope
-        loaded: T
+        # define `loaded` variable here to be used in function scope. Type is 'any' because we do not check the type of the data.
+        loaded: Any
 
         #  open the file within a context manager
         try:
@@ -37,10 +37,6 @@ class FilePersistence(Generic[T]):
             logging.error(errorMessage)
             # aaand raise a not so nice error with the nice message for the happy user
             raise FileNotFoundError(errorMessage)
-
-        logging.debug(
-            f"Loaded object from '{self.__path}' with key '{key}' as '{loaded}'."
-        )
 
         return loaded
 
