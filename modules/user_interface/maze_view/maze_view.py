@@ -4,7 +4,6 @@ from modules.common_structures.xy import XY
 from typing import Any, Optional, Set, Tuple
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from PyQt6.QtGui import (
-    QColorConstants,
     QPainter,
     QPainterPath,
     QPaintEvent,
@@ -73,7 +72,6 @@ class MazeView(QWidget):
         # it is a bound variable so draw it
         try:
             agent = self.__drawAgent(self.__solverState)  # type: ignore # that's why we're in a try block
-            self.__painter.setBackground(QColorConstants.Black)
             self.__painter.drawPath(agent)
         except:
             pass
@@ -94,9 +92,6 @@ class MazeView(QWidget):
             self.height() / self.__maze.size.y,
         )
 
-        # set colour of painter
-        # solverAgentPainter.setBackground(QColorConstants.DarkCyan)
-
         solverAgent = QPainterPath()
 
         # draw the agent shape
@@ -112,9 +107,43 @@ class MazeView(QWidget):
             cellSize[1],
         )
 
-        # get the direction of the solver and rotate the paint by that amount
-        # direction = solverState.facingDirection.toDegrees()
-        # solverAgentPainter.rotate(direction)
+        ###
+        ### Draw the direction arrow of the solver
+        ###
+        # get the facing direction of the solver
+        direction = solverState.facingDirection
+        # calculte middle of agent solver sprite to draw from
+        middleOfCircle = (
+            currentPosition[0] + cellSize[0] * 0.5,
+            currentPosition[1] + cellSize[1] * 0.5,
+        )
+        # calculate the XY of the edge of the circle that we want to move to (to the facing direction)
+        #   start by getting the middle of the circle and then changing it accordingly
+        edgeOfCircle = [
+            middleOfCircle[0],
+            middleOfCircle[1],
+        ]
+        if direction == AbsoluteDirection.north:
+            # north, so take away half the circle size in the Y direction
+            edgeOfCircle[1] -= cellSize[1] * 0.5
+        elif direction == AbsoluteDirection.south:
+            # south, so add half the circle size in the Y direction
+            edgeOfCircle[1] += cellSize[1] * 0.5
+        elif direction == AbsoluteDirection.west:
+            # west, so take away half the circle size in the X direction
+            edgeOfCircle[0] -= cellSize[0] * 0.5
+        elif direction == AbsoluteDirection.east:
+            # east, so add half the circle size in the X direction
+            edgeOfCircle[0] += cellSize[0] * 0.5
+
+        solverAgent.moveTo(
+            middleOfCircle[0],
+            middleOfCircle[1],
+        )
+        solverAgent.lineTo(
+            edgeOfCircle[0],
+            edgeOfCircle[1],
+        )
 
         return solverAgent
 
