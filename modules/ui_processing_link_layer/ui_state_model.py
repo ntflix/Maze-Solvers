@@ -84,7 +84,7 @@ class UIStateModel:
 
     def __onRestartButtonPressed(self) -> None:
         print("__onRestartButtonPressed")
-
+        # simply call the '__onSolveButtonPressed' method with the _existing_ solver specification
         self.__onSolveButtonPressed(
             self.__solverSpecification,  # type: ignore
         )
