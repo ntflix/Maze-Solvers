@@ -17,6 +17,7 @@ class UIStateModel:
     __maze: Optional[MazeProtocol]
     __agent: Optional[MazeSolver] = None
     __solverSpecification: Optional[MazeSolverSpecification]
+    __agentVariablesWindowVisible: bool = False
 
     def __init__(self) -> None:
         self.__initUI()
@@ -113,6 +114,9 @@ class UIStateModel:
         self.__ui.setMazeSolverControlsEnabled.emit(True)
         # send the mazeSolverUpdate event to the UI with our new solver agent
         self.__ui.onMazeSolverAgentUpdate(self.__agent)
+        # only update the agent vars window if it is already open
+        if self.__agentVariablesWindowVisible:
+            self.__ui.showAgentVariablesWindow()
 
     def __instantiateSolver(
         self, solverSpecification: MazeSolverSpecification
@@ -128,4 +132,5 @@ class UIStateModel:
 
     def __onAgentVariablesButtonPressed(self) -> None:
         if self.__agent is not None:
+            self.__agentVariablesWindowVisible = True
             self.__ui.showAgentVariablesWindow()
