@@ -53,9 +53,9 @@ class PledgeSolver(MazeSolver):
             5       NO:
             6           GOTO step 1
         > Step 2
-            7   TURN right
+            7   TURN right (& increment angle counter)
         > Step 3
-            8   FOLLOW obstacle wall
+            8   FOLLOW obstacle wall (& mutate angle counter appropriately)
         > Step 4
             9      IF angle_counter == 0:
             10          GOTO step 5
@@ -104,9 +104,10 @@ class PledgeSolver(MazeSolver):
         if algorithmStep == 0:
             # set angle_counter to 0
             solver._state.solverSpecificVariables["angle_counter"] = (int, 0)
+            # set the solver step to 1
             solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 1)
             # just assigning a variable doesn't really count as a step. therefore we call advance() again on the solver so it does something visual.
-            result = solver.advance()
+            # result = solver.advance() # disabled due to issues debugging on a different stack level
 
         #  Step 1
         #   GO forward
@@ -128,6 +129,14 @@ class PledgeSolver(MazeSolver):
         # TURN right
         elif algorithmStep == 2:
             result = solver._turn(RelativeDirection.right)
+            # increment angle counter
+            solver._state.solverSpecificVariables["angle_counter"] = (
+                int,  # type of data is `int`
+                (
+                    solver._state.solverSpecificVariables["angle_counter"][1] + 1
+                ),  # simply get the current angle and add 1
+            )
+            #  go to step 3
             solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 3)
 
         #  Step 3
@@ -139,7 +148,25 @@ class PledgeSolver(MazeSolver):
             # We can follow a wall really easily by just using the
             #   existing code of the wall follower. How
             #   cool is that!? Benefits of sticking to SOLID ;)
+            ######
+            # get the old facing direction so we can calculate the direction change (for the angle counter)
+            oldDirection = solver.getCurrentState().facingDirection
+            #  perform the wall follower
             command, result = WallFollower.performAlgorithmOn(solver)
+            # get new facing direction
+            newDirection = result.newState.facingDirection
+            # calculate the change of direction (in degrees
+            directionChangeDegrees = newDirection.toDegrees() - oldDirection.toDegrees()
+            # change angle counter by direction change
+            numberOfRightAnglesTurned: int = directionChangeDegrees // 90
+            # mutate the `angle_counter` by the change in right angles (eg, if -1 numberOfRightAnglesTurned, decrement the counter)
+            solver._state.solverSpecificVariables["angle_counter"] = (
+                int,
+                solver._state.solverSpecificVariables["angle_counter"][1]
+                + numberOfRightAnglesTurned,
+            )
+            # set step to 4, to check angles
+            solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 4)
 
         # Step 4
         # IF angle_counter == 0:
@@ -147,6 +174,7 @@ class PledgeSolver(MazeSolver):
         # ELSE:
         #   GOTO step 3
         elif algorithmStep == 4:
+            #  if there are no outstanding angles to turn
             if solver._state.solverSpecificVariables["angle_counter"][1] == 0:
                 # GOTO step 5
                 solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 5)
@@ -160,6 +188,8 @@ class PledgeSolver(MazeSolver):
         # ELSE:
         # GOTO step 1
         elif algorithmStep == 5:
+            # if exit found:
+            #   break!
             solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 1)
 
         result = MazeSolverCommandResult(
