@@ -3,14 +3,14 @@
   <help_text>fontfamily=Monospaced
 style=autoresize
 style=autoresize</help_text>
-  <zoom_level>8</zoom_level>
+  <zoom_level>6</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>384</x>
-      <y>0</y>
-      <w>200</w>
-      <h>80</h>
+      <x>492</x>
+      <y>30</y>
+      <w>192</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>MazeViewWindow: QMainWindow
 -
@@ -25,10 +25,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>360</x>
-      <y>112</y>
-      <w>248</w>
-      <h>168</h>
+      <x>468</x>
+      <y>126</y>
+      <w>234</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>MazeViewController: QWidget
 -
@@ -51,10 +51,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>568</x>
-      <y>312</y>
-      <w>208</w>
-      <h>144</h>
+      <x>714</x>
+      <y>300</y>
+      <w>198</w>
+      <h>126</h>
     </coordinates>
     <panel_attributes>MazeView: QWidget
 -
@@ -75,22 +75,22 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>160</x>
-      <y>312</y>
-      <w>392</w>
-      <h>168</h>
+      <x>318</x>
+      <y>300</y>
+      <w>378</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>MazeControlsView: QWidget
 -
 -__init__(
-    onPlayButtonPressed: pyqtSlot(),
-    onPauseButtonPressed: pyqtSlot(),
-    onStepButtonPressed: pyqtSlot(),
-    onRestartButtonPressed: pyqtSlot(),
-    onSpeedControlValueChanged: pyqtSlot(),
-    onOpenLogButtonPressed: pyqtSlot(),
-    onAgentVarsButtonPressed: pyqtSlot(),
-    onGenerateMazeButtonPressed: pyqtSlot(MazeGenerationSpecification),
+    onPlayButtonPressed: pyqtSignal(),
+    onPauseButtonPressed: pyqtSignal(),
+    onStepButtonPressed: pyqtSignal(),
+    onRestartButtonPressed: pyqtSignal(),
+    onSpeedControlValueChanged: pyqtSignal(),
+    onOpenLogButtonPressed: pyqtSignal(),
+    onAgentVarsButtonPressed: pyqtSignal(),
+    onGenerateMazeButtonPressed: pyqtSignal(MazeGenerationSpecification),
     parent: Optional&lt;QWidget&gt; = None,
     keepAspectRatio: bool = True,
  )
@@ -101,10 +101,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>328</x>
-      <y>512</y>
-      <w>328</w>
-      <h>216</h>
+      <x>450</x>
+      <y>474</y>
+      <w>306</w>
+      <h>192</h>
     </coordinates>
     <panel_attributes>SolveMazeGroupView
 -
@@ -115,13 +115,13 @@ style=autoresize</panel_attributes>
 -__maximumXY: XY
 -
 -__init__(
-    onPlayButtonPressed: pyqtSlot(),
-    onPauseButtonPressed: pyqtSlot(),
-    onStepButtonPressed: pyqtSlot(),
-    onRestartButtonPressed: pyqtSlot(),
-    onSpeedControlValueChanged: pyqtSlot(int),
-    onOpenLogButtonPressed: pyqtSlot(),
-    onAgentVarsButtonPressed: pyqtSlot(),
+    onPlayButtonPressed: pyqtSignal(),
+    onPauseButtonPressed: pyqtSignal(),
+    onStepButtonPressed: pyqtSignal(),
+    onRestartButtonPressed: pyqtSignal(),
+    onSpeedControlValueChanged: pyqtSignal(int),
+    onOpenLogButtonPressed: pyqtSignal(),
+    onAgentVarsButtonPressed: pyqtSignal(),
     mazeSize: XY,
     parent: Optional&lt;QWidget&gt; = None,
  )
@@ -132,10 +132,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>592</x>
-      <y>760</y>
-      <w>208</w>
-      <h>144</h>
+      <x>684</x>
+      <y>690</y>
+      <w>198</w>
+      <h>126</h>
     </coordinates>
     <panel_attributes>XYPicker
 -
@@ -156,21 +156,21 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>272</x>
-      <y>760</y>
-      <w>256</w>
-      <h>136</h>
+      <x>408</x>
+      <y>690</y>
+      <w>252</w>
+      <h>120</h>
     </coordinates>
     <panel_attributes>SolverControlsView
 -
 -__init__(
-    onPlayButtonPressed: pyqtSlot(),
-    onPauseButtonPressed: pyqtSlot(),
-    onStepButtonPressed: pyqtSlot(),
-    onRestartButtonPressed: pyqtSlot(),
-    onSpeedControlValueChanged: pyqtSlot(int),
-    onOpenLogButtonPressed: pyqtSlot(),
-    onAgentVarsButtonPressed: pyqtSlot(),
+    onPlayButtonPressed: pyqtSignal(),
+    onPauseButtonPressed: pyqtSignal(),
+    onStepButtonPressed: pyqtSignal(),
+    onRestartButtonPressed: pyqtSignal(),
+    onSpeedControlValueChanged: pyqtSignal(int),
+    onOpenLogButtonPressed: pyqtSignal(),
+    onAgentVarsButtonPressed: pyqtSignal(),
     parent: Optional&lt;QWidget&gt; = None,
  )
 style=autoresize</panel_attributes>
@@ -179,18 +179,18 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>352</x>
-      <y>928</y>
+      <x>474</x>
+      <y>834</y>
       <w>216</w>
-      <h>104</h>
+      <h>96</h>
     </coordinates>
     <panel_attributes>SolverControlButtonsView
 -
 -__init__(
-    onPlayButtonPressed: pyqtSlot(),
-    onPauseButtonPressed: pyqtSlot(),
-    onStepButtonPressed: pyqtSlot(),
-    onRestartButtonPressed: pyqtSlot(),
+    onPlayButtonPressed: pyqtSignal(),
+    onPauseButtonPressed: pyqtSignal(),
+    onStepButtonPressed: pyqtSignal(),
+    onRestartButtonPressed: pyqtSignal(),
     parent: Optional&lt;QWidget&gt; = None,
  )
 style=autoresize</panel_attributes>
@@ -199,10 +199,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>352</x>
-      <y>1064</y>
-      <w>208</w>
-      <h>80</h>
+      <x>486</x>
+      <y>954</y>
+      <w>198</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>LabelledIconButton
 -
@@ -217,15 +217,15 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>120</x>
-      <y>928</y>
-      <w>208</w>
-      <h>72</h>
+      <x>264</x>
+      <y>834</y>
+      <w>198</w>
+      <h>66</h>
     </coordinates>
     <panel_attributes>MazeSolverSpeedControlView
 -
 -__init__(
-    onValueChanged: pyqtSlot(int),
+    onValueChanged: pyqtSignal(int),
     parent: Optional&lt;QWidget&gt; = None,
  )
 style=autoresize</panel_attributes>
@@ -234,16 +234,16 @@ style=autoresize</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>592</x>
-      <y>928</y>
-      <w>232</w>
-      <h>80</h>
+      <x>702</x>
+      <y>834</y>
+      <w>228</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>SolverWindowsButtonView
 -
 -__init__(
-    onOpenLogButtonPressed: pyqtSlot(),
-    onAgentVarsButtonPressed: pyqtSlot(),
+    onOpenLogButtonPressed: pyqtSignal(),
+    onAgentVarsButtonPressed: pyqtSignal(),
     parent: Optional&lt;QWidget&gt; = None,
  )
 style=autoresize</panel_attributes>
@@ -252,10 +252,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>72</y>
-      <w>24</w>
-      <h>56</h>
+      <x>558</x>
+      <y>96</y>
+      <w>18</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -263,10 +263,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>432</x>
-      <y>272</y>
-      <w>24</w>
-      <h>56</h>
+      <x>522</x>
+      <y>270</y>
+      <w>18</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -274,10 +274,21 @@ style=autoresize</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>584</x>
-      <y>272</y>
-      <w>24</w>
-      <h>56</h>
+      <x>666</x>
+      <y>270</y>
+      <w>78</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;110.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>444</y>
+      <w>18</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -285,10 +296,10 @@ style=autoresize</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>448</x>
-      <y>472</y>
-      <w>24</w>
-      <h>56</h>
+      <x>504</x>
+      <y>660</y>
+      <w>18</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -296,10 +307,32 @@ style=autoresize</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>400</x>
-      <y>720</y>
+      <x>666</x>
+      <y>660</y>
+      <w>54</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>420</x>
+      <y>804</y>
       <w>24</w>
-      <h>56</h>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>20.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>804</y>
+      <w>18</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -307,54 +340,21 @@ style=autoresize</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>616</x>
-      <y>720</y>
-      <w>24</w>
-      <h>56</h>
+      <x>636</x>
+      <y>804</y>
+      <w>96</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+    <additional_attributes>10.0;10.0;140.0;50.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>296</x>
-      <y>888</y>
-      <w>24</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>448</x>
-      <y>888</y>
-      <w>24</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>512</x>
-      <y>888</y>
-      <w>184</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;210.0;50.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>448</x>
-      <y>1024</y>
-      <w>24</w>
-      <h>56</h>
+      <x>552</x>
+      <y>924</y>
+      <w>18</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>

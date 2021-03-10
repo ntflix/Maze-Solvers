@@ -1,6 +1,5 @@
 import logging
 from typing import Tuple
-from modules.maze_solvers.solvers.wall_follower import WallFollower
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
@@ -29,7 +28,7 @@ class PledgeSolver(MazeSolver):
         super().__init__(maze, startingPosition, startingDirection)
 
         # set our algorithmStep to 0 as we're on the 1st step of the pledge algorithm
-        self._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 0)
+        # self._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 0)
 
         logging.debug(
             f"Initialized Pledge maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
@@ -42,30 +41,38 @@ class PledgeSolver(MazeSolver):
             MazeSolverCommandResult: The result of the next instruction.
 
         The algorithm for this is as follows:
-        ```pseudocode
-        > Step 0
-            0   SET angle_counter to 0
-        > Step 1
-            1   GO forward
-            2       Collision?
-            3       YES:
-            4           GOTO step 2
-            5       NO:
-            6           GOTO step 1
-        > Step 2
-            7   TURN right (& increment angle counter)
-        > Step 3
-            8   FOLLOW obstacle wall (& mutate angle counter appropriately)
-        > Step 4
-            9      IF angle_counter == 0:
-            10          GOTO step 5
-            11     ELSE: GOTO step 3
-        > Step 5
-            12  IF exit found:
-            13      BREAK
-            14  ELSE:
-            15      GOTO step 1
         ```
+        SOLVER.VARS["TOTAL_TURNS"] = 0
+
+        TURN_LEFT() {
+            SOLVER.VARS["TOTAL_TURNS"] += 90
+            SOLVER.TURN_LEFT()
+        }
+
+        TURN_RIGHT() {
+            SOLVER.VARS["TOTAL_TURNS"] -= 90
+            SOLVER.TURN_RIGHT()
+        }
+
+        ~~~~~~~~~~~~~~~~~~~~~
+        #0 ~~~~~~~~~~~~~~~~~~
+        MOVE FORWARD
+            SUCCESS
+                GOTO #0
+            FAILURE
+                GOTO #1
+        #1 ~~~~~~~~~~~~~~~~~~
+        TURN_LEFT()
+        WHILE SOLVER.VARS["TOTAL_TURNS"] IS NOT 0:
+            PLEDGE_SOLVER.PERFORM_ON(SOLVER)
+        GOTO #0
+        ~~~~~~~~~~~~~~~~~~~~~
+        ~~~~~~~~~~~~~~~~~~~~~
+        ```
+        From [http://www.scratch-blog.com/2013/10/the-pledge-maze-solving-algorithm.html]:
+            [Pledge's] algorithm collects local information by adding turns to the left as positive numbers and turns to the right as negative values to a variable called Total Turning.
+            Total Turning is initially set to zero. The robot then moves forward until it strikes a barrier. It turns left, adding the angle measure of the turn to Total Turning and then executes the rest of the algorithm until Total Turning equals zero degrees (not 360º) that indicates the robot has navigated around the barrier. The algorithm resets Total Turning to zero, and the robot again moves forward until it strikes another barrier. And so on.
+            A complete discussion of the Pledge algorithm can be found in the book Turtle Geometry, by Harold Abelson and Andrea A. diSessa published by the MIT Press in 1980.
         """
 
         # use this class' static performAlgorithm method to do heavy lifting
@@ -83,6 +90,7 @@ class PledgeSolver(MazeSolver):
     @staticmethod
     def performAlgorithmOn(
         solver: "MazeSolver",
+        recursionLevel: int = 0,
     ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
 
         # initialise result var to return later on
@@ -92,105 +100,99 @@ class PledgeSolver(MazeSolver):
             MazeSolverCommandType.detection,
             None,
         )
+        algorithmStep: int
+        try:
+            algorithmStep = solver._state.solverSpecificVariables[
+                # the key, for example, may be "pledgeSolverStep0" for the 0th recursion level
+                f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+            ][1]
+        except:
+            # new recursion level, so make new PledgeSolverStep (start at 0, of course)
+            solver._state.solverSpecificVariables[
+                # the key, for example, may be "pledgeSolverStep0" for the 0th recursion level
+                f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+            ] = (int, 0)
+            algorithmStep = 0
 
-        algorithmStep = solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY][1]
+        try:
+            _ = solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"][1]
+        except:
+            solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"] = (
+                int,
+                0,
+            )
 
         logging.info(
             f"Attempting to advance the Pledge solver. Current step: {algorithmStep}"
         )
 
-        # Step 0
-        #   SET angle_counter to 0
+        ###
+        # 0 ~~~~~~~~~~~~~~~~~~
+        # MOVE FORWARD
+        #     SUCCESS
+        #         GOTO #0
+        #     FAILURE
+        #         GOTO #1
+        ###
         if algorithmStep == 0:
-            # set angle_counter to 0
-            solver._state.solverSpecificVariables["angle_counter"] = (int, 0)
-            # set the solver step to 1
-            solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 1)
-            # just assigning a variable doesn't really count as a step. therefore we call advance() again on the solver so it does something visual.
-            # result = solver.advance() # disabled due to issues debugging on a different stack level
-
-        #  Step 1
-        #   GO forward
-        #       Collision?
-        #       YES:
-        #           GOTO step 2
-        #       NO:
-        #           GOTO step 1
-        elif algorithmStep == 1:
+            command.commandType = MazeSolverCommandType.movement
+            command.humanDescription = "Move forward"
             result = solver._moveForward()
             if result.success:
-                # no collision
-                solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 1)
+                solver._state.solverSpecificVariables[
+                    f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+                ] = (int, 0)
             else:
-                # there was a collision
-                solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 2)
-
-        #  Step 2
-        # TURN right
-        elif algorithmStep == 2:
-            result = solver._turn(RelativeDirection.right)
-            # increment angle counter
-            solver._state.solverSpecificVariables["angle_counter"] = (
-                int,  # type of data is `int`
-                (
-                    solver._state.solverSpecificVariables["angle_counter"][1] + 1
-                ),  # simply get the current angle and add 1
-            )
-            #  go to step 3
-            solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 3)
-
-        #  Step 3
-        # FOLLOW obstacle wall
-        # GOTO step 3.5
-        elif algorithmStep == 3:
-            # FOLLOW obstacle wall. This is stateful and therefore
-            #   we must keep track of the wall follower state.
-            # We can follow a wall really easily by just using the
-            #   existing code of the wall follower. How
-            #   cool is that!? Benefits of sticking to SOLID ;)
-            ######
-            # get the old facing direction so we can calculate the direction change (for the angle counter)
-            oldDirection = solver.getCurrentState().facingDirection
-            #  perform the wall follower
-            command, result = WallFollower.performAlgorithmOn(solver)
-            # get new facing direction
-            newDirection = result.newState.facingDirection
-            # calculate the change of direction (in degrees
-            directionChangeDegrees = newDirection.toDegrees() - oldDirection.toDegrees()
-            # change angle counter by direction change
-            numberOfRightAnglesTurned: int = directionChangeDegrees // 90
-            # mutate the `angle_counter` by the change in right angles (eg, if -1 numberOfRightAnglesTurned, decrement the counter)
-            solver._state.solverSpecificVariables["angle_counter"] = (
+                solver._state.solverSpecificVariables[
+                    f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+                ] = (int, 1)
+        ###
+        # 1 ~~~~~~~~~~~~~~~~~~
+        # TURN_LEFT()
+        # WHILE SOLVER.VARS["TOTAL_TURNS"] IS NOT 0:
+        #     PLEDGE_SOLVER.PERFORM_ON(SOLVER)
+        # GOTO #0
+        ###
+        elif algorithmStep == 1:
+            command.commandType = MazeSolverCommandType.movement
+            command.humanDescription = "Turn left & perform Pledge recursively"
+            # decrement TOTAL_TURNS by 90 degrees
+            solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"] = (
                 int,
-                solver._state.solverSpecificVariables["angle_counter"][1]
-                + numberOfRightAnglesTurned,
+                solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"][1]
+                - 90,
             )
-            # set step to 4, to check angles
-            solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 4)
+            result = solver._turn(RelativeDirection.left)
+            #  check if the subsolver is instantiated – if not, instantiate it.
+            try:
+                _ = solver._state.solverSpecificVariables[
+                    f"SubSolverLevel{recursionLevel + 1}"
+                ][1]
+            except:
+                solver._state.solverSpecificVariables[
+                    f"SubSolverLevel{recursionLevel + 1}"
+                ] = (
+                    MazeSolver,  # data type
+                    PledgeSolver(
+                        solver._maze,
+                        startingPosition=solver.getCurrentState().currentCell,
+                        startingDirection=solver.getCurrentState().facingDirection,
+                    ),  # actual data
+                )
 
-        # Step 4
-        # IF angle_counter == 0:
-        #   GOTO step 5
-        # ELSE:
-        #   GOTO step 3
-        elif algorithmStep == 4:
-            #  if there are no outstanding angles to turn
-            if solver._state.solverSpecificVariables["angle_counter"][1] == 0:
-                # GOTO step 5
-                solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 5)
-            else:
-                # GOTO step 3
-                solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 3)
+            while (
+                solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"][1]
+                != 0
+            ):
+                #  perform the Pledge subsolver until TOTAL_TURNS is 0, with one higher recursion level
+                result = solver._state.solverSpecificVariables[
+                    f"SubSolverLevel{recursionLevel + 1}"
+                ][1].advance()
 
-        #  Step 5
-        # IF exit found:
-        #   BREAK
-        # ELSE:
-        # GOTO step 1
-        elif algorithmStep == 5:
-            # if exit found:
-            #   break!
-            solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 1)
+            # set step back to 0
+            solver._state.solverSpecificVariables[
+                f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+            ] = (int, 0)
 
         result = MazeSolverCommandResult(
             result.success,  # type: ignore  # for static type checking

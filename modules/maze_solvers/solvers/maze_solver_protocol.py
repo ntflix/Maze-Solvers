@@ -24,7 +24,7 @@ class MazeSolver:
     _state: MazeSolverState
 
     # the actual maze
-    __maze: MazeProtocol
+    _maze: MazeProtocol
 
     def __init__(
         self,
@@ -32,7 +32,7 @@ class MazeSolver:
         startingPosition: XY,
         startingDirection: AbsoluteDirection = AbsoluteDirection.north,
     ) -> None:
-        self.__maze = maze
+        self._maze = maze
         # initialize the solver's state to the default start state
         self._state = MazeSolverState(
             currentCell=startingPosition,
@@ -48,7 +48,7 @@ class MazeSolver:
         )
 
         # get the walls of the agent's current cell
-        walls = self.__maze.getWallsOfCellAtCoordinate(self._state.currentCell)
+        walls = self._maze.getWallsOfCellAtCoordinate(self._state.currentCell)
 
         # check we're moving in a valid direction
         if self._state.facingDirection in walls:
@@ -64,11 +64,11 @@ class MazeSolver:
         else:
             # there's no wall in that direction
             # so get the index of the current cell for use later
-            cellIndex = self.__maze.getIndexFromCoordinates(self._state.currentCell)
+            cellIndex = self._maze.getIndexFromCoordinates(self._state.currentCell)
 
             # get the connections of this cell and their directions (using the index we just got)
             connectionsAndDirections = (
-                self.__maze.getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(
+                self._maze.getConnectionsAndDirectionsOfConnectionsOfCellAtIndex(
                     cellIndex
                 )
             )
@@ -135,7 +135,7 @@ class MazeSolver:
         )
 
     def _detectForward(self) -> DetectionCommandResult:
-        walls = self.__maze.getWallsOfCellAtCoordinate(self._state.currentCell)
+        walls = self._maze.getWallsOfCellAtCoordinate(self._state.currentCell)
         obstacleInFront = self._state.facingDirection in walls
 
         return DetectionCommandResult(
