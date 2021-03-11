@@ -23,22 +23,22 @@ if __name__ == "__main__":
     app.start()
 
 
-###|------------------------------|
-###|~~~~~~~~~~~~~TODO~~~~~~~~~~~~~|
-###|------------------------------|
-# #|-Maze Loader screen-----------|
-# #| • 'Load Last Maze' button    |
-# #| • 'Generate Maze' button     |
-# #|-Maze View Window-------------|
-# #| • 'Save' function            |
-# #| • 'Load' function            |
-# #| • onMazeSolved method        |
-# #| • Generate maze button       |
-# #| • Log window view            |
-# #|*~ Solver controls ~~~~~~~~~~*|
-# #| • Play button                |
-# #| • Pause button               |
-# #| • Slow/fast slider           |
-# #|-Maze Solvers-----------------|
-# #| • onMazeSolved detection     |
-###|______________________________|
+# |------------------------------| #
+# |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
+# |------------------------------| #
+# |-Maze Loader screen-----------| #
+# | • 'Load Last Maze' button    | #
+# | • 'Generate Maze' button     | #
+# |-Maze View Window-------------| #
+# | • 'Save' function            | #
+# | • 'Load' function            | #
+# | • onMazeSolved method        | #
+# | • Generate maze button       | #
+# | • Log window view            | #
+# |*~ Solver controls ~~~~~~~~~~*| #
+# | • Play button                | #
+# | • Pause button               | #
+# | • Slow/fast slider           | #
+# |-Maze Solvers-----------------| #
+# | • onMazeSolved detection     | #
+# |______________________________| #
