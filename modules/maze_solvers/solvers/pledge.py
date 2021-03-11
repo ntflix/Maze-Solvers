@@ -134,69 +134,107 @@ class PledgeSolver(MazeSolver):
         #     FAILURE
         #         GOTO #1
         ###
-        if algorithmStep == 0:
-            command.commandType = MazeSolverCommandType.movement
-            command.humanDescription = "Move forward"
-            result = solver._moveForward()
-            if result.success:
+
+        hasSubSolver: bool
+        try:
+            # check if we are in have a subsolver state.
+            _ = solver._state.solverSpecificVariables[
+                f"SubSolverLevel{recursionLevel + 1}"
+            ]
+            hasSubSolver = True
+        except KeyError:
+            hasSubSolver = False
+
+        if hasSubSolver:
+            # if there is a subsolver, then
+            subSolver: MazeSolver = solver._state.solverSpecificVariables[
+                f"SubSolverLevel{recursionLevel + 1}"
+            ][1]
+            result = subSolver.advance()
+        else:
+            # there was no subsolver, so continue as normal
+            if algorithmStep == 0:
+                command.commandType = MazeSolverCommandType.movement
+                command.humanDescription = "Move forward"
+                result = solver._moveForward()
+                if result.success:
+                    solver._state.solverSpecificVariables[
+                        f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+                    ] = (
+                        int,
+                        solver._state.solverSpecificVariables[
+                            f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+                        ][1]
+                        - 1,
+                    )
+                else:
+                    # increment recursion level – we need to go deeper
+                    solver._state.solverSpecificVariables[
+                        f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+                    ] = (
+                        int,
+                        solver._state.solverSpecificVariables[
+                            f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
+                        ][1]
+                        + 1,
+                    )
+            ###
+            # 1 ~~~~~~~~~~~~~~~~~~
+            # TURN_LEFT()
+            # WHILE SOLVER.VARS["TOTAL_TURNS"] IS NOT 0:
+            #     PLEDGE_SOLVER.PERFORM_ON(SOLVER)
+            # GOTO #0
+            ###
+            elif algorithmStep == 1:
+                command.commandType = MazeSolverCommandType.movement
+                command.humanDescription = "Turn left & perform Pledge recursively"
+                # decrement TOTAL_TURNS by 90 degrees
+                solver._state.solverSpecificVariables[
+                    f"TOTAL_TURNS{recursionLevel}"
+                ] = (
+                    int,
+                    solver._state.solverSpecificVariables[
+                        f"TOTAL_TURNS{recursionLevel}"
+                    ][1]
+                    - 90,
+                )
+                result = solver._turn(RelativeDirection.left)
+                #  check if the subsolver is instantiated – if not, instantiate it.
+                try:
+                    _ = solver._state.solverSpecificVariables[
+                        f"SubSolverLevel{recursionLevel + 1}"
+                    ][1]
+                except:
+                    solver._state.solverSpecificVariables[
+                        f"SubSolverLevel{recursionLevel + 1}"
+                    ] = (
+                        MazeSolver,  # data type
+                        PledgeSolver(
+                            solver._maze,
+                            startingPosition=solver.getCurrentState().currentCell,
+                            startingDirection=solver.getCurrentState().facingDirection,
+                        ),  # actual data
+                    )
+
+                while (
+                    solver._state.solverSpecificVariables[
+                        f"TOTAL_TURNS{recursionLevel}"
+                    ][1]
+                    != 0
+                ):
+                    #  perform the Pledge subsolver until TOTAL_TURNS is 0, with one higher recursion level
+                    result = solver._state.solverSpecificVariables[
+                        f"SubSolverLevel{recursionLevel + 1}"
+                    ][1].advance()
+
+                # set step back to 0
                 solver._state.solverSpecificVariables[
                     f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
                 ] = (int, 0)
-            else:
-                solver._state.solverSpecificVariables[
-                    f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-                ] = (int, 1)
-        ###
-        # 1 ~~~~~~~~~~~~~~~~~~
-        # TURN_LEFT()
-        # WHILE SOLVER.VARS["TOTAL_TURNS"] IS NOT 0:
-        #     PLEDGE_SOLVER.PERFORM_ON(SOLVER)
-        # GOTO #0
-        ###
-        elif algorithmStep == 1:
-            command.commandType = MazeSolverCommandType.movement
-            command.humanDescription = "Turn left & perform Pledge recursively"
-            # decrement TOTAL_TURNS by 90 degrees
-            solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"] = (
-                int,
-                solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"][1]
-                - 90,
-            )
-            result = solver._turn(RelativeDirection.left)
-            #  check if the subsolver is instantiated – if not, instantiate it.
-            try:
-                _ = solver._state.solverSpecificVariables[
-                    f"SubSolverLevel{recursionLevel + 1}"
-                ][1]
-            except:
-                solver._state.solverSpecificVariables[
-                    f"SubSolverLevel{recursionLevel + 1}"
-                ] = (
-                    MazeSolver,  # data type
-                    PledgeSolver(
-                        solver._maze,
-                        startingPosition=solver.getCurrentState().currentCell,
-                        startingDirection=solver.getCurrentState().facingDirection,
-                    ),  # actual data
-                )
-
-            while (
-                solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"][1]
-                != 0
-            ):
-                #  perform the Pledge subsolver until TOTAL_TURNS is 0, with one higher recursion level
-                result = solver._state.solverSpecificVariables[
-                    f"SubSolverLevel{recursionLevel + 1}"
-                ][1].advance()
-
-            # set step back to 0
-            solver._state.solverSpecificVariables[
-                f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-            ] = (int, 0)
 
         result = MazeSolverCommandResult(
-            result.success,  # type: ignore  # for static type checking
-            result.humanDescription,  # type: ignore  # for static type checking
+            result.success,
+            result.humanDescription,
             solver._state,
         )
 

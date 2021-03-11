@@ -112,8 +112,8 @@ class MazeViewWindow(QMainWindow):
         quit = QAction("Quit", self)
         file.addAction(quit)
 
-        file.triggered.connect(  # type: ignore
-            lambda x: print(x),  #  type: ignore
+        file.triggered.connect(  # type: ignore # no proper type hints for this method yet
+            lambda x: print(x),  # type: ignore # no inline type info for lambdas just yet
         )
 
         return bar

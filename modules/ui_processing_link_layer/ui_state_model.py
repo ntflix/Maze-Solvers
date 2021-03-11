@@ -14,9 +14,9 @@ import logging
 
 class UIStateModel:
     __ui: MazeSolverUI
-    __maze: Optional[MazeProtocol]
+    __maze: Optional[MazeProtocol] = None
     __agent: Optional[MazeSolver] = None
-    __solverSpecification: Optional[MazeSolverSpecification]
+    __solverSpecification: Optional[MazeSolverSpecification] = None
     __agentVariablesWindowVisible: bool = False
 
     def __init__(self) -> None:
@@ -75,19 +75,20 @@ class UIStateModel:
 
     def __onStepButtonPressed(self) -> None:
         # Step through the maze solver by one command
-        result = self.__agent.advance()  # type: ignore # maze solver agent is bound here so we can unwrap optional value
-        logging.debug(result)
-        # update UI
         if self.__agent is not None:
+            result = self.__agent.advance()
+            logging.debug(result)
+            # update UI
             self.__ui.onMazeSolverAgentUpdate(self.__agent)
         print("__onStepButtonPressed")
 
     def __onRestartButtonPressed(self) -> None:
         print("__onRestartButtonPressed")
         # simply call the '__onSolveButtonPressed' method with the _existing_ solver specification
-        self.__onSolveButtonPressed(
-            self.__solverSpecification,  # type: ignore
-        )
+        if self.__solverSpecification is not None:
+            self.__onSolveButtonPressed(
+                self.__solverSpecification,
+            )
 
     def __onSpeedControlValueChanged(self, newValue: int) -> None:
         print(f"__onSpeedControlValueChanged: {newValue}")
@@ -121,10 +122,15 @@ class UIStateModel:
     def __instantiateSolver(
         self, solverSpecification: MazeSolverSpecification
     ) -> MazeSolver:
-        return solverSpecification.solverType(  # see how awesome protocols are? you can do stuff like this with complete safety!
-            maze=self.__maze,  # type: ignore # maze is not optional here, as the solver controls view is only present when a MazeView is present
-            startingPosition=solverSpecification.startPosition,
-        )
+        if self.__maze is not None:
+            return solverSpecification.solverType(  # see how awesome protocols are? you can do stuff like this with complete safety!
+                maze=self.__maze,
+                startingPosition=solverSpecification.startPosition,
+            )
+        else:
+            raise RuntimeError(
+                "Maze unbound – `self.__maze` is `None` in UIStateModel class"
+            )
 
     def startApplication(self) -> int:
         self.__ui.showMazeLoader()

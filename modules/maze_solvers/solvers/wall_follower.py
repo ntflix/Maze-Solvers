@@ -199,8 +199,8 @@ class WallFollower(MazeSolver):
                 )
 
         wallFollowerCommandResult = MazeSolverCommandResult(
-            result.success,  # type: ignore  # for static type checking
-            result.humanDescription,  # type: ignore  # for static type checking
+            result.success,
+            result.humanDescription,
             solver._state,
         )
 

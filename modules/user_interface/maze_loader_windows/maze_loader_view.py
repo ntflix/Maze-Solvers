@@ -48,13 +48,13 @@ class MazeLoaderView(QWidget):
         self,
     ) -> List[QPushButton]:
         loadMazeButton = QPushButton("Load Maze…")
-        loadMazeButton.clicked.connect(self.__onLoadMazeButtonPressed)  # type: ignore
+        loadMazeButton.pressed = self.__onLoadMazeButtonPressed
 
         generateMazeButton = QPushButton("Generate Maze…")
-        generateMazeButton.clicked.connect(self.__onGenerateMazeButtonPressed)  # type: ignore
+        generateMazeButton.pressed = self.__onGenerateMazeButtonPressed
 
         loadLastMazeButton = QPushButton("Load Last Maze")
-        loadLastMazeButton.clicked.connect(self.__onLoadLastMazeChosen)  # type: ignore
+        loadLastMazeButton.pressed = self.__onLoadLastMazeChosen
 
         elements: List[QPushButton] = [
             loadMazeButton,

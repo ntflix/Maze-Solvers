@@ -52,7 +52,7 @@ class CircularQueue(Generic[T]):
         6
         """
         # initialize `self.queue` to an array of `-1` repeating `maxSize` number of times
-        self.__queue = LinkedList[Optional[T]]([None] * maxSize)  # type: ignore     # for type hinting to work correctly
+        self.__queue = LinkedList[Optional[T]]([None] * maxSize)  # type: ignore # List[None] != List[Optional[T]]
         # set `self._maxSize` to provided `maxSize` argument
         self.__maxSize = maxSize
         # set `self.__length` to 0, because there are no elements in our queue just yet

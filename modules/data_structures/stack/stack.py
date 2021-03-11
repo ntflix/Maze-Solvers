@@ -12,12 +12,16 @@ class Stack(Generic[T]):
             item = self.__stack[self.__top]
             self.__stack[self.__top] = None
             self.__top -= 1
-            return item  # type: ignore – cannot be None because we checked whether self.__isEmpty()
+            if item is not None:
+                return item
         raise IndexError("Stack empty")
 
     def peek(self) -> T:
         if not self.isEmpty():
-            return self.__stack[self.__top]  # type: ignore – cannot be None because we checked whether self.__isEmpty()
+            data = self.__stack[self.__top]
+            if data is not None:
+                return data
+
         raise IndexError("Stack empty")
 
     def push(self, item: T) -> None:

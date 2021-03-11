@@ -1,7 +1,7 @@
 #!python3.9
 
 # support type hinting in editor and code
-from typing import Generator, Generic, List, Optional, TypeVar
+from typing import Generator, Generic, Iterator, List, Optional, TypeVar
 
 # circular queue for breadth first search
 from modules.data_structures.circular_queue.circular_queue import CircularQueue
@@ -255,9 +255,7 @@ class Graph(Generic[T]):
             # the index is OK
             return True
 
-    def depthFirstTraversal(
-        self, nodeIndex: Optional[int] = None
-    ) -> Generator[Node[T], None, None]:
+    def depthFirstTraversal(self, nodeIndex: Optional[int] = None) -> Iterator[T]:
         """Recursively depth-first traverse the graph.
         Yields data — rather than returning it — because returning the values would require putting everything into a list.
 
@@ -321,9 +319,12 @@ class Graph(Generic[T]):
                 # see PEP 380 Syntax for Delegating to a Subgenerator – https://www.python.org/dev/peps/pep-0380/
                 yield from self.depthFirstTraversal(connectionIndex)
 
-            yield self.__nodes[nodeIndex].data  # type: ignore bc this was previously guaranteed to be a safe indexing
+            data = self.__nodes[nodeIndex].data
 
-    def breadthFirstTraversal(self) -> Generator[Node[T], None, None]:
+            if data is not None:
+                yield data
+
+    def breadthFirstTraversal(self) -> Iterator[T]:
         """Iteratively breadth-first traverse the graph.
         Yields data – rather than returning it – because returning values would require more memory.
         `yield` basically pauses the function after yielding, saving all of its states, and only
@@ -388,7 +389,9 @@ class Graph(Generic[T]):
             # pop a node from the queue
             currentNode = visitedNodes.deQueue()
             # and yield it
-            yield currentNode.data  # type: ignore as we previously guaranteed that this value is safe with the while statement
+            data = currentNode.data
+            if data is not None:
+                yield data
 
             # get neighbours of the node
             for neighbour in currentNode.connections:

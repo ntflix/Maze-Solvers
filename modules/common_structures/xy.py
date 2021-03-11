@@ -16,9 +16,9 @@ class XY:
     def __str__(self) -> str:
         return f"({self.x}, {self.y})"
 
-    def __eq__(self, o: object) -> bool:
+    def __eq__(self, o: "XY") -> bool:
         if type(o) == XY:
-            return (self.x, self.y) == (o.x, o.y)  # type: ignore
+            return (self.x, self.y) == (o.x, o.y)
         else:
             return False
 

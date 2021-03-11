@@ -17,7 +17,7 @@ class MazeView(QWidget):
     __painter: QPainter
     __maze: MazeProtocol
     __keepAspectRatio: bool
-    __solverState: Optional[MazeSolverState]
+    __solverState: Optional[MazeSolverState] = None
 
     onMazeSolverAgentUpdate = pyqtSignal(MazeSolverState)
 
@@ -70,11 +70,9 @@ class MazeView(QWidget):
         # only draw the agent if the solverState is bound
         # if self.__solverState is not None:
         # it is a bound variable so draw it
-        try:
-            agent = self.__drawAgent(self.__solverState)  # type: ignore # that's why we're in a try block
+        if self.__solverState is not None:
+            agent = self.__drawAgent(self.__solverState)
             self.__painter.drawPath(agent)
-        except:
-            pass
 
         mazePath = self.__createMazePath()
         self.__painter.drawPath(mazePath)
