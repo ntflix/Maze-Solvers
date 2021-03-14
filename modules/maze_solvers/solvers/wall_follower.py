@@ -22,10 +22,11 @@ class WallFollower(MazeSolver):
         self,
         maze: MazeProtocol,
         startingPosition: XY,
+        endingPosition: XY,
         startingDirection: AbsoluteDirection = AbsoluteDirection.north,
     ) -> None:
         # init superclass
-        super().__init__(maze, startingPosition, startingDirection)
+        super().__init__(maze, startingPosition, endingPosition, startingDirection)
 
         # set our algorithmStep to 0 as we're on the 1st step of the wall follower algorithm
         self._state.solverSpecificVariables[WALLFOLLOWERSTEP_KEY] = (int, 0)
@@ -218,7 +219,7 @@ if __name__ == "__main__":
     from modules.data_structures.maze.maze import Maze
 
     maze = Maze(10, 10, False)
-    wf = WallFollower(maze, XY(0, 0))
+    wf = WallFollower(maze, XY(0, 0), XY(9, 9))
 
     FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
     LEVEL = 0

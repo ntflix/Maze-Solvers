@@ -141,6 +141,7 @@ class UIStateModel:
             return solverSpecification.solverType(  # see how awesome protocols are? you can do stuff like this with complete safety!
                 maze=self.__maze,
                 startingPosition=solverSpecification.startPosition,
+                endingPosition=solverSpecification.endPosition,
             )
         else:
             raise RuntimeError(

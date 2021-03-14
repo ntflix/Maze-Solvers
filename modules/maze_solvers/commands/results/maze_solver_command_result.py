@@ -1,4 +1,3 @@
-import logging
 from modules.maze_solvers.maze_solver_state import MazeSolverState
 
 
@@ -16,10 +15,6 @@ class MazeSolverCommandResult:
         self.success = success
         self.humanDescription = humanDescription
         self.newState = state
-
-        logging.debug(
-            f"Initialised MazeSolverCommandResult with parameters ({success, humanDescription, state})"
-        )
 
     def __repr__(self) -> str:
         return self.humanDescription

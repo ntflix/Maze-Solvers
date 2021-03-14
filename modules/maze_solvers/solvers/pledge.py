@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple
+from typing import Optional, Tuple
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
@@ -22,13 +22,11 @@ class PledgeSolver(MazeSolver):
         self,
         maze: MazeProtocol,
         startingPosition: XY,
+        endingPosition: XY,
         startingDirection: AbsoluteDirection = AbsoluteDirection.north,
     ) -> None:
         # init superclass
-        super().__init__(maze, startingPosition, startingDirection)
-
-        # set our algorithmStep to 0 as we're on the 1st step of the pledge algorithm
-        # self._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 0)
+        super().__init__(maze, startingPosition, endingPosition, startingDirection)
 
         logging.debug(
             f"Initialized Pledge maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
@@ -40,34 +38,44 @@ class PledgeSolver(MazeSolver):
         Returns:
             MazeSolverCommandResult: The result of the next instruction.
 
-        The algorithm for this is as follows:
+        The algorithm for this is as follows (adapted from [https://scratch.mit.edu/projects/104473076/]):
         ```
-        SOLVER.VARS["TOTAL_TURNS"] = 0
-
-        TURN_LEFT() {
-            SOLVER.VARS["TOTAL_TURNS"] += 90
-            SOLVER.TURN_LEFT()
+        turnLeft {
+            solver.turnLeft();
+            increment pledge_angle by 90
         }
 
-        TURN_RIGHT() {
-            SOLVER.VARS["TOTAL_TURNS"] -= 90
-            SOLVER.TURN_RIGHT()
+        turnRight {
+            solver.turnRight();
+            increment pledge_angle by -90
         }
 
-        ~~~~~~~~~~~~~~~~~~~~~
-        #0 ~~~~~~~~~~~~~~~~~~
-        MOVE FORWARD
-            SUCCESS
-                GOTO #0
-            FAILURE
-                GOTO #1
-        #1 ~~~~~~~~~~~~~~~~~~
-        TURN_LEFT()
-        WHILE SOLVER.VARS["TOTAL_TURNS"] IS NOT 0:
-            PLEDGE_SOLVER.PERFORM_ON(SOLVER)
-        GOTO #0
-        ~~~~~~~~~~~~~~~~~~~~~
-        ~~~~~~~~~~~~~~~~~~~~~
+        if pledge_angle is not set {
+            set pledge_angle to 0
+        }
+
+        ssvs.finished = false
+        while (ssvs.finished is false) {
+            if (solver.detectFront() is true) {
+                solver.turnLeft()
+                set pledge_angle to 90
+
+                while (ssvs.pledge_angle != 0) {
+                    while (solver.detectFront() is true) {
+                        turnLeft()
+                    }
+                    solver.moveForward()
+                    turnRight()
+                    if (solver.detectFront() is true) {
+                        turnLeft()
+                    }
+                }
+            } else {
+                solver.moveForward()
+            }
+        }
+        print("escaped")
+        solver.onEscape()
         ```
         From [http://www.scratch-blog.com/2013/10/the-pledge-maze-solving-algorithm.html]:
             [Pledge's] algorithm collects local information by adding turns to the left as positive numbers and turns to the right as negative values to a variable called Total Turning.
@@ -90,157 +98,237 @@ class PledgeSolver(MazeSolver):
     @staticmethod
     def performAlgorithmOn(
         solver: "MazeSolver",
-        recursionLevel: int = 0,
     ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
 
-        # initialise result var to return later on
-        result = MazeSolverCommandResult(True, "", solver._state)
-        command = MazeSolverCommand(
-            "",
-            MazeSolverCommandType.detection,
-            None,
-        )
-        algorithmStep: int
-        try:
-            algorithmStep = solver._state.solverSpecificVariables[
-                # the key, for example, may be "pledgeSolverStep0" for the 0th recursion level
-                f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-            ][1]
-        except:
-            # new recursion level, so make new PledgeSolverStep (start at 0, of course)
-            solver._state.solverSpecificVariables[
-                # the key, for example, may be "pledgeSolverStep0" for the 0th recursion level
-                f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-            ] = (int, 0)
-            algorithmStep = 0
+        # define some helpful methods to avoid messy code and mistakes
+        def setSolverStep(step: int) -> None:
+            solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, step)
 
-        try:
-            _ = solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"][1]
-        except:
-            solver._state.solverSpecificVariables[f"TOTAL_TURNS{recursionLevel}"] = (
-                int,
-                0,
+        def getSolverStep() -> int:
+            return solver._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY][1]
+
+        # Pledge-specific methods for helping with angle tracking
+        def setPledgeAngle(angle: int) -> None:
+            solver._state.solverSpecificVariables["PledgeAngle"] = (int, angle)
+
+        def getPledgeAngle() -> Optional[int]:
+            try:
+                angle = solver._state.solverSpecificVariables["PledgeAngle"][1]
+                return angle
+            except:
+                # var not set
+                return None
+
+        def turnLeftPledge() -> MazeSolverCommandResult:
+            result = solver._turn(RelativeDirection.left)
+            # increment Pledge angle by 90 degrees
+            angle = getPledgeAngle()
+            if angle is None:
+                # angle hasn't been set yet
+                angle = 0
+
+            setPledgeAngle(
+                angle + 90,
             )
 
-        logging.info(
-            f"Attempting to advance the Pledge solver. Current step: {algorithmStep}"
+            return result
+
+        def turnRightPledge() -> MazeSolverCommandResult:
+            result = solver._turn(RelativeDirection.right)
+            # decrement Pledge angle by 90 degrees
+            angle = getPledgeAngle()
+            if angle is None:
+                # angle hasn't been set yet
+                angle = 0
+
+            setPledgeAngle(
+                angle - 90,
+            )
+
+            return result
+
+        # define the result of our algorithm step to return later
+        result: MazeSolverCommandResult = MazeSolverCommandResult(
+            False, "Something went wrong", solver._state
         )
 
-        ###
-        # 0 ~~~~~~~~~~~~~~~~~~
-        # MOVE FORWARD
-        #     SUCCESS
-        #         GOTO #0
-        #     FAILURE
-        #         GOTO #1
-        ###
+        # define the command of our algorithm step to return later
+        commandHumanDescription: str
+        commandType: MazeSolverCommandType
 
-        hasSubSolver: bool
+        # check if solverStep is already set, if not, set it
         try:
-            # check if we are in have a subsolver state.
-            _ = solver._state.solverSpecificVariables[
-                f"SubSolverLevel{recursionLevel + 1}"
-            ]
-            hasSubSolver = True
-        except KeyError:
-            hasSubSolver = False
+            _ = getSolverStep()
+        except:
+            setSolverStep(0)
 
-        if hasSubSolver:
-            # if there is a subsolver, then
-            subSolver: MazeSolver = solver._state.solverSpecificVariables[
-                f"SubSolverLevel{recursionLevel + 1}"
-            ][1]
-            result = subSolver.advance()
-        else:
-            # there was no subsolver, so continue as normal
-            if algorithmStep == 0:
-                command.commandType = MazeSolverCommandType.movement
-                command.humanDescription = "Move forward"
-                result = solver._moveForward()
-                if result.success:
-                    solver._state.solverSpecificVariables[
-                        f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-                    ] = (
-                        int,
-                        solver._state.solverSpecificVariables[
-                            f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-                        ][1]
-                        - 1,
-                    )
-                else:
-                    # increment recursion level – we need to go deeper
-                    solver._state.solverSpecificVariables[
-                        f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-                    ] = (
-                        int,
-                        solver._state.solverSpecificVariables[
-                            f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-                        ][1]
-                        + 1,
-                    )
-            ###
-            # 1 ~~~~~~~~~~~~~~~~~~
-            # TURN_LEFT()
-            # WHILE SOLVER.VARS["TOTAL_TURNS"] IS NOT 0:
-            #     PLEDGE_SOLVER.PERFORM_ON(SOLVER)
-            # GOTO #0
-            ###
-            elif algorithmStep == 1:
-                command.commandType = MazeSolverCommandType.movement
-                command.humanDescription = "Turn left & perform Pledge recursively"
-                # decrement TOTAL_TURNS by 90 degrees
-                solver._state.solverSpecificVariables[
-                    f"TOTAL_TURNS{recursionLevel}"
-                ] = (
-                    int,
-                    solver._state.solverSpecificVariables[
-                        f"TOTAL_TURNS{recursionLevel}"
-                    ][1]
-                    - 90,
-                )
-                result = solver._turn(RelativeDirection.left)
-                #  check if the subsolver is instantiated – if not, instantiate it.
-                try:
-                    _ = solver._state.solverSpecificVariables[
-                        f"SubSolverLevel{recursionLevel + 1}"
-                    ][1]
-                except:
-                    solver._state.solverSpecificVariables[
-                        f"SubSolverLevel{recursionLevel + 1}"
-                    ] = (
-                        MazeSolver,  # data type
-                        PledgeSolver(
-                            solver._maze,
-                            startingPosition=solver.getCurrentState().currentCell,
-                            startingDirection=solver.getCurrentState().facingDirection,
-                        ),  # actual data
-                    )
-
-                while (
-                    solver._state.solverSpecificVariables[
-                        f"TOTAL_TURNS{recursionLevel}"
-                    ][1]
-                    != 0
-                ):
-                    #  perform the Pledge subsolver until TOTAL_TURNS is 0, with one higher recursion level
-                    result = solver._state.solverSpecificVariables[
-                        f"SubSolverLevel{recursionLevel + 1}"
-                    ][1].advance()
-
-                # set step back to 0
-                solver._state.solverSpecificVariables[
-                    f"{PLEDGESOLVERSTEP_KEY}{recursionLevel}"
-                ] = (int, 0)
-
-        result = MazeSolverCommandResult(
-            result.success,
-            result.humanDescription,
-            solver._state,
+        logging.info(
+            f"Attempting to advance the Pledge solver. Current step: {getSolverStep()}"
         )
+
+        if getPledgeAngle() is None:
+            setPledgeAngle(0)
+
+        # and now, the actual algorithm!
+        # See below this giant if-else block for a better reading of the algorithm with state comments.
+        step = getSolverStep()
+        if step == 0:
+            if solver._state.currentCell != solver.endingPosition:
+                setSolverStep(1)
+            else:
+                setSolverStep(11)
+            # do not break after this step, so we just call the algorithm again on itself
+            (command, result) = PledgeSolver.performAlgorithmOn(solver)
+        elif step == 1:
+            result = solver._detectForward()
+            commandHumanDescription = "Detect forward"
+            commandType = MazeSolverCommandType.detection
+
+            if result.obstacleExists:
+                setSolverStep(2)
+            else:
+                setSolverStep(10)
+        elif step == 2:
+            result = solver._turn(RelativeDirection.left)
+            commandHumanDescription = "Turn left and set Pledge angle to 90"
+            commandType = MazeSolverCommandType.movement
+
+            setPledgeAngle(90)
+            setSolverStep(3)
+        elif step == 3:
+            if getPledgeAngle() != 0:
+                setSolverStep(4)
+            else:
+                # finished the while loop
+                setSolverStep(0)
+            # do not return from this step so call Pledge on itself again
+            (command, result) = PledgeSolver.performAlgorithmOn(solver)
+        elif step == 4:
+            result = solver._detectForward()
+            commandHumanDescription = "Detect forward"
+            commandType = MazeSolverCommandType.detection
+
+            if result.obstacleExists:
+                setSolverStep(5)
+            else:
+                setSolverStep(6)
+        elif step == 5:
+            result = turnLeftPledge()
+            commandHumanDescription = "Turn left & increment Pledge angle"
+            commandType = MazeSolverCommandType.movement
+
+            setSolverStep(6)
+        elif step == 6:
+            result = solver._moveForward()
+            commandHumanDescription = "Move forward"
+            commandType = MazeSolverCommandType.movement
+
+            setSolverStep(7)
+        elif step == 7:
+            result = turnRightPledge()
+            commandHumanDescription = "Turn right & decrement Pledge angle"
+            commandType = MazeSolverCommandType.movement
+
+            setSolverStep(8)
+        elif step == 8:
+            result = solver._detectForward()
+            commandHumanDescription = "Detect forward"
+            commandType = MazeSolverCommandType.detection
+
+            if result.obstacleExists:
+                setSolverStep(9)
+            else:
+                setSolverStep(0)
+        elif step == 9:
+            result = turnLeftPledge()
+            commandHumanDescription = "Turn left & increment Pledge angle"
+            commandType = MazeSolverCommandType.movement
+
+            setSolverStep(10)
+        elif step == 10:
+            result = solver._moveForward()
+            commandHumanDescription = "Move forward"
+            commandType = MazeSolverCommandType.movement
+
+            setSolverStep(0)
+        elif step == 11:
+            # finished, we are at the end position
+            result = MazeSolverCommandResult(True, "Solver finished", solver._state)
+            commandHumanDescription = "Finish maze"
+            commandType = MazeSolverCommandType.movement
+
+            print("BOOIIIIIIII")
+            exit()
+
+        # actual algorithm is below – but without the states
+        """
+        # check we've reached the end of the maze
+        # s0
+        while solver._state.currentCell != solver.endingPosition:
+            # s1
+            # detect if obstacle is in front
+            if solver._detectForward().obstacleExists:
+                # s2
+                # something in the way; turn left.
+                result = solver._turn(RelativeDirection.left)
+                setPledgeAngle(90)
+
+                # s3
+                while getPledgeAngle() != 0:
+                    # s4
+                    while solver._detectForward().obstacleExists:
+                        # s5
+                        result = turnLeftPledge()
+                    # s6
+                    result = solver._moveForward()
+                    # s7
+                    result = turnRightPledge()
+
+                    # s8
+                    if solver._detectForward().obstacleExists:
+                        # s9
+                        result = turnLeftPledge()
+            else:
+                result = solver._moveForward()
+                # s10
+
+        if solver._state.currentCell == solver.endingPosition:
+            # s12
+            result = MazeSolverCommandResult(True, "Solver finished", solver._state)
+            print("BOOIIIIIIII")
+            exit()
+        """
+
+        """
+        while (not in finish cell) {
+            if (solver.detectFront() is true) {
+                solver.turnLeft()
+                set pledge_angle to 90
+
+                while (ssvs.pledge_angle != 0) {
+                    while (solver.detectFront() is true) {
+                        turnLeft()
+                    }
+                    solver.moveForward()
+                    turnRight()
+                    if (solver.detectFront() is true) {
+                        turnLeft()
+                    }
+                }
+            } else {
+                solver.moveForward()
+            }
+        }
+        print("escaped")
+        solver.onEscape()
+        """
+
+        commandHumanDescription = "Something"
+        commandType = MazeSolverCommandType.detection
 
         command = MazeSolverCommand(
-            humanDescription=command.humanDescription,
-            commandType=command.commandType,
+            humanDescription=commandHumanDescription,
+            commandType=commandType,
             commandResult=result,
         )
 
@@ -252,7 +340,7 @@ if __name__ == "__main__":
     from modules.data_structures.maze.maze import Maze
 
     maze = Maze(10, 10, False)
-    pledge = PledgeSolver(maze, XY(0, 0))
+    pledge = PledgeSolver(maze, XY(0, 0), XY(9, 9))
 
     FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
     LEVEL = 0
