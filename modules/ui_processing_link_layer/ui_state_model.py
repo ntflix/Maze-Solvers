@@ -1,3 +1,4 @@
+from modules.maze_generation.recursive_backtracker import RecursiveBacktracker
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
@@ -103,7 +104,21 @@ class UIStateModel:
         logging.debug(
             f"Generate Maze button pressed with maze specification: {mazeSpecification}"
         )
-        print("__onGenerateMazeButtonPressed", mazeSpecification)
+
+        maze: MazeProtocol
+
+        if mazeSpecification.simplyConnected == True:
+            # generate a simply connected maze
+            maze = RecursiveBacktracker(mazeSpecification.size).generate()
+        else:
+            # generate a non-simple maze
+            maze = RecursiveBacktracker(mazeSpecification.size).generate()
+            raise NotImplementedError(
+                "No non-simple maze generation algorithms implemented yet"
+            )
+
+        #  maze instantiated, so call appropriate method
+        self.__onMazeInstantiated(maze)
 
     def __onSolveButtonPressed(
         self,
