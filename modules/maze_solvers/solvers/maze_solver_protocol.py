@@ -26,13 +26,18 @@ class MazeSolver:
     # the actual maze
     _maze: MazeProtocol
 
+    # cell to end up in
+    endingPosition: XY
+
     def __init__(
         self,
         maze: MazeProtocol,
         startingPosition: XY,
+        endingPosition: XY,
         startingDirection: AbsoluteDirection = AbsoluteDirection.north,
     ) -> None:
         self._maze = maze
+        self.endingPosition = endingPosition
         # initialize the solver's state to the default start state
         self._state = MazeSolverState(
             currentCell=startingPosition,

@@ -30,3 +30,12 @@ class MazeSolverCommand:
         self.humanDescription = humanDescription
         self.commandType = commandType
         self.commandResult = commandResult
+
+    @staticmethod
+    def emptyCommand() -> "MazeSolverCommand":
+        # Implemented a none-command for none-operations such as when a solver is finished
+        return MazeSolverCommand(
+            humanDescription="Nothing",
+            commandType=MazeSolverCommandType.none,
+            commandResult=None,
+        )

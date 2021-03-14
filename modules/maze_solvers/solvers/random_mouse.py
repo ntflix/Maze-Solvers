@@ -19,10 +19,11 @@ class RandomMouse(MazeSolver):
         self,
         maze: MazeProtocol,
         startingPosition: XY,
+        endingPosition: XY,
         startingDirection: AbsoluteDirection = AbsoluteDirection.north,
     ) -> None:
         # init superclass
-        super().__init__(maze, startingPosition, startingDirection)
+        super().__init__(maze, startingPosition, endingPosition, startingDirection)
 
         logging.debug(
             f"Initialized Random Mouse maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
@@ -57,6 +58,15 @@ class RandomMouse(MazeSolver):
     def performAlgorithmOn(
         solver: "MazeSolver",
     ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
+
+        # if it's finished, return finished states
+        if solver._state.currentCell == solver.endingPosition:
+            solver._state.solverSpecificVariables["Finished"] = (bool, True)
+            return (
+                MazeSolverCommand.emptyCommand(),
+                MazeSolverCommandResult.finished(solver._state),
+            )
+
         # choose random direction to go in
         # absolute direction is less expensive than relative
         movementDirection = random.choice(AbsoluteDirection.allCases())
@@ -83,7 +93,7 @@ if __name__ == "__main__":
     from modules.data_structures.maze.maze import Maze
 
     maze = Maze(10, 10, False)
-    rm = RandomMouse(maze, XY(0, 0))
+    rm = RandomMouse(maze, XY(0, 0), XY(9, 9))
 
     FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
     LEVEL = 0

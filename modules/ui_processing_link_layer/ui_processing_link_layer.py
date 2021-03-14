@@ -26,6 +26,9 @@ if __name__ == "__main__":
 # |------------------------------| #
 # |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
 # |------------------------------| #
+# |-Maze Generation--------------| #
+# | • Non-Simply Connected       | #
+# |------------------------------| #
 # |-Maze Loader screen-----------| #
 # | • 'Load Last Maze' button    | #
 # | • 'Generate Maze' button     | #
@@ -35,10 +38,8 @@ if __name__ == "__main__":
 # | • onMazeSolved method        | #
 # | • Generate maze button       | #
 # | • Log window view            | #
-# |*~ Solver controls ~~~~~~~~~~*| #
+# |-Solver controls--------------| #
 # | • Play button                | #
 # | • Pause button               | #
 # | • Slow/fast slider           | #
-# |-Maze Solvers-----------------| #
-# | • onMazeSolved detection     | #
 # |______________________________| #
