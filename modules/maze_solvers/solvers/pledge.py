@@ -253,12 +253,11 @@ class PledgeSolver(MazeSolver):
             setSolverStep(0)
         elif step == 11:
             # finished, we are at the end position
-            result = MazeSolverCommandResult(True, "Solver finished", solver._state)
-            commandHumanDescription = "Finish maze"
-            commandType = MazeSolverCommandType.movement
-
-            print("BOOIIIIIIII")
-            exit()
+            solver._state.solverSpecificVariables["Finished"] = (bool, True)
+            return (
+                MazeSolverCommand.emptyCommand(),
+                MazeSolverCommandResult.finished(solver._state),
+            )
 
         # actual algorithm is below – but without the states
         """

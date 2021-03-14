@@ -27,7 +27,6 @@ if __name__ == "__main__":
 # |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
 # |------------------------------| #
 # |-Maze Solvers-----------------| #
-# | • Pledge algorithm           | #
 # | • onMazeSolved detection     | #
 # |-Maze Solvers-----------------| #
 # | • Non-Simply Connected       | #

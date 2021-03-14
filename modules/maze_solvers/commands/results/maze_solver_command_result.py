@@ -18,3 +18,7 @@ class MazeSolverCommandResult:
 
     def __repr__(self) -> str:
         return self.humanDescription
+
+    @staticmethod
+    def finished(state: MazeSolverState) -> "MazeSolverCommandResult":
+        return MazeSolverCommandResult(True, "Finished", state)

@@ -92,6 +92,14 @@ class WallFollower(MazeSolver):
         solver: MazeSolver,
     ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
 
+        # if it's finished, return a finished state
+        if solver._state.currentCell == solver.endingPosition:
+            solver._state.solverSpecificVariables["Finished"] = (bool, True)
+            return (
+                MazeSolverCommand.emptyCommand(),
+                MazeSolverCommandResult.finished(solver._state),
+            )
+
         # init `result` and `command` for reassignment later
         result = MazeSolverCommandResult(True, "", solver._state)
 

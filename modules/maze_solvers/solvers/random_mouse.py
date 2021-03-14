@@ -58,6 +58,15 @@ class RandomMouse(MazeSolver):
     def performAlgorithmOn(
         solver: "MazeSolver",
     ) -> Tuple[MazeSolverCommand, MazeSolverCommandResult]:
+
+        # if it's finished, return finished states
+        if solver._state.currentCell == solver.endingPosition:
+            solver._state.solverSpecificVariables["Finished"] = (bool, True)
+            return (
+                MazeSolverCommand.emptyCommand(),
+                MazeSolverCommandResult.finished(solver._state),
+            )
+
         # choose random direction to go in
         # absolute direction is less expensive than relative
         movementDirection = random.choice(AbsoluteDirection.allCases())
