@@ -294,8 +294,6 @@ class PledgeSolver(MazeSolver):
         if solver._state.currentCell == solver.endingPosition:
             # s12
             result = MazeSolverCommandResult(True, "Solver finished", solver._state)
-            print("BOOIIIIIIII")
-            exit()
         """
 
         """
