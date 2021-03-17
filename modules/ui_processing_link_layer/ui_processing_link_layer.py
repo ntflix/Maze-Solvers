@@ -23,23 +23,25 @@ if __name__ == "__main__":
     app.start()
 
 
-# |------------------------------| #
+# |——————————————————————————————| #
 # |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
-# |------------------------------| #
-# |-Maze Generation--------------| #
-# | • Non-Simply Connected       | #
-# |------------------------------| #
-# |-Maze Loader screen-----------| #
+# |——————————————————————————————| #
+# |—Urgent———————————————————————| #
+# | • Draw line of solver path   | #
+# | • Log window view            | #
+# | • Check Pledge works!?       | #
+# | • Non—Simply Connected       | #
+# |——————————————————————————————| #
+# |—Maze Loader screen———————————| #
 # | • 'Load Last Maze' button    | #
 # | • 'Generate Maze' button     | #
-# |-Maze View Window-------------| #
+# |—Maze View Window—————————————| #
 # | • 'Save' function            | #
 # | • 'Load' function            | #
 # | • onMazeSolved method        | #
 # | • Generate maze button       | #
-# | • Log window view            | #
-# |-Solver controls--------------| #
+# |—Solver controls——————————————| #
 # | • Play button                | #
 # | • Pause button               | #
 # | • Slow/fast slider           | #
-# |______________________________| #
+# |——————————————————————————————| #
