@@ -166,7 +166,7 @@ class MazeView(QWidget):
         for y in range(self.__maze.size.y):
             currentY = y * cellSize[1]
 
-            for x in range(self.__maze.size.y):
+            for x in range(self.__maze.size.x):
                 currentX = x * cellSize[0]
 
                 # get the list of walls surrounding this cell
