@@ -31,6 +31,8 @@ if __name__ == "__main__":
 # | • Non—Simply Connected       | #
 # | • Log window view            | #
 # | • Draw line of solver path   | #
+# | • Fix divide by zero error…  | #
+# |   … on slider input          | #
 # |——————————————————————————————| #
 # |—Maze Loader screen———————————| #
 # | • 'Load Last Maze' button    | #
