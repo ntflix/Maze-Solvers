@@ -27,6 +27,10 @@ class PledgeSolver(MazeSolver):
     ) -> None:
         # init superclass
         super().__init__(maze, startingPosition, endingPosition, startingDirection)
+        
+        # init Pledge vars
+        self._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 0)
+        self._state.solverSpecificVariables["PledgeAngle"] = (int, 0)
 
         logging.debug(
             f"Initialized Pledge maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
