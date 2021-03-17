@@ -163,12 +163,17 @@ class UIStateModel:
             self.__ui.showAgentVariablesWindow()
 
     def __stepSolver(self) -> None:
-        # Step through the maze solver by one command
-        if self.__agent is not None:
-            result = self.__agent.advance()
-            logging.debug(result)
-            # update UI
-            self.__ui.onMazeSolverAgentUpdate(self.__agent)
+        def stepOnceThreaded():
+            # This is a CPU-intensive operation, so run this in a thread
+            # Step through the maze solver by one command
+            if self.__agent is not None:
+                result = self.__agent.advance()
+                logging.debug(result)
+                # update UI
+                self.__ui.onMazeSolverAgentUpdate(self.__agent)
+
+        solverThread = threading.Thread(target=stepOnceThreaded)
+        solverThread.start()
 
     def __waitThenPerformSolver(self, delay: float) -> None:
         # to be called in a thread. this WILL BLOCK whatever thread it is run on, so don't run it on the main thread at least.
@@ -177,16 +182,16 @@ class UIStateModel:
 
     def __performSolver(self) -> None:
         self.__solverIsActive = True
-        delay = 1 / self.__solverRate  # e.g., 25 ops/second = 1 ÷ 25 = 0.04 Hz
+        delay = (
+            1 / self.__solverRate
+        )  # e.g., 25 ops/second = 1 ÷ 25 = 0.04 second delay between solver ops
 
-        def something() -> None:
+        def performSolverRepeatedly() -> None:
             self.__waitThenPerformSolver(delay)
-            # if self.__agent is not None:
-            # self.__ui.onMazeSolverAgentUpdate(self.__agent)
             if self.__solverIsActive:
                 self.__performSolver()
 
         # run the waiting on another thread to not block the UI
-        thread = threading.Thread(target=something)
+        thread = threading.Thread(target=performSolverRepeatedly)
         # start thread
         thread.start()
