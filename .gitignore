@@ -2,3 +2,4 @@
 **.DS_Store**
 **._*
 **.mypy_cache**
+.vscode
