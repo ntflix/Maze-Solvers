@@ -30,7 +30,7 @@ class PledgeSolver(MazeSolver):
         # init superclass
         super().__init__(maze, startingPosition, endingPosition, startingDirection)
 
-        #  init Pledge vars
+        # init Pledge vars
         # start in step 1
         self._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 1)
         # start with angle 0
@@ -180,6 +180,9 @@ class PledgeSolver(MazeSolver):
                 True, commandHumanDescription, solver._state
             )
         elif step == 6:
+            if solver._state.currentCell == solver.endingPosition:
+                raise NotImplementedError("finished maze")
+
             if getPledgeAngle() != 0:
                 setSolverStep(5)
             else:
@@ -196,7 +199,7 @@ class PledgeSolver(MazeSolver):
                 setSolverStep(2)
             else:
                 # finished!
-                raise NotImplementedError("finished maze lol")
+                raise NotImplementedError("finished maze")
 
             commandHumanDescription = "Check solver is finished"
             commandType = MazeSolverCommandType.logic
@@ -226,9 +229,9 @@ class PledgeSolver(MazeSolver):
 
 if __name__ == "__main__":
     # Test out the Pledge maze solver
-    maze = RecursiveBacktracker(XY(10, 10)).generate()
+    maze = RecursiveBacktracker(XY(4, 5)).generate()
 
-    pledge = PledgeSolver(maze, XY(0, 0), XY(9, 9))
+    pledge = PledgeSolver(maze, XY(0, 0), XY(3, 4))
 
     FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
     LEVEL = 0
@@ -240,9 +243,13 @@ if __name__ == "__main__":
 
     while True:
         result = pledge.advance()
-        sleep(0.25)
+        # sleep(0.25)
 
         print(pledge.getCurrentState().currentCell)
+
+        if result.newState.solverSpecificVariables[PLEDGESOLVERSTEP_KEY][1] == 7:
+            print(pledge.getCurrentState().currentCell)
         # if finished
-        if result.newState.solverSpecificVariables[PLEDGESOLVERSTEP_KEY][1] == 11:
-            break
+        # if "finished" in result:
+        # pass
+        # break
