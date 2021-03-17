@@ -11,6 +11,8 @@ from modules.user_interface.ui_translation.maze_generation_specification import 
 )
 from modules.user_interface.main_window import MazeSolverUI
 import logging
+import threading  #  so we can run the sleep ops and maze solver operations on a different thread to not freeze the UI
+from time import sleep
 
 
 class UIStateModel:
@@ -19,6 +21,8 @@ class UIStateModel:
     __agent: Optional[MazeSolver] = None
     __solverSpecification: Optional[MazeSolverSpecification] = None
     __agentVariablesWindowVisible: bool = False
+    __solverRate: int = 25
+    __solverIsActive = False
 
     def __init__(self) -> None:
         self.__initUI()
@@ -69,21 +73,21 @@ class UIStateModel:
                 break
 
     def __onPlayButtonPressed(self) -> None:
+        self.__solverIsActive = False
+        self.__performSolver()
         print("__onPlayButtonPressed")
 
     def __onPauseButtonPressed(self) -> None:
+        self.__solverIsActive = False
         print("__onPauseButtonPressed")
 
     def __onStepButtonPressed(self) -> None:
-        # Step through the maze solver by one command
-        if self.__agent is not None:
-            result = self.__agent.advance()
-            logging.debug(result)
-            # update UI
-            self.__ui.onMazeSolverAgentUpdate(self.__agent)
+        self.__solverIsActive = False
+        self.__stepSolver()
         print("__onStepButtonPressed")
 
     def __onRestartButtonPressed(self) -> None:
+        self.__solverIsActive = False
         print("__onRestartButtonPressed")
         # simply call the '__onSolveButtonPressed' method with the _existing_ solver specification
         if self.__solverSpecification is not None:
@@ -92,6 +96,7 @@ class UIStateModel:
             )
 
     def __onSpeedControlValueChanged(self, newValue: int) -> None:
+        self.__solverRate = newValue
         print(f"__onSpeedControlValueChanged: {newValue}")
 
     def __onOpenLogButtonPressed(self) -> None:
@@ -156,3 +161,32 @@ class UIStateModel:
         if self.__agent is not None:
             self.__agentVariablesWindowVisible = True
             self.__ui.showAgentVariablesWindow()
+
+    def __stepSolver(self) -> None:
+        # Step through the maze solver by one command
+        if self.__agent is not None:
+            result = self.__agent.advance()
+            logging.debug(result)
+            # update UI
+            self.__ui.onMazeSolverAgentUpdate(self.__agent)
+
+    def __waitThenPerformSolver(self, delay: float) -> None:
+        # to be called in a thread. this WILL BLOCK whatever thread it is run on, so don't run it on the main thread at least.
+        sleep(delay)
+        self.__stepSolver()
+
+    def __performSolver(self) -> None:
+        self.__solverIsActive = True
+        delay = 1 / self.__solverRate  # e.g., 25 ops/second = 1 ÷ 25 = 0.04 Hz
+
+        def something() -> None:
+            self.__waitThenPerformSolver(delay)
+            # if self.__agent is not None:
+            # self.__ui.onMazeSolverAgentUpdate(self.__agent)
+            if self.__solverIsActive:
+                self.__performSolver()
+
+        # run the waiting on another thread to not block the UI
+        thread = threading.Thread(target=something)
+        # start thread
+        thread.start()
