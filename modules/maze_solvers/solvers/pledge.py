@@ -6,7 +6,6 @@ from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
     MazeSolverCommandType,
 )
-from modules.maze_solvers.relative_direction import RelativeDirection
 from modules.common_structures.xy import XY
 from modules.maze_solvers.absolute_direction import AbsoluteDirection
 from modules.maze_solvers.commands.results.maze_solver_command_result import (
@@ -35,6 +34,11 @@ class PledgeSolver(MazeSolver):
         self._state.solverSpecificVariables[PLEDGESOLVERSTEP_KEY] = (int, 1)
         # start with angle 0
         self._state.solverSpecificVariables["pledgeAngle"] = (int, 0)
+
+        self._state.solverSpecificVariables["lastSuccessfulForwardMove"] = (
+            bool,
+            True,
+        )
 
         logging.debug(
             f"Initialized Pledge maze solver with maze {maze}, starting position {startingPosition} and starting direction {startingDirection}."
@@ -118,99 +122,75 @@ class PledgeSolver(MazeSolver):
                 setPledgeAngle(0)
                 return 0
 
+        """
+        The Pledge algorithm, designed to circumvent obstacles, requires an arbitrarily chosen direction to go toward.
+        When an obstacle is met, one hand (say the right hand) is kept along the obstacle while the angles turned are counted.
+        When the solver is facing the original direction again, and the angular sum of the turns made is 0, the solver leaves the obstacle and continues moving in its original direction.
+        """
         step = getSolverStep()
+        CHOSEN_DIRECTION = AbsoluteDirection.north
 
         if step == 1:
-            # set angle counter to 0
-            setPledgeAngle(0)
-            setSolverStep(2)
+            commandHumanDescription = "Turn to face chosen direction and move forward"
+            commandType = MazeSolverCommandType.movement
 
-            commandHumanDescription = "Set angle to 0"
-            commandType = MazeSolverCommandType.logic
             result = MazeSolverCommandResult(
-                True, commandHumanDescription, solver._state
+                True, f"Go {CHOSEN_DIRECTION}", solver._state
             )
-        elif step == 2:
+            if solver._state.facingDirection != CHOSEN_DIRECTION:
+                solver._turnAbsolute(CHOSEN_DIRECTION)
             result = solver._moveForward()
+            if result.success is False:
+                # if we've hit a wall, go to step 2, else just stay on step 1 and keep going
+                setSolverStep(2)
+
+        elif step == 2:
+            result = MazeSolverCommandResult(True, "Followed wall", solver._state)
+
+            oldDirection = solver._state.facingDirection
+
+            (command, result) = WallFollower.performAlgorithmOn(solver)
+            commandHumanDescription = command.humanDescription
+            commandType = command.commandType
+
+            newDirection = result.newState.facingDirection
+
+            changeInDirection = newDirection.toDegrees() - oldDirection.toDegrees()
+            # if we've moved from 270 to 0 degrees suddenly, something's up, so check it and fix the calculated angle:
+            if oldDirection == AbsoluteDirection.west:
+                if newDirection == AbsoluteDirection.north:
+                    # moved from 270 to 0, meaning a changeInDirection of -270 (invalid)
+                    changeInDirection = 90
+            elif oldDirection == AbsoluteDirection.north:
+                if newDirection == AbsoluteDirection.west:
+                    # moved from 0 to 270, meaning a changeInDirection of 270 (invalid)
+                    changeInDirection = -90
+
+            setPledgeAngle(getPledgeAngle() + changeInDirection)
+
             setSolverStep(3)
 
-            commandHumanDescription = "Move forward"
-            commandType = MazeSolverCommandType.movement
         elif step == 3:
-            # get the last command's result – and the last command has to be step #2 so we check if it hit a wall or not
-            lastCommand = solver.getCompletedCommandsList()[-1]
-            if lastCommand.commandResult is not None:
-                if lastCommand.commandResult.success:
-                    # if a wall was not hit
-                    setSolverStep(2)
-                else:
-                    # a wall *was* hit
-                    setSolverStep(4)
-
-            commandHumanDescription = "Check for collision last time"
+            commandHumanDescription = (
+                "Check facing direction and Pledge angle to determine next step"
+            )
             commandType = MazeSolverCommandType.logic
 
             result = MazeSolverCommandResult(
-                True, commandHumanDescription, solver._state
+                True, "Checked solver facing direction and Pledge angle", solver._state
             )
-        elif step == 4:
-            result = solver._turn(RelativeDirection.right)
-            setPledgeAngle(
-                getPledgeAngle() + 90,
-            )
-            setSolverStep(5)
+            # set solver step to 2 here, in case next steps are not satisfied
+            setSolverStep(2)
+            if solver._state.facingDirection == CHOSEN_DIRECTION:
+                if getPledgeAngle() == 0:
+                    setSolverStep(1)
 
-            commandHumanDescription = "Turn right"
-            commandType = MazeSolverCommandType.movement
-        elif step == 5:
-            # follow the obstacle's wall
-            oldDirection = solver._state.facingDirection.toDegrees()
-            (_, result) = WallFollower.performAlgorithmOn(solver)
-            newDirection = result.newState.facingDirection.toDegrees()
-
-            directionDifference = newDirection - oldDirection
-            setPledgeAngle(getPledgeAngle() + directionDifference)
-
-            setSolverStep(6)
-
-            commandHumanDescription = "Follow the obstacle's wall"
-            commandType = MazeSolverCommandType.movement
-
-            result = MazeSolverCommandResult(
-                True, commandHumanDescription, solver._state
-            )
-        elif step == 6:
-            if solver._state.currentCell == solver.endingPosition:
-                raise NotImplementedError("finished maze")
-
-            if getPledgeAngle() != 0:
-                setSolverStep(5)
-            else:
-                setSolverStep(7)
-
-            commandHumanDescription = "Check angle counter is 0"
-            commandType = MazeSolverCommandType.logic
-            result = MazeSolverCommandResult(
-                True, commandHumanDescription, solver._state
-            )
-        elif step == 7:
-            if solver._state.currentCell != solver.endingPosition:
-                # exit not found, goto #2
-                setSolverStep(2)
-            else:
-                # finished!
-                raise NotImplementedError("finished maze")
-
-            commandHumanDescription = "Check solver is finished"
-            commandType = MazeSolverCommandType.logic
-
-            result = MazeSolverCommandResult(
-                True, commandHumanDescription, solver._state
-            )
         else:
-            # we're in a weird state that shouldn't exist
+            logging.error(
+                f"Something unexpected happened: the Pledge solver is in an unknown step {step}. This should be impossible as there are no code routes to set the step to this value."
+            )
             raise RuntimeError(
-                f"Unknown Pledge maze solver error – undefined step {step}"
+                f"Pledge solver is in unknown step {step}! Last command issued was {solver.getCompletedCommandsList()[-1]}."
             )
 
         command = MazeSolverCommand(
@@ -243,7 +223,7 @@ if __name__ == "__main__":
 
     while True:
         result = pledge.advance()
-        # sleep(0.25)
+        sleep(0.25)
 
         print(pledge.getCurrentState().currentCell)
 
