@@ -29,19 +29,12 @@ if __name__ == "__main__":
 # |—Urgent———————————————————————| #
 # | • Non—Simply Connected       | #
 # | • Log window view            | #
-# | • Start/stop solver controls | #
 # | • Draw line of solver path   | #
 # |——————————————————————————————| #
 # |—Maze Loader screen———————————| #
 # | • 'Load Last Maze' button    | #
-# | • 'Generate Maze' button     | #
 # |—Maze View Window—————————————| #
 # | • 'Save' function            | #
 # | • 'Load' function            | #
 # | • onMazeSolved method        | #
-# | • Generate maze button       | #
-# |—Solver controls——————————————| #
-# | • Play button                | #
-# | • Pause button               | #
-# | • Slow/fast slider           | #
 # |——————————————————————————————| #
