@@ -27,6 +27,7 @@ if __name__ == "__main__":
 # |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
 # |——————————————————————————————| #
 # |—Urgent———————————————————————| #
+# | • Make solver stop if solved | #
 # | • Non—Simply Connected       | #
 # | • Log window view            | #
 # | • Draw line of solver path   | #
