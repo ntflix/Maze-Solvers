@@ -27,10 +27,10 @@ if __name__ == "__main__":
 # |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
 # |——————————————————————————————| #
 # |—Urgent———————————————————————| #
-# | • Draw line of solver path   | #
-# | • Log window view            | #
-# | • Check Pledge works!?       | #
 # | • Non—Simply Connected       | #
+# | • Log window view            | #
+# | • Start/stop solver controls | #
+# | • Draw line of solver path   | #
 # |——————————————————————————————| #
 # |—Maze Loader screen———————————| #
 # | • 'Load Last Maze' button    | #
