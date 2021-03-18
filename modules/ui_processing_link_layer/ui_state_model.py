@@ -163,7 +163,7 @@ class UIStateModel:
             self.__agentVariablesWindowVisible = True
             self.__ui.showAgentVariablesWindow()
 
-    def __stepSolver(self) -> None:
+    def __stepSolver(self, updateUI: bool = True) -> None:
         def stepOnceThreaded():
             if self.__solverOperationInProgress:
                 # the solver is already doing stuff, so we leave it
@@ -175,8 +175,9 @@ class UIStateModel:
             if self.__agent is not None:
                 result = self.__agent.advance()
                 logging.debug(result)
-                # update UI
-                self.__ui.onMazeSolverAgentUpdate(self.__agent)
+                if updateUI:
+                    # update UI
+                    self.__ui.onMazeSolverAgentUpdate(self.__agent)
             # finally, unlock the solver
             self.__solverOperationInProgress = False
 
@@ -185,8 +186,13 @@ class UIStateModel:
 
     def __waitThenPerformSolver(self, delay: float) -> None:
         # to be called in a thread. this WILL BLOCK whatever thread it is run on, so don't run it on the main thread at least.
+        self.__stepSolver(
+            updateUI=False
+        )  # we're updating the solver in the background, and when the time is finished, we update the UI
+        # sleep, and then update the UI
         sleep(delay)
-        self.__stepSolver()
+        if self.__agent is not None:
+            self.__ui.onMazeSolverAgentUpdate(self.__agent)
 
     def __performSolver(self) -> None:
         self.__solverIsActive = True
