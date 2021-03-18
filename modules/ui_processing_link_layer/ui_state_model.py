@@ -165,9 +165,6 @@ class UIStateModel:
 
     def __stepSolver(self) -> None:
         def stepOnceThreaded():
-            if self.__solverOperationInProgress:
-                # the solver is already doing stuff, so we leave it
-                return
             # 'lock' the solver to this thread by setting `__solverOperationInProgress` to True
             self.__solverOperationInProgress = True
             # This is a CPU-intensive operation, so run this in a thread
@@ -180,6 +177,9 @@ class UIStateModel:
             # finally, unlock the solver
             self.__solverOperationInProgress = False
 
+        if self.__solverOperationInProgress:
+            # the solver is already doing stuff, so we leave it
+            return
         solverThread = threading.Thread(target=stepOnceThreaded)
         solverThread.start()
 
