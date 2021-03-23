@@ -48,10 +48,14 @@ class UIStateModel:
         logging.debug(f"Maze {maze} instantiated")
         self.__maze = maze
 
+        file = MazeFileHandler("./.lastMaze")
+        file.save(maze)
+
         self.__ui.showMazeViewWindow(self.__maze)
         self.__ui.setMazeSolverControlsEnabled.emit(False)
 
     def __onLoadLastMazePressed(self) -> None:
+        self.__onMazeFilePathChosen("./.lastMaze.db")
         print("__onLoadLastMazePressed")
 
     def __onMazeFilePathChosen(self, filePath: str) -> None:

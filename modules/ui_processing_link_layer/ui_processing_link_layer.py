@@ -31,8 +31,6 @@ if __name__ == "__main__":
 # | • Draw line of solver path   | #
 # | • Make solver stop if solved | #
 # |——————————————————————————————| #
-# |—Maze Loader screen———————————| #
-# | • 'Load Last Maze' button    | #
 # |—Maze View Window—————————————| #
 # | • 'Save' function            | #
 # | • 'Load' function            | #
