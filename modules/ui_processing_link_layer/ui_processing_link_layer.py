@@ -22,17 +22,14 @@ if __name__ == "__main__":
     app = UIProcessingLinkLayer()
     app.start()
 
-
 # |——————————————————————————————| #
 # |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
 # |——————————————————————————————| #
 # |—Urgent———————————————————————| #
-# | • Make solver stop if solved | #
 # | • Non—Simply Connected       | #
 # | • Log window view            | #
 # | • Draw line of solver path   | #
-# | • Fix divide by zero error…  | #
-# |   … on slider input          | #
+# | • Make solver stop if solved | #
 # |——————————————————————————————| #
 # |—Maze Loader screen———————————| #
 # | • 'Load Last Maze' button    | #

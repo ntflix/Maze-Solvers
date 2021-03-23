@@ -148,12 +148,12 @@ class MazeSolverSpeedControlView(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         slider = QSlider(Qt.Orientations.Horizontal)
-        # minimum of 0 op/s
-        slider.setMinimum(0)
+        # minimum of 1 op/s (0 would result in a divide by zero op and thus crash)
+        slider.setMinimum(1)
         # maximum of 50 op/s
-        slider.setMaximum(50)
+        slider.setMaximum(70)
         # initial value in the middle
-        slider.setValue(25)
+        slider.setValue(35)
 
         # connect the onValueChange event to the method passed to this widget
         slider.valueChanged.connect(onValueChanged)  # type: ignore
