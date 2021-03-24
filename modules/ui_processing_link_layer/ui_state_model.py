@@ -118,7 +118,7 @@ class UIStateModel:
 
         maze: MazeProtocol
 
-        if mazeSpecification.simplyConnected == True:
+        if mazeSpecification.simplyConnected is True:
             # generate a simply connected maze
             maze = RecursiveBacktracker(mazeSpecification.size).generate()
         else:
