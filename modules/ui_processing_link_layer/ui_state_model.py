@@ -1,3 +1,4 @@
+from modules.maze_generation.non_simple import NonSimple
 from modules.maze_generation.recursive_backtracker import RecursiveBacktracker
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
@@ -122,10 +123,7 @@ class UIStateModel:
             maze = RecursiveBacktracker(mazeSpecification.size).generate()
         else:
             # generate a non-simple maze
-            maze = RecursiveBacktracker(mazeSpecification.size).generate()
-            raise NotImplementedError(
-                "No non-simple maze generation algorithms implemented yet"
-            )
+            maze = NonSimple(mazeSpecification.size).generate()
 
         #  maze instantiated, so call appropriate method
         self.__onMazeInstantiated(maze)
@@ -171,7 +169,7 @@ class UIStateModel:
         def stepOnceThreaded():
             # 'lock' the solver to this thread by setting `__solverOperationInProgress` to True
             self.__solverOperationInProgress = True
-            # This is a CPU-intensive operation, so run this in a thread
+            # This is a CPU-intensive operation, so run this in a thread as to not block the UI
             # Step through the maze solver by one command
             if self.__agent is not None:
                 result = self.__agent.advance()
