@@ -22,6 +22,7 @@ class UIStateModel:
     __agent: Optional[MazeSolver] = None
     __solverSpecification: Optional[MazeSolverSpecification] = None
     __agentVariablesWindowVisible: bool = False
+    __agentLogWindowVisible: bool = False
     __solverRate: int = 25
     __solverIsActive = False
     __solverOperationInProgress = False
@@ -105,9 +106,6 @@ class UIStateModel:
         self.__solverRate = newValue
         print(f"__onSpeedControlValueChanged: {newValue}")
 
-    def __onOpenLogButtonPressed(self) -> None:
-        print("__onOpenLogButtonPressed")
-
     def __onGenerateMazeButtonPressed(
         self,
         mazeSpecification: MazeGenerationSpecification,
@@ -138,9 +136,13 @@ class UIStateModel:
         self.__ui.setMazeSolverControlsEnabled.emit(True)
         # send the mazeSolverUpdate event to the UI with our new solver agent
         self.__ui.onMazeSolverAgentUpdate(self.__agent)
-        # only update the agent vars window if it is already open
+        # only update the agent vars window if it is already open:
         if self.__agentVariablesWindowVisible:
             self.__ui.showAgentVariablesWindow()
+
+        # only update the agent log window if it is already open:
+        if self.__agentLogWindowVisible:
+            self.__ui.showAgentLogWindow()
 
     def __instantiateSolver(
         self, solverSpecification: MazeSolverSpecification
@@ -159,6 +161,12 @@ class UIStateModel:
     def startApplication(self) -> int:
         self.__ui.showMazeLoader()
         return self.__ui.exec()
+
+    def __onOpenLogButtonPressed(self) -> None:
+        print("__onOpenLogButtonPressed")
+        if self.__agent is not None:
+            self.__agentLogWindowVisible = True
+            self.__ui.showAgentLogWindow()
 
     def __onAgentVariablesButtonPressed(self) -> None:
         if self.__agent is not None:

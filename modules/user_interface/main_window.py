@@ -1,3 +1,4 @@
+from modules.user_interface.agent_windows.log import AgentLogView
 from modules.user_interface.agent_windows.agent_variables import AgentVariablesView
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
 from modules.user_interface.ui_translation.maze_solver_specification import (
@@ -19,6 +20,7 @@ class MazeSolverUI(QApplication):
     __mazeViewWindow: MazeViewWindow
     __agent: Optional[MazeSolver] = None
     __agentVarsWindow: Optional[AgentVariablesView] = None
+    __agentLogWindow: Optional[AgentLogView] = None
 
     __onLoadLastMazePressed: Callable[[], None]
     __onMazeFilePathChosen: Callable[[str], None]
@@ -127,7 +129,10 @@ class MazeSolverUI(QApplication):
             self.__agentVarsWindow.onSolverVariablesChange.emit(
                 self.__agent.getCurrentState().solverSpecificVariables
             )
-            # self.__agentVarsWindow.update()
+
+        if self.__agentLogWindow is not None:
+            commandsList = self.__agent.getCompletedCommandsList()
+            self.__agentLogWindow.onLogUpdate(commandsList)
 
     def showAgentVariablesWindow(self) -> None:
         if self.__agent is not None:
@@ -136,3 +141,8 @@ class MazeSolverUI(QApplication):
             )
 
             self.__agentVarsWindow.show()
+
+    def showAgentLogWindow(self) -> None:
+        if self.__agent is not None:
+            self.__agentLogWindow = AgentLogView()
+            self.__agentLogWindow.show()
