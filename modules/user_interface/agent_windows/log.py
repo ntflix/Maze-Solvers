@@ -70,7 +70,6 @@ class AgentLogView(QWidget):
 
         # update the log layout
         self.__verticalLogLayout.updateCommands(commandsAndResults)
-        self.update()
 
     def onStateUpdate(self, state: str) -> None:
         self.__currentStateBox.onStateChange(state)
@@ -129,8 +128,6 @@ class VerticalLogLayout(QWidget):
             self.__commandNames.append(command[0])
             self.__commandResults.append(command[1])
 
-        self.update()
-
 
 class CurrentStateBox(QWidget):
     def __init__(
@@ -157,4 +154,3 @@ class CurrentStateBox(QWidget):
 
     def onStateChange(self, state: str) -> None:
         self.__currentStateLabel.setText(state)
-        self.update()
