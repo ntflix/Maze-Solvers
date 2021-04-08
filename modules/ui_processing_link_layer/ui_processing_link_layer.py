@@ -34,4 +34,5 @@ if __name__ == "__main__":
 # | • 'Save' function            | #
 # | • 'Load' function            | #
 # | • onMazeSolved method        | #
+# | • 'Clear' funct. (see reqs)  | #
 # |——————————————————————————————| #
