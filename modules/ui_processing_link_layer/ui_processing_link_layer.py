@@ -26,12 +26,13 @@ if __name__ == "__main__":
 # |~~~~~~~~~~~~~TODO~~~~~~~~~~~~~| #
 # |——————————————————————————————| #
 # |—Urgent———————————————————————| #
-# | • Log window view            | #
 # | • Draw line of solver path   | #
 # | • Make solver stop if solved | #
+# | • Log window view autoupdate | #
 # |——————————————————————————————| #
 # |—Maze View Window—————————————| #
 # | • 'Save' function            | #
 # | • 'Load' function            | #
 # | • onMazeSolved method        | #
+# | • 'Clear' funct. (see reqs)  | #
 # |——————————————————————————————| #

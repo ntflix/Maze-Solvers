@@ -46,7 +46,9 @@ class AgentVariablesGroupView(QWidget):
             self.__variables = vars
 
             # for each variable name, then…
-            for variableName in self.__variables.keys():
+            # make a copy of the KeysView (keys) so it won't unexpectedly change size during iteration
+            currentKeys = list(self.__variables.keys())
+            for variableName in currentKeys:
                 # add it to the list of label widgets as a QLabel
                 namesLabels.append(QLabel(variableName))
                 # …also add it to the vertical labelNames labels box
