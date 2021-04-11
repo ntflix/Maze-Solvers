@@ -26,6 +26,7 @@ class UIStateModel:
     __solverRate: int = 25
     __solverIsActive = False
     __solverOperationInProgress = False
+    __solverHasFinishedMaze = False
 
     def __init__(self) -> None:
         self.__initUI()
@@ -95,6 +96,7 @@ class UIStateModel:
 
     def __onRestartButtonPressed(self) -> None:
         self.__solverIsActive = False
+        self.__solverHasFinishedMaze = False  # reset the solver's `finished` state
         print("__onRestartButtonPressed")
         # simply call the '__onSolveButtonPressed' method with the _existing_ solver specification
         if self.__solverSpecification is not None:
@@ -180,6 +182,13 @@ class UIStateModel:
             # This is a CPU-intensive operation, so run this in a thread as to not block the UI
             # Step through the maze solver by one command
             if self.__agent is not None:
+                if (
+                    "Finished"
+                    in self.__agent.getCurrentState().solverSpecificVariables.keys()
+                ):
+                    self.__solverHasFinishedMaze = True
+                    return True  # agent has finished maze
+
                 result = self.__agent.advance()
                 logging.debug(result)
                 # update UI
@@ -201,7 +210,15 @@ class UIStateModel:
         if self.__agent is not None:
             self.__ui.onMazeSolverAgentUpdate(self.__agent)
 
+    def __onAgentFinished(self) -> None:
+        logging.info("Solver has finished maze")
+
     def __performSolver(self) -> None:
+        if self.__solverHasFinishedMaze:
+            #  don't do anything if the solver is finished
+            self.__onAgentFinished()
+            return
+
         self.__solverIsActive = True
         delay = (
             1 / self.__solverRate
