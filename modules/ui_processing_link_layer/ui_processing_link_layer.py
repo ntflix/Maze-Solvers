@@ -27,7 +27,6 @@ if __name__ == "__main__":
 # |——————————————————————————————| #
 # |—Urgent———————————————————————| #
 # | • Draw line of solver path   | #
-# | • Make solver stop if solved | #
 # | • Log window view autoupdate | #
 # |——————————————————————————————| #
 # |—Maze View Window—————————————| #
@@ -35,4 +34,5 @@ if __name__ == "__main__":
 # | • 'Load' function            | #
 # | • onMazeSolved method        | #
 # | • 'Clear' funct. (see reqs)  | #
+# | • Alert on solver finish     | #
 # |——————————————————————————————| #
