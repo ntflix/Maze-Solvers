@@ -80,10 +80,12 @@ class Graph(Generic[T]):
         return self.__nodes[index].connections
 
     def setNodeData(self, index: int, newValue: T) -> None:
-        for nodeIndex in range(len(self)):
+        for nodeIndex, node in enumerate(
+            self
+        ):  # loop through self's nodes with an index counter as well as current node
             if nodeIndex == index:
                 # set the node data bc index is correct
-                self.__nodes[nodeIndex].data = newValue
+                node.data = newValue
                 # make sure to return so we don't loop over everything!
                 return
         # not found
@@ -159,9 +161,11 @@ class Graph(Generic[T]):
         ['None -> [1, 4]', 'None -> [0, 4]', 'None -> [4, 3]', 'None -> [2, 4]', 'None -> [0, 1, 2, 3]']
         """
 
-        for i in range(len(values)):
+        for index, thisValue in enumerate(values):
             # make new `Node` with this value's data and left and right pointers
-            thisNode: Node[T] = Node(data=values[i], connections=connectionsPointers[i])
+            thisNode: Node[T] = Node(
+                data=thisValue, connections=connectionsPointers[index]
+            )
             self.__nodes.append(thisNode)  # append new node to `self.nodes`
 
     def connectionExistsFrom(self, indexA: int, indexB: int) -> bool:
