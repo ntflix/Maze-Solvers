@@ -1,0 +1,35 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>100</x><y>50</y><w>360</w><h>510</h></coordinates><panel_attributes>UIStateModel
+-
+-__ui: MazeSolverUI
+-__maze: Optional[MazeProtocol] = None
+-__agent: Optional[MazeSolver] = None
+-__solverSpecification: Optional[MazeSolverSpecification] = None
+-__agentVariablesWindowVisible: bool = False
+-__agentLogWindowVisible: bool = False
+-__solverRate: int = 25
+-__solverIsActive = False
+-__solverOperationInProgress = False
+-__solverHasFinishedMaze = False
+-
+-__init__(): void
+-__initUI(): void
+-__onMazeInstantiated(self, maze: MazeProtocol): void
+-__onLoadLastMazePressed(self): void
+-__onMazeFilePathChosen(self, filePath: str): void
+-__onPlayButtonPressed(self): void
+-__onPauseButtonPressed(self): void
+-__onStepButtonPressed(self): void
+-__onRestartButtonPressed(self): void
+-__onSpeedControlValueChanged(self, newValue: int): void
+-__onGenerateMazeButtonPressed: void
+-__onSolveButtonPressed: void
+-__instantiateSolver: void
+-__onOpenLogButtonPressed(self): void
+-__onAgentVariablesButtonPressed(self): void
+-__stepSolver(self): void
+-__waitThenPerformSolver(self, delay: float): void
+-__onAgentFinished(self): void
+-__performSolver(self): void
++startApplication(self): int
+style=autoresize
+</panel_attributes><additional_attributes></additional_attributes></element></diagram>
