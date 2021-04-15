@@ -59,7 +59,6 @@ class UIStateModel:
 
     def __onLoadLastMazePressed(self) -> None:
         self.__onMazeFilePathChosen("./.lastMaze.db")
-        print("__onLoadLastMazePressed")
 
     def __onMazeFilePathChosen(self, filePath: str) -> None:
         maze: MazeProtocol
@@ -83,20 +82,16 @@ class UIStateModel:
     def __onPlayButtonPressed(self) -> None:
         self.__solverIsActive = False
         self.__performSolver()
-        print("__onPlayButtonPressed")
 
     def __onPauseButtonPressed(self) -> None:
         self.__solverIsActive = False
-        print("__onPauseButtonPressed")
 
     def __onStepButtonPressed(self) -> None:
         self.__solverIsActive = False
         self.__stepSolver()
-        print("__onStepButtonPressed")
 
     def __onRestartButtonPressed(self) -> None:
         self.__solverIsActive = False
-        print("__onRestartButtonPressed")
         # simply call the '__onSolveButtonPressed' method with the _existing_ solver specification
         if self.__solverSpecification is not None:
             self.__onSolveButtonPressed(
@@ -105,7 +100,7 @@ class UIStateModel:
 
     def __onSpeedControlValueChanged(self, newValue: int) -> None:
         self.__solverRate = newValue
-        print(f"__onSpeedControlValueChanged: {newValue}")
+        logging.debug(f"__onSpeedControlValueChanged: {newValue}")
 
     def __onGenerateMazeButtonPressed(
         self,
@@ -131,7 +126,7 @@ class UIStateModel:
         self,
         solverSpecification: MazeSolverSpecification,
     ):
-        print(f"__onSolveButtonPressed {solverSpecification}")
+        logging.debug(f"__onSolveButtonPressed {solverSpecification}")
         self.__solverIsActive = False
         self.__solverSpecification = solverSpecification
         self.__agent = self.__instantiateSolver(solverSpecification)
@@ -167,7 +162,6 @@ class UIStateModel:
         return self.__ui.exec()
 
     def __onOpenLogButtonPressed(self) -> None:
-        print("__onOpenLogButtonPressed")
         if self.__agent is not None:
             self.__agentLogWindowVisible = True
             self.__ui.showAgentLogWindow()
