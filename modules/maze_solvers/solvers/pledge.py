@@ -1,6 +1,6 @@
 import logging
+from modules.maze_generation.non_simple import NonSimple
 from modules.maze_solvers.solvers.wall_follower import WallFollower
-from modules.maze_generation.recursive_backtracker import RecursiveBacktracker
 from typing import Tuple
 from modules.data_structures.maze.maze_protocol import MazeProtocol
 from modules.maze_solvers.commands.commands.maze_solver_command_type_enum import (
@@ -209,9 +209,9 @@ class PledgeSolver(MazeSolver):
 
 if __name__ == "__main__":
     # Test out the Pledge maze solver
-    maze = RecursiveBacktracker(XY(4, 5)).generate()
+    maze = NonSimple(XY(5, 5)).generate()
 
-    pledge = PledgeSolver(maze, XY(0, 0), XY(3, 4))
+    pledge = PledgeSolver(maze, XY(2, 3), XY(0, 0))
 
     FORMAT = "%(asctime)s - %(name)-20s - %(levelname)-5s - %(message)s"
     LEVEL = 0
@@ -225,7 +225,7 @@ if __name__ == "__main__":
         result = pledge.advance()
         sleep(0.25)
 
-        print(pledge.getCurrentState().currentCell)
+        print(f"Current cell: {pledge.getCurrentState().currentCell}")
 
         if result.newState.solverSpecificVariables[PLEDGESOLVERSTEP_KEY][1] == 7:
             print(pledge.getCurrentState().currentCell)

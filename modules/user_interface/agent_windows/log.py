@@ -29,8 +29,8 @@ class AgentLogView(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         verticalGroupLayout = QVBoxLayout()
-        self.__currentStateBox = CurrentStateBox("Not set…")
-        verticalGroupLayout.addWidget(self.__currentStateBox)
+        # self.__currentStateBox = CurrentStateBox("Not set…")
+        # verticalGroupLayout.addWidget(self.__currentStateBox)
 
         # define the vertical scroll area of the log
         logLayoutScrollArea = QScrollArea()
