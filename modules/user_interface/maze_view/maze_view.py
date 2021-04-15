@@ -25,7 +25,6 @@ class MazeView(QWidget):
         self,
         minimumSize: QSize,
         maze: MazeProtocol,
-        solverState: Optional[MazeSolverState],
         parent: Optional[QWidget] = None,
         keepAspectRatio: bool = True,
         *args: Tuple[Any, Any],
@@ -35,7 +34,6 @@ class MazeView(QWidget):
 
         self.__keepAspectRatio = keepAspectRatio
         self.__maze = maze
-        self.__solverState = solverState
 
         self.setContentsMargins(0, 0, 0, 0)
 

@@ -64,7 +64,6 @@ class MazeViewWindow(QMainWindow):
 
         mazeViewController = MazeViewController(
             maze=maze,
-            solver=solver,
             onPlayButtonPressed=self.__onPlayButtonPressed,
             onPauseButtonPressed=self.__onPauseButtonPressed,
             onStepButtonPressed=self.__onStepButtonPressed,

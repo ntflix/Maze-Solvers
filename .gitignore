@@ -3,3 +3,4 @@
 **._*
 **.mypy_cache**
 .vscode
+.lastMaze.db

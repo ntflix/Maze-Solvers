@@ -1,5 +1,4 @@
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
-from modules.maze_solvers.maze_solver_state import MazeSolverState
 from modules.user_interface.ui_translation.maze_solver_specification import (
     MazeSolverSpecification,
 )
@@ -30,7 +29,6 @@ class MazeViewController(QWidget):
     def __init__(
         self,
         maze: MazeProtocol,
-        solver: Optional[MazeSolver],
         onPlayButtonPressed: Callable[[], None],
         onPauseButtonPressed: Callable[[], None],
         onStepButtonPressed: Callable[[], None],
@@ -64,20 +62,9 @@ class MazeViewController(QWidget):
 
         layout = QHBoxLayout()
 
-        # safely unwrap optional solver state
-        # init solverState as None so it is not unbound
-        solverState: Optional[MazeSolverState] = None
-        if solver is not None:
-            # solver has been passed to class
-            # check it is of type MazeSolverState (mainly for static type analysis)
-            if type(solver) == MazeSolverState:
-                # set solverState to the current state of our solver
-                solverState = solver.getCurrentState()
-
         self.__mazeView = MazeView(
             minimumSize=minimumMazeSize,
             maze=self.__maze,
-            solverState=solverState,
             parent=self,
             keepAspectRatio=False,
         )

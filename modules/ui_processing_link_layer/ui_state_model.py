@@ -96,7 +96,6 @@ class UIStateModel:
 
     def __onRestartButtonPressed(self) -> None:
         self.__solverIsActive = False
-        self.__solverHasFinishedMaze = False  # reset the solver's `finished` state
         print("__onRestartButtonPressed")
         # simply call the '__onSolveButtonPressed' method with the _existing_ solver specification
         if self.__solverSpecification is not None:
@@ -133,8 +132,11 @@ class UIStateModel:
         solverSpecification: MazeSolverSpecification,
     ):
         print(f"__onSolveButtonPressed {solverSpecification}")
+        self.__solverIsActive = False
         self.__solverSpecification = solverSpecification
         self.__agent = self.__instantiateSolver(solverSpecification)
+        self.__solverHasFinishedMaze = False  # reset the solver's `finished` state
+        self.__solverOperationInProgress = False
         self.__ui.setMazeSolverControlsEnabled.emit(True)
         # send the mazeSolverUpdate event to the UI with our new solver agent
         self.__ui.onMazeSolverAgentUpdate(self.__agent)
