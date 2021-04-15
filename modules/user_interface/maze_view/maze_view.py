@@ -43,7 +43,6 @@ class MazeView(QWidget):
         self.onMazeSolverAgentUpdate.connect(self.__onMazeSolverAgentUpdate)
 
     def __onMazeSolverAgentUpdate(self, newState: MazeSolverState) -> None:
-        print("__onMazeSolverAgentUpdate called in MazeView")
         self.__solverState = newState
         self.update()
         # self.__drawAgent(self.__solverState)
