@@ -112,7 +112,7 @@ class Graph(Generic[T]):
 
         # make a list of nodes of the correct length
         everyNode = [Node[T](None) for _ in range(0, sizeX * sizeY)]
-        return Graph(nodes=everyNode)
+        return Graph[T](nodes=everyNode)
 
     def setNodesFromNodesList(self, nodes: list[Node[T]]) -> None:
         """Set a graph's nodes from a list of nodes.
@@ -169,7 +169,6 @@ class Graph(Generic[T]):
             self.__nodes.append(thisNode)  # append new node to `self.nodes`
 
     def connectionExistsFrom(self, indexA: int, indexB: int) -> bool:
-
         """Check whether there is a connection from provided node index A to index B.
 
         Args:
