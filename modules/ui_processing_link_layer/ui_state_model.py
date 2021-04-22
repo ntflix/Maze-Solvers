@@ -223,6 +223,7 @@ class UIStateModel:
         def performSolverRepeatedly() -> None:
             self.__waitThenPerformSolver(delay)
             if self.__solverIsActive:
+                # repeat the solver if it should be active
                 self.__performSolver()
 
         # run the waiting on another thread to not block the UI
