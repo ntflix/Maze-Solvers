@@ -30,7 +30,7 @@ class FilePersistence(Generic[T]):
             with shelve.open(self.__path, flag="r") as shelf:
                 # load from file
                 loaded = shelf[key]
-        except dbm.error as error:  # there was an error with the loading of the file
+        except Exception as error:  # there was an error with the loading of the file
             # make a nice error message :)
             errorMessage = f"Could not load file from {self.__path}: {error}."
             # log the error

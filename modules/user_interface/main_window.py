@@ -1,3 +1,4 @@
+from PyQt6 import QtGui
 from modules.user_interface.agent_windows.log import AgentLogView
 from modules.user_interface.agent_windows.agent_variables import AgentVariablesView
 from modules.maze_solvers.solvers.maze_solver_protocol import MazeSolver
@@ -71,6 +72,10 @@ class MazeSolverUI(QApplication):
         self.__onGenerateMazeButtonPressed = onGenerateMazeButtonPressed
         self.__onSolveButtonPressed = onSolveButtonPressed
         self.__onAgentVariablesButtonPressed = onAgentVariablesButtonPressed
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        print(event.key())
+        print(event.keyCombination())
 
     def showMazeLoader(self) -> None:
         # construct a maze loader view
