@@ -1,4 +1,3 @@
-import dbm
 from modules.file_handling.serializable import Serializable
 from typing import Any, Generic, TypeVar
 import logging
